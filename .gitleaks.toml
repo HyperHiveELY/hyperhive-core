@@ -1,0 +1,18 @@
+[extend]
+useDefault = true
+
+# Exact CSS matches and fixture key name reviewed in the local audit.
+[[allowlists]]
+regexTarget = "match"
+rules = ["generic-api-key"]
+regexes = [
+    '''^\.framer\-nWf9h\.framer\-v\-1lkey4x\ \.framer\-12r00r4,\ \.framer\-nWf9h\.framer\-v\-gr870s\ $''',
+    '''^\.framer\-nWf9h\.framer\-v\-1lkey4x\ \.framer\-12r00r4,\.framer\-nWf9h\.framer\-v\-gr870s\ $''',
+    '''^\.framer\-nWf9h\.framer\-v\-1lkey4x\ \.framer\-1lq4w50,\ \.framer\-nWf9h\.framer\-v\-1lkey4x\ $''',
+    '''^\.framer\-nWf9h\.framer\-v\-1lkey4x\ \.framer\-1lq4w50,\.framer\-nWf9h\.framer\-v\-1lkey4x\ $''',
+    '''^\.framer\-nWf9h\.framer\-v\-1lkey4x\ \.framer\-1tuhrrd,\ \.framer\-nWf9h\.framer\-v\-gr870s\ $''',
+    '''^\.framer\-nWf9h\.framer\-v\-1lkey4x\ \.framer\-1tuhrrd,\.framer\-nWf9h\.framer\-v\-gr870s\ $''',
+    '''^\.framer\-nWf9h\.framer\-v\-1lkey4x\ \.framer\-p0qhlp,\ \.framer\-nWf9h\.framer\-v\-1lkey4x\ $''',
+    '''^\.framer\-nWf9h\.framer\-v\-1lkey4x\ \.framer\-p0qhlp,\.framer\-nWf9h\.framer\-v\-1lkey4x\ $''',
+    '''^key='hyperhive\.owner\.encrypted\.v1'$''',
+]
