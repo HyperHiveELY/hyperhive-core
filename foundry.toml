@@ -1,0 +1,18 @@
+[profile.default]
+src = "contracts/src"
+test = "contracts/test"
+out = "contracts/forge-out"
+cache_path = "contracts/forge-cache"
+libs = ["node_modules"]
+remappings = ["@openzeppelin/contracts/=node_modules/@openzeppelin/contracts/"]
+solc_version = "0.8.39"
+evm_version = "cancun"
+optimizer = true
+optimizer_runs = 200
+bytecode_hash = "ipfs"
+code_size_limit = 100000
+
+[invariant]
+runs = 800
+depth = 128
+fail_on_revert = true
