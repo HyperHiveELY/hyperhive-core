@@ -1,0 +1,11 @@
+{
+  "testRunner": "vitest",
+  "plugins": ["@stryker-mutator/vitest-runner"],
+  "mutate": ["packages/core/risk.ts","packages/core/matching.ts","packages/core/position-recovery.ts"],
+  "coverageAnalysis": "perTest",
+  "concurrency": 3,
+  "reporters": ["clear-text","json"],
+  "ignorePatterns": ["tsconfig.json","output","dist",".data","contracts/forge-*","contracts/out","docs","apps/web/public",".env*"],
+  "thresholds": {"high": 80,"low": 60,"break": 80},
+  "vitest": {"configFile": "vitest.mutation.config.ts"}
+}
