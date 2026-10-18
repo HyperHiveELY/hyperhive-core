@@ -1,0 +1,41 @@
+{
+  "archive": "eko-source-2026-11-10.zip",
+  "license": "MIT",
+  "files": [
+    {
+      "source": "packages/shared/src/canonical.ts",
+      "destination": "packages/eko/canonical.ts",
+      "sha256": "337ee74f571f71cdaae07b355cec1b2f5b0d7876de69fbecdcc30f6c7135aebe"
+    },
+    {
+      "source": "packages/shared/src/indicators.ts",
+      "destination": "packages/eko/indicators.ts",
+      "sha256": "2c40052afb8f642be255e457f3aee9bb7401e7484f1c394fd5bab7dbbb21bcad"
+    },
+    {
+      "source": "apps/web/src/lib/format.ts",
+      "destination": "packages/eko/format.ts",
+      "sha256": "fa81f1ed38608c8a8483962dd31ed6902d530f02d83166e343a637de6b941e71"
+    },
+    {
+      "source": "apps/server/src/ai/types.ts",
+      "destination": "packages/ai/types.ts",
+      "sha256": "68aff3ac96cb1b96b939e24a15bbe1157939bd3759cfe25499c2bcdc966dea4d"
+    },
+    {
+      "source": "apps/server/src/ai/providers/chat.ts",
+      "destination": "packages/ai/chat.ts",
+      "sha256": "356aa0051b85600cacb37cb4132ff0cb4da167e19567d2a9156f7b460da3ff18"
+    },
+    {
+      "source": "LICENSE",
+      "destination": "packages/eko/LICENSE",
+      "sha256": "00d756040559f8fc79fddb59241aa7b4ed63e7102c7581716ca0fb8bd333ebb5"
+    },
+    {
+      "source": "NOTICE",
+      "destination": "packages/eko/NOTICE",
+      "sha256": "29a850d8e924da7465cd83375cb2b5336990b4d222a89e60f446a1c02a54c392"
+    }
+  ]
+}
