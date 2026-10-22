@@ -1,0 +1,18 @@
+import {CONTRACT_CHAIN_ID} from '../../packages/core/chain.js';
+import {createPublicClient,http,type Hex} from 'viem';
+import {config} from '../../packages/core/config.js';
+import {integrationSettings} from '../../packages/core/integration-settings.js';
+import {auditorAbi,rootsAbi,tokenAbi} from '../../packages/core/contract-abis.js';
+/** Read public Elysium round state and optional balances, commitments and pending obligations for one operator. */
+export async function networkState(owner?:Hex,hour?:number){
+ const settings=await integrationSettings();if(!settings.auditor||!settings.roots)return {configured:false,settings};
+ const rpc=createPublicClient({transport:http(config.ELYSIUM_RPC)});if(await rpc.getChainId()!==CONTRACT_CHAIN_ID)throw Error('Network RPC must be Elysium mainnet');
+ const contract=settings.auditor as Hex,root=settings.roots as Hex;
+ const [token,rewardToken,roots,minimum,halted,lastHour,block]=await Promise.all([rpc.readContract({address:contract,abi:auditorAbi,functionName:'token'}),rpc.readContract({address:contract,abi:auditorAbi,functionName:'rewardToken'}),rpc.readContract({address:contract,abi:auditorAbi,functionName:'roots'}),rpc.readContract({address:contract,abi:auditorAbi,functionName:'minimum'}),rpc.readContract({address:contract,abi:auditorAbi,functionName:'halted'}),rpc.readContract({address:root,abi:rootsAbi,functionName:'lastHour'}),rpc.getBlock()]);
+ if(roots.toLowerCase()!==root.toLowerCase()||settings.token&&token.toLowerCase()!==settings.token)throw Error('Configured contracts are not connected to each other');
+ const h=BigInt(hour??(lastHour>0n?Number(lastHour):Math.floor(Date.now()/3600000)-1));
+ const [round,slip,match,decimals,rewardDecimals]=await Promise.all([rpc.readContract({address:contract,abi:auditorAbi,functionName:'rounds',args:[h]}),rpc.readContract({address:root,abi:rootsAbi,functionName:'slips',args:[h]}),rpc.readContract({address:root,abi:rootsAbi,functionName:'matches',args:[h]}),rpc.readContract({address:token,abi:tokenAbi,functionName:'decimals'}),rpc.readContract({address:rewardToken,abi:tokenAbi,functionName:'decimals'})]);
+ let operator:any=null;
+ if(owner){const [a,pending,earned,weight,commitment,vote,balance,allowance]=await Promise.all([rpc.readContract({address:contract,abi:auditorAbi,functionName:'auditors',args:[owner]}),rpc.readContract({address:contract,abi:auditorAbi,functionName:'pendingRounds',args:[owner]}),rpc.readContract({address:contract,abi:auditorAbi,functionName:'earned',args:[owner]}),rpc.readContract({address:contract,abi:auditorAbi,functionName:'weight',args:[h,owner]}),rpc.readContract({address:contract,abi:auditorAbi,functionName:'commitments',args:[h,owner]}),rpc.readContract({address:contract,abi:auditorAbi,functionName:'votes',args:[h,owner]}),rpc.readContract({address:token,abi:tokenAbi,functionName:'balanceOf',args:[owner]}),rpc.readContract({address:token,abi:tokenAbi,functionName:'allowance',args:[owner,contract]})]);operator={stake:String(a[0]),requested:String(a[1]),unlockAt:Number(a[2]),lockedUntil:Number(a[3]),strikes:a[4],listed:a[5],pending:String(pending),earned:String(earned),weight:String(weight),commitment,vote,balance:String(balance),allowance:String(allowance)};}
+ return {configured:true,settings,token,rewardToken,minimum:String(minimum),decimals,rewardDecimals,halted,lastHour:Number(lastHour),timestamp:Number(block.timestamp),hour:Number(h),round:{commitEnd:Number(round[1]),revealEnd:Number(round[2]),total:String(round[3]),finalized:round[4]},slip:{digest:slip[0],count:slip[2],postedAt:Number(slip[3]),poster:slip[4]},match,operator};
+}
