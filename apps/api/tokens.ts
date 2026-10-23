@@ -1,0 +1,36 @@
+import type {FastifyInstance,FastifyRequest} from 'fastify';
+import {z} from 'zod';
+import type {Database} from '../../packages/core/db.js';
+import {integrationSettings,saveIntegrationSettings} from '../../packages/core/integration-settings.js';
+import {tokenPricing,tokenBalance,aiTestingExempt,meteringReady,createTokenInvoice,confirmTokenInvoice,receiverReady} from '../../packages/core/tokens.js';
+/** Install private usage, purchase and confirmation routes and operator-only metering settings. */
+export function registerTokens(app:FastifyInstance,db:Database,owner:(r:FastifyRequest)=>Promise<string>,local:(r:FastifyRequest)=>void){
+ /** Return public checkout readiness, purchase limits and the AI markup. */
+ app.get('/api/tokens/pricing',async()=>({...await tokenPricing(),meteringReady:await meteringReady(db)}));
+ /** Read the owner's private credit balance, invoices and usage history. */
+ app.get('/api/tokens',async req=>{
+  const who=await owner(req);
+  return {...await tokenBalance(db,who),testingExempt:await aiTestingExempt(db,who),invoices:(await db.query('SELECT * FROM token_invoices WHERE owner=$1 ORDER BY created_at DESC LIMIT 100',[who])).rows,usage:(await db.query('SELECT id,crew_id,model,reserved,charged,status,billing_exempt,cost_basis,created_at,finished_at FROM token_usage WHERE owner=$1 ORDER BY created_at DESC LIMIT 100',[who])).rows};
+ });
+ /** Create a credit purchase invoice for the signed-in owner and configured receiver. */
+ app.post('/api/tokens/invoices',async req=>{
+  const who=await owner(req),{amount}=z.strictObject({amount:z.number().int().min(5).max(500)}).parse(req.body),s=await integrationSettings();
+  if(!s.tokenPayTo)throw Error('Token checkout is awaiting a receiving wallet from the operator');
+  if(!await receiverReady(s.tokenPayTo))throw Error('The receiving wallet must be active on Hyperliquid before checkout opens');
+  return createTokenInvoice(db,who,amount,s.tokenPayTo);
+ });
+ /** Reconcile an owned purchase against sender and recipient venue ledgers. */
+ app.post<{Params:{id:string}}>('/api/tokens/invoices/:id/confirm',async req=>{
+  const who=await owner(req),id=z.string().uuid().parse(req.params.id),{tx}=z.strictObject({tx:z.string().regex(/^0x[\da-fA-F]{64}$/).optional()}).parse(req.body);
+  return confirmTokenInvoice(db,who,id,tx);
+ });
+ /** Read checkout configuration and unresolved metering alerts in local setup. */
+ app.get('/api/setup/tokens',async req=>{local(req);return {pricing:await tokenPricing(),alerts:(await db.query('SELECT * FROM ai_metering_alerts WHERE resolved_at IS NULL ORDER BY created_at')).rows};});
+ /** Validate the receiving wallet and markup and persist the operator's checkout settings. */
+ app.post('/api/setup/tokens',async req=>{
+  local(req);const {payTo,markupBps}=z.strictObject({payTo:z.string().regex(/^0x[\da-fA-F]{40}$/),markupBps:z.number().int().min(0).max(10000)}).parse(req.body);
+  await saveIntegrationSettings({...await integrationSettings(),tokenPayTo:payTo,aiMarkupBps:markupBps});return tokenPricing();
+ });
+ /** Acknowledge reviewed metering alerts from local operator setup. */
+ app.post('/api/setup/tokens/metering',async req=>{local(req);const {reviewed}=z.strictObject({reviewed:z.literal(true)}).parse(req.body);if(reviewed)await db.query('UPDATE ai_metering_alerts SET resolved_at=$1 WHERE resolved_at IS NULL',[Date.now()]);return {ok:true};});
+}
