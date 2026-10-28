@@ -1,0 +1,24 @@
+/* Brand-only layer. Original Framer layout and typography remain authoritative. */
+@import url('/vital/how-it-works.css');
+@import url('/vital/identity.css');
+#__framer-badge-container{display:none!important}
+button[data-hh-plan-active="true"]{background:#fff!important}
+button[data-hh-plan-active="false"]{background:#ffffff1a!important}
+button[data-hh-plan-active="true"] p{color:#111!important}
+button[data-hh-plan-active="false"] p{color:#fff!important}
+img[data-hh-duotone],video[data-hh-duotone]{filter:url(#hyperhive-duotone)}
+[data-hh-process-number]{font-size:0!important}
+[data-hh-process-number]:before{content:attr(data-hh-process-number);font-size:80px;line-height:.8em}
+#hh-notice{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:999999;background:#111;color:#fff;max-width:calc(100% - 40px);padding:16px 22px;font:14px/1.5 Geist,Arial,sans-serif;box-shadow:0 8px 30px #0002}
+#hh-notice button{margin-left:20px;background:none;border:0;color:white;cursor:pointer;font:inherit}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}}
+.hh-template-illustration{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1;background:#fff}
+.hh-template-illustration .hh-enter{transform-box:fill-box;transform-origin:center;animation:hh-asset-enter .75s cubic-bezier(.2,.7,.2,1) both}
+.hh-template-illustration .hh-piece{transform-box:fill-box;transform-origin:center;animation:hh-asset-piece .45s cubic-bezier(.2,.7,.2,1) both}
+.hh-template-illustration .hh-selection{animation:hh-selection .65s .15s ease-out both;transform-box:fill-box;transform-origin:center}
+.hh-template-illustration .hh-ring-stroke{animation:hh-profile-ring 1s .2s ease-out both}
+@keyframes hh-asset-enter{from{opacity:0;transform:scale(.6) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes hh-asset-piece{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes hh-selection{from{opacity:0;transform:scaleY(.6)}to{opacity:1;transform:scaleY(1)}}
+@keyframes hh-profile-ring{from{stroke-dasharray:0 616}to{stroke-dasharray:470 146}}
+@media(prefers-reduced-motion:reduce){.hh-template-illustration *{animation:none!important}}
