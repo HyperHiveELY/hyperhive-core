@@ -1,0 +1,38 @@
+/* Shared responsive repairs for the original landing and document-page chrome. */
+html { -webkit-text-size-adjust:100%; scroll-padding-top:100px }
+@media(max-width:809px) {
+  /* Fixed-width action groups must fit their container, not be clipped by it. */
+  .framer-clR72 :is(.framer-1mp0001,.framer-1ppesji) {
+    width:100%!important; max-width:100%; height:auto!important;
+    flex-wrap:wrap!important; gap:12px!important;
+  }
+  .framer-clR72 :is(.framer-1mp0001,.framer-1ppesji)>div {
+    min-width:0!important; max-width:100%;
+  }
+  .framer-clR72 .framer-afoq7v { width:100%!important; gap:12px!important; }
+  .framer-clR72 .framer-afoq7v>[data-framer-name="Author"] { min-width:0; flex:1; }
+  .framer-clR72 .framer-afoq7v>[data-framer-name="Author"] p { overflow-wrap:anywhere; }
+  .framer-clR72 :is(input,textarea,select) { font-size:16px!important; min-width:0; }
+  .framer-clR72 header [role="button"],.framer-clR72 header button { min-width:44px; min-height:44px; }
+  .framer-clR72 header[data-framer-name="Mobile Open"] .framer-114v8hw { max-height:calc(100dvh - 36px)!important; overflow-y:auto!important; overscroll-behavior:contain; }
+  .framer-clR72 header[data-framer-name="Mobile Open"] .framer-114v8hw>* { flex-shrink:0!important; }
+  .framer-clR72 header nav a { min-height:44px; display:inline-flex; align-items:center; justify-content:center; }
+  .framer-clR72 footer a { min-height:44px; display:inline-flex; align-items:center; }
+  .framer-clR72 footer [data-framer-name="Socials"] { flex-wrap:wrap; }
+  .framer-clR72 footer .framer-18y69wn { display:flex!important; flex-direction:column!important; height:auto!important; gap:10px!important; padding:0!important; background:transparent!important; }
+  .framer-clR72 footer .framer-18y69wn>.framer-form-input-wrapper { position:relative!important; inset:auto!important; width:100%!important; height:52px!important; min-height:52px!important; flex:none!important; padding:12px 16px!important; }
+  .framer-clR72 footer .framer-18y69wn>.framer-4knetx-container { position:relative!important; inset:auto!important; width:100%!important; height:44px!important; flex:none!important; }
+  .framer-clR72 footer .framer-form-input { height:28px!important; min-height:28px!important; padding:0!important; }
+  #how-it-works .hh-role-widget-wrap,#how-it-works .hh-role-widget,#how-it-works .hh-role-host { min-width:0; }
+  #how-it-works .hh-role-detail { min-height:0; }
+  #how-it-works .hh-role-meta { flex-wrap:wrap; }
+  #home,#home>.framer-1ntzsp4 { height:auto!important; min-height:740px; }
+  #home>.framer-1ntzsp4 { padding-block:150px 110px!important; }
+}
+@media(max-width:480px) {
+  .framer-clR72 :is(.framer-1mp0001,.framer-1ppesji) { flex-direction:column!important; }
+  .framer-clR72 :is(.framer-1mp0001,.framer-1ppesji)>div { width:100%!important; }
+  .framer-clR72 :is(.framer-1mp0001,.framer-1ppesji)>div>a { width:100%!important; justify-content:center!important; }
+  .framer-clR72 .framer-afoq7v { gap:8px!important; }
+  .framer-clR72 .framer-afoq7v>[data-framer-name="Author"] { gap:8px!important; }
+}
