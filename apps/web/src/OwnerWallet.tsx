@@ -1,0 +1,32 @@
+import React,{useState,useEffect} from 'react';
+import {ArrowLeft,ArrowUpRight,ChevronRight,Wallet,Copy,LogOut} from './ui/ProductIcons.js';
+import {createOwnerWallet,unlockOwnerWallet,lockOwnerWallet,ownerWalletStatus,exportOwnerBackup,archivedOwnerWallets,exportArchivedOwnerBackup,connectExternal,activeExternalWallet} from './wallet.js';
+import {discoverWallets,walletBrands,type WalletChoice} from './wallet-providers.js';
+import {WalletForm} from './dashboard/WalletForm.js';
+export function OwnerWallet({onReady,onLocked,onBusyChange}:{onReady:()=>Promise<void>;onLocked:()=>Promise<void>;onBusyChange?:(value:boolean)=>void}){
+ const [state,setState]=useState(ownerWalletStatus),[externalState,setExternalState]=useState(activeExternalWallet),[view,setView]=useState<'choose'|'local'|'external'>(()=>activeExternalWallet()?'external':ownerWalletStatus().unlocked?'local':'choose');
+ const [wallets,setWallets]=useState<WalletChoice[]>([...walletBrands]),[password,setPassword]=useState(''),[repeat,setRepeat]=useState(''),[saved,setSaved]=useState(false),[restore,setRestore]=useState(false),[file,setFile]=useState<File|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState('');
+ const [fresh,setFresh]=useState(false);
+ const create=(fresh||!state.saved)&&!restore;
+ const archives=archivedOwnerWallets();
+ useEffect(()=>discoverWallets(setWallets),[]);
+ useEffect(()=>{onBusyChange?.(busy);return()=>onBusyChange?.(false);},[busy,onBusyChange]);
+ const choose=()=>{setView('choose');setFresh(false);setPassword('');setRepeat('');setError('');setNotice('');};
+ async function submit(){setBusy(true);setError('');try{
+  if(create){if(password!==repeat)throw Error('Passwords do not match');if(!saved)throw Error('Confirm that you will save the backup');await createOwnerWallet(password,{preserveExisting:fresh});setFresh(false);}
+  else await unlockOwnerWallet(password,restore?file??undefined:undefined);
+  setPassword('');setRepeat('');setState(ownerWalletStatus());setExternalState(null);await onReady();
+ }catch(e){setError((e as Error).message);}finally{setBusy(false);}}
+ async function external(wallet:WalletChoice){if(!wallet.provider)return;setBusy(true);setError('');try{
+  await connectExternal(wallet.provider,wallet.name);setState(ownerWalletStatus());setExternalState(activeExternalWallet());setView('external');
+  await onLocked();await onReady();setNotice(wallet.name+' connected.');
+ }catch(e){setError((e as Error).message);}finally{setBusy(false);}}
+ async function disconnect(){setBusy(true);setError('');try{lockOwnerWallet();setState(ownerWalletStatus());setExternalState(null);await onLocked();choose();}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
+ const copy=(address:string)=>navigator.clipboard.writeText(address).then(()=>setNotice('Address copied.')).catch(()=>setError('Clipboard unavailable. Select the address to copy it.'));
+ return <>{error&&<p role="alert" className="negative">{error}</p>}{notice&&<p role="status">{notice}</p>}
+ {view==='choose'?<div className="wallet-picker"><h2 id="dialog-title">Connect a wallet</h2><p>Choose your wallet to get started on Hyperliquid.</p><div className="wallet-options">{wallets.map(wallet=>wallet.provider?<button key={wallet.id} disabled={busy} className="wallet-option" onClick={()=>external(wallet)}>{wallet.icon?<img src={wallet.icon} alt=""/>:<Wallet size={32}/>}<span>{wallet.name}<small>Detected</small></span><ChevronRight size={18}/></button>:<a key={wallet.id} className="wallet-option" href={wallet.install} target="_blank" rel="noopener noreferrer"><img src={wallet.icon} alt=""/><span>{wallet.name}</span><small>Install</small><ArrowUpRight size={15}/></a>)}</div><div className="local-wallet-option"><button disabled={busy} onClick={()=>{setView('local');setFresh(false);setRestore(false);setError('');}}><Wallet size={20}/><span>{state.unlocked?'Your local wallet':state.saved?'Unlock local wallet':'Create a local wallet'}</span><ChevronRight size={18}/></button><button className="text-button" disabled={busy} onClick={()=>{setView('local');setFresh(false);setRestore(true);setError('');}}>Restore a backup</button></div><small className="muted">Connect an EVM account. Your wallet stays in your control.</small>{busy&&<p role="status">Continue in your wallet…</p>}</div>:
+ view==='external'&&externalState?<div className="external-wallet-details"><h2 id="dialog-title">{externalState.name}</h2><p>Connected account</p><code className="wallet-address">{externalState.address}</code><button className="wide" onClick={()=>copy(externalState.address)}><Copy size={16}/>Copy address</button><button className="wide" disabled={busy} onClick={choose}>Change wallet</button><button className="wide" disabled={busy} onClick={disconnect}><LogOut size={16}/>Disconnect</button></div>:
+ <><button className="wallet-back" disabled={busy} onClick={choose}><ArrowLeft size={16}/>Wallet options</button>{fresh&&state.saved&&<p>Your old wallet stays separate. Its encrypted backup will be kept on this device. Funds and bots do not move to the new wallet.</p>}<WalletForm mode={create?'create':restore?'restore':state.unlocked?'unlocked':'unlock'} address={state.address} password={password} repeat={repeat} saved={saved} file={file} busy={busy} hasExternal={wallets.some(w=>w.provider)} onPassword={setPassword} onRepeat={setRepeat} onSaved={setSaved} onFile={setFile} onSubmit={submit} onRestore={()=>{setFresh(false);setRestore(!restore);setError('');setPassword('');setRepeat('');}} onExternal={choose} onCopy={()=>copy(state.address!)} onExport={exportOwnerBackup} onLock={disconnect}/>{state.saved&&!fresh&&!restore&&<button className="text-button" disabled={busy} onClick={()=>{setFresh(true);setRestore(false);setPassword('');setRepeat('');setSaved(false);setError('');}}>Forgot password? Create a new wallet</button>}{fresh&&state.saved&&<button className="text-button" disabled={busy} onClick={exportOwnerBackup}>Download old encrypted backup</button>}</>}
+ {archives.length>0&&<details className="guided-disclosure"><summary>Previous wallet backups</summary><p>Restore a backup with its original password to access that wallet.</p>{archives.map(a=><button key={a.id} className="text-button" onClick={()=>exportArchivedOwnerBackup(a.id)}>Download {a.address.slice(0,6)}…{a.address.slice(-4)} backup</button>)}</details>}
+ </>;
+}
