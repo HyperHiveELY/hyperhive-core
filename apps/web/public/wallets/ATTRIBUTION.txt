@@ -1,0 +1,1 @@
+Wallet logos sourced from @rainbow-me/rainbowkit 2.2.11 (MIT), https://github.com/rainbow-me/rainbowkit. Marks belong to their respective wallet providers. Used to identify available wallet connections.
