@@ -1,0 +1,5 @@
+import React from 'react';
+import * as Icons from '../ui/ProductIcons.js';
+import './brand-fonts.css';
+import './icon-review.css';
+export default function IconReview(){const glyphs=Object.entries(Icons).filter(([name])=>name!=='BrandMark');return <main className="icon-review"><header><Icons.BrandMark/><span>HyperHive · icon system</span><b>DESIGN REVIEW</b></header><h1>One geometric language.</h1><p>Square terminals. Faceted forms. Solid planes. The landing page’s visual language, sized for the product.</p><section className="icon-review-sizes" aria-label="Size comparison">{[16,20,24,32].map(size=><div key={size}><span>{size}px</span><Icons.Wallet size={size}/><Icons.ShieldCheck size={size}/><Icons.Search size={size}/><Icons.UserRound size={size}/></div>)}</section><section className="icon-review-grid" aria-label="All product icons">{glyphs.map(([name,Glyph])=><article key={name}><Glyph size={28}/><span>{name.replace(/([a-z])([A-Z])/g,'$1 $2')}</span></article>)}</section><footer>Wallet provider logos retain their official artwork. Charts and illustration artwork are separate from UI icons.</footer></main>}
