@@ -1,0 +1,18 @@
+@font-face { font-family: "IBM Plex Mono"; src: url("/vital/media/bb4ad552e1a102.woff2"); font-style: normal; font-weight: 400 }
+@font-face { font-family: "Geist"; src: url("/vital/media/f7530ad2ccd919.woff2"); font-display: swap; font-style: normal; font-weight: 400 }
+@font-face { font-family: "Geist"; src: url("/vital/media/d1bb941c61d376.woff2"); font-display: swap; font-style: normal; font-weight: 700 }
+@font-face { font-family: "Geist"; src: url("/vital/media/6f00cf97ae7132.woff2"); font-display: swap; font-style: italic; font-weight: 700 }
+@font-face { font-family: "Geist"; src: url("/vital/media/dbd20c9ff88087.woff2"); font-display: swap; font-style: italic; font-weight: 400 }
+@font-face { font-family: "Geist"; src: url("/vital/media/8766a2cd8be3a4.woff2"); font-display: swap; font-style: normal; font-weight: 500 }
+@font-face { font-family: "Adamina"; src: url("/vital/media/bdc283516f4d82.woff2"); font-display: swap; font-style: normal; font-weight: 400 }
+@font-face { font-family: "Geist"; src: url("/vital/media/21610cb11207dd.woff2"); font-display: swap; font-style: normal; font-weight: 600 }
+@font-face { font-family: "IBM Plex Mono"; src: url("/vital/media/e468d728dca31d.woff2"); font-style: normal; font-weight: 500 }
+@font-face { font-family: "Geist"; src: url("/vital/media/442c319df0cd44.woff2"); font-style: normal; font-weight: 900 }
+@font-face { font-family: "Geist"; src: url("/vital/media/f74c4f6a572e12.woff2"); font-style: italic; font-weight: 900 }
+@font-face { font-family: "Geist"; src: url("/vital/media/50496642492f90.woff2"); font-display: swap; font-style: italic; font-weight: 600 }
+@font-face { font-family: "Geist"; src: url("/vital/media/26402badacf22b.woff2"); font-display: swap; font-style: italic; font-weight: 500 }
+@font-face { font-family: "IBM Plex Mono"; src: url("/vital/media/035a6e99a0ddc1.woff2"); font-style: normal; font-weight: 700 }
+@font-face { font-family: "IBM Plex Mono"; src: url("/vital/media/e2652e7547950b.woff2"); font-style: italic; font-weight: 700 }
+@font-face { font-family: "IBM Plex Mono"; src: url("/vital/media/2bfe493d67b052.woff2"); font-style: italic; font-weight: 500 }
+@font-face { font-family: "Geist Placeholder"; src: local("Arial"); ascent-override: 94.56%; descent-override: 27.76%; line-gap-override: 0.00%; size-adjust: 106.28% }
+@font-face { font-family: "Adamina Placeholder"; src: local("Times New Roman"); ascent-override: 91.04%; descent-override: 24.63%; line-gap-override: 0.00%; size-adjust: 117.75% }
