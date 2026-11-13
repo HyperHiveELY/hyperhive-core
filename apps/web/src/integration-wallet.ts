@@ -1,0 +1,32 @@
+import {createPublicClient,http,type Hex,type Abi,encodeAbiParameters,keccak256} from 'viem';
+import {CONTRACT_CHAIN_ID,contractChain} from '../../../packages/core/chain.js';
+import {chainWallet} from './wallet.js';
+export const networkClient=createPublicClient({chain:contractChain,transport:http()});
+function requireLiveApp(){if(typeof location!=='undefined'&&location.pathname==='/__design')throw Error('The design preview cannot sign or submit transactions');}
+export async function ownerWallet(owner:string,chain:typeof CONTRACT_CHAIN_ID|8453=CONTRACT_CHAIN_ID){requireLiveApp();const wallet=await chainWallet(chain);if(!owner||wallet.account.address.toLowerCase()!==owner.toLowerCase())throw Error('Connect the signed-in owner wallet');return wallet;}
+export async function contractWrite(owner:string,address:Hex,abi:Abi,functionName:string,args:readonly unknown[]=[],onSubmitted?:(tx:Hex)=>void){
+ const wallet=await ownerWallet(owner),simulation=await networkClient.simulateContract({account:wallet.account,address,abi,functionName,args});
+ const tx=await wallet.writeContract(simulation.request);onSubmitted?.(tx);const receipt=await networkClient.waitForTransactionReceipt({hash:tx});if(receipt.status!=='success')throw Error('Transaction reverted: '+tx);return tx;
+}
+export type Vote={operator:Hex;contract:Hex;chainId:typeof CONTRACT_CHAIN_ID;hour:number;root:Hex;broken:number;venue:number;salt:Hex};
+export function commitment(v:Vote){if(v.chainId!==CONTRACT_CHAIN_ID)throw Error('Reveal backup belongs to another network');return keccak256(encodeAbiParameters([{type:'bytes32'},{type:'uint32'},{type:'uint32'},{type:'bytes32'},{type:'address'},{type:'uint64'},{type:'uint256'}],[v.root,v.broken,v.venue,v.salt,v.operator,BigInt(v.hour),BigInt(v.chainId)]));}
+const encoder=new TextEncoder(),b64=(v:Uint8Array)=>btoa(String.fromCharCode(...v)),bytes=(s:string)=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+async function derive(password:string,salt:Uint8Array){if(password.length<12||password.length>1024)throw Error('Use a backup password of 12–1024 characters');const key=await crypto.subtle.importKey('raw',encoder.encode(password),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',hash:'SHA-256',salt:salt as BufferSource,iterations:600000},key,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);}
+export async function encryptVote(v:Vote,password:string){const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12)),header={format:'hyperhive-vote-v1',commitment:commitment(v),contract:v.contract,operator:v.operator,hour:v.hour};const ciphertext=await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData:encoder.encode(JSON.stringify(header))},await derive(password,salt),encoder.encode(JSON.stringify(v)));return {...header,salt:b64(salt),iv:b64(iv),ciphertext:b64(new Uint8Array(ciphertext))};}
+export async function decryptVote(raw:any,password:string):Promise<Vote>{if(raw?.format!=='hyperhive-vote-v1'||!['salt','iv','ciphertext'].every(k=>typeof raw[k]==='string'&&raw[k].length<4000))throw Error('Invalid reveal backup');const {format,commitment:expected,contract,operator,hour}=raw,header={format,commitment:expected,contract,operator,hour};try{const plaintext=await crypto.subtle.decrypt({name:'AES-GCM',iv:bytes(raw.iv),additionalData:encoder.encode(JSON.stringify(header))},await derive(password,bytes(raw.salt)),bytes(raw.ciphertext));const vote=JSON.parse(new TextDecoder().decode(plaintext));if(vote.chainId!==CONTRACT_CHAIN_ID||vote.contract!==contract||vote.operator!==operator||vote.hour!==hour||commitment(vote)!==expected)throw Error('Mismatch');return vote;}catch{throw Error('Wrong password or damaged reveal backup');}}
+export async function paidRequest(path:string,expected:{owner:string;amount:string;payTo:string}){
+ requireLiveApp();
+ const {x402Client}=await import('@x402/core/client'),{registerExactEvmScheme}=await import('@x402/evm/exact/client'),{decodePaymentRequiredHeader,encodePaymentSignatureHeader}=await import('@x402/core/http');
+ const response=await fetch(path,{credentials:'same-origin'});if(response.ok)return response.json();if(response.status!==402)throw Error((await response.json()).error??'Payment unavailable');
+ const required=decodePaymentRequiredHeader(response.headers.get('PAYMENT-REQUIRED')??''),r=required.accepts[0];
+ if(required.x402Version!==2||r.scheme!=='exact'||r.network!=='eip155:8453'||r.asset.toLowerCase()!=='0x833589fcd6edb6e08f4c7c32d4f71b54bda02913'||r.amount!==expected.amount||r.payTo.toLowerCase()!==expected.payTo.toLowerCase())throw Error('Payment differs from the reviewed amount, network or recipient');
+ const key='hyperhive.payment.'+path,prior=sessionStorage.getItem(key);
+ if(prior){const payload=JSON.parse(prior);if(payload.payload?.authorization?.from?.toLowerCase()!==expected.owner.toLowerCase())throw Error('Payment was signed by another wallet');const retry=await fetch(path,{credentials:'same-origin',headers:{'PAYMENT-SIGNATURE':encodePaymentSignatureHeader(payload)}}),result=await retry.json();if(!retry.ok)throw Error(result.error??'Recover the payment with its Base transaction hash');return result;}
+ const wallet=await ownerWallet(expected.owner,8453),client=new x402Client();registerExactEvmScheme(client,{networks:['eip155:8453'],signer:{address:wallet.account.address,signTypedData:args=>wallet.signTypedData(args as any)}});
+ const payload=await client.createPaymentPayload({...required,accepts:[r]});
+ // Store the exact authorization before submitting. A retry never creates a second authorization.
+ sessionStorage.setItem(key,JSON.stringify(payload));
+ const paid=await fetch(path,{credentials:'same-origin',headers:{'PAYMENT-SIGNATURE':encodePaymentSignatureHeader(payload)}}),result=await paid.json();if(!paid.ok)throw Error(result.error??'Settlement not confirmed. Recover the invoice before paying again.');return result;
+}
+
+export async function recoverVerification(path:string,tx:string){const raw=sessionStorage.getItem('hyperhive.payment.'+path);if(!raw)throw Error('Use the browser tab that signed this payment');const response=await fetch(path+'/recover',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({tx,payload:JSON.parse(raw)})}),result=await response.json();if(!response.ok)throw Error(result.error??'Recovery failed');return result;}

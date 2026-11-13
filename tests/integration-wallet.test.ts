@@ -1,0 +1,5 @@
+import {it,expect} from 'vitest';
+import {commitment,encryptVote,decryptVote,type Vote} from '../apps/web/src/integration-wallet.js';
+const vote:Vote={chainId:99901,operator:('0x'+'11'.repeat(20)) as `0x${string}`,contract:('0x'+'22'.repeat(20)) as `0x${string}`,hour:500000,root:('0x'+'33'.repeat(32)) as `0x${string}`,broken:2,venue:1,salt:('0x'+'44'.repeat(32)) as `0x${string}`};
+it('encrypts reveal data and authenticates the public round binding',async()=>{const b=await encryptVote(vote,'a long backup password');expect(JSON.stringify(b)).not.toContain(vote.salt);expect(await decryptVote(b,'a long backup password')).toEqual(vote);await expect(decryptVote({...b,hour:b.hour+1},'a long backup password')).rejects.toThrow('damaged');await expect(decryptVote(b,'different long password')).rejects.toThrow('password');});
+it('binds commitment to operator, hour, root and counts',()=>{for(const patch of [{operator:('0x'+'55'.repeat(20))},{hour:500001},{broken:3},{venue:2},{root:('0x'+'66'.repeat(32))}])expect(commitment({...vote,...patch} as Vote)).not.toBe(commitment(vote));});
