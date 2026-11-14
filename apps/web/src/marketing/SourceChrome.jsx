@@ -1,0 +1,6 @@
+import React,{useState} from 'react';
+import header from './source-header.html?raw';
+import footer from './source-footer.html?raw';
+import './source-chrome.css';
+export function SourceHeader(){const[open,setOpen]=useState(false);return <div className="source-chrome source-header framer-clR72"><div dangerouslySetInnerHTML={{__html:header}}/><button className="source-menu-toggle" aria-label={open?'Close menu':'Open menu'} aria-expanded={open} onClick={()=>setOpen(!open)}>{open?'×':<><i/><i/></>}</button>{open&&<nav className="source-mobile-menu" aria-label="Main navigation">{[['Home','/'],['Technology','/#features'],['About','/about'],['How It Works','/#how-it-works'],['Roadmap','/roadmap'],['Workspace','/dashboard']].map(([text,href])=><a key={href} href={href}>{text}</a>)}</nav>}</div>}
+export function SourceFooter(){const[notice,setNotice]=useState(false);return <div className="source-chrome source-footer framer-clR72" onClick={e=>{if(e.target.closest('a[data-hh-social]')){e.preventDefault();setNotice(true)}}}><div onSubmit={e=>{e.preventDefault();location.assign('/dashboard')}} dangerouslySetInnerHTML={{__html:footer}}/>{notice&&<div className="source-notice" role="status">HyperHive social channels have not been announced yet.<button onClick={()=>setNotice(false)} aria-label="Dismiss notice">×</button></div>}</div>}
