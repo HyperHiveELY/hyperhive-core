@@ -1,0 +1,4 @@
+FROM postgres:17-alpine@sha256:f9cf3e1f0066f0eb0c48707d864f0ac5941e9ff454a072077d97a4d278d07d73
+# The disposable CI database starts under its own account and requires no privilege helper.
+RUN apk add --no-cache --upgrade libxml2=2.13.9-r5 libcrypto3=3.5.9-r1 libssl3=3.5.9-r1 && rm /usr/local/bin/gosu
+USER postgres
