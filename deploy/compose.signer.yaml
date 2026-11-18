@@ -1,0 +1,30 @@
+# Phala dstack CVM only. Use an immutable sha256 image digest and approve the
+# resulting compose measurement through dstack KMS before releasing live keys.
+services:
+  signer:
+    image: ${HYPERHIVE_IMAGE:?Set a registry image digest}
+    restart: unless-stopped
+    command: ["npm", "run", "signer"]
+    environment:
+      NODE_ENV: production
+      SIGNER_MODE: phala
+      DATABASE_URL: ${DATABASE_URL:?Set TLS Postgres URL}
+      PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:?Set HTTPS origin}
+      INTEGRATION_SETTINGS: ${INTEGRATION_SETTINGS:?Set exported public integration settings}
+      ROOT_CONTRACT: ${ROOT_CONTRACT:?Set SlipRoot contract}
+      ELYSIUM_RPC: ${ELYSIUM_RPC:?Set production Elysium RPC}
+      MEASUREMENT_HASH: ${MEASUREMENT_HASH:?Set independently verified measurement}
+      LIVE_TRADING_ENABLED: ${LIVE_TRADING_ENABLED:-false}
+      DSTACK_SOCKET: /var/run/dstack.sock
+    volumes:
+      - /var/run/dstack.sock:/var/run/dstack.sock
+    read_only: true
+    tmpfs: ["/tmp"]
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    healthcheck:
+      test: ["CMD", "node", "--import", "tsx", "scripts/service-health.ts", "signer"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
