@@ -1,0 +1,18 @@
+import {beforeAll,afterAll,it,expect,vi} from 'vitest';
+import {Database} from '../packages/core/db.js';
+import {dashboard} from '../apps/api/dashboard.js';
+import {combinedHistory,total,type BotSummary} from '../packages/core/dashboard-view.js';
+import {crew,policy} from './fixtures.js';
+import {createServer} from '../apps/api/server.js';
+let db:Database;
+beforeAll(async()=>{db=await new Database('memory').init();const c=await crew();await db.query('INSERT INTO crews(id,owner,account,policy,signature,created_at) VALUES($1,$2,$3,$4,$5,$6)',[c.id,c.owner,c.account,JSON.stringify(c.policy),c.signature,c.created_at]);});
+afterAll(()=>db.close());
+const load=async()=>({state:{marginSummary:{accountValue:'100'},withdrawable:'80',assetPositions:[]},portfolio:[['perpAllTime',{accountValueHistory:[[1,'90'],[2,'100']],pnlHistory:[[1,'0'],[2,'10']]}]],fills:[{closedPnl:'-4',fee:'.5'},{closedPnl:'10',fee:'.5'}]}) as any;
+it('requires authentication for the aggregate dashboard',async()=>{const app=await createServer(db);try{expect((await app.inject({url:'/api/dashboard'})).statusCode).toBe(401);}finally{await app.close();}});
+it('keeps balances, histories, and risk scoped to the owner',async()=>{const other=vi.fn(load);const empty=await dashboard(db,'0x0000000000000000000000000000000000000001',other);expect(empty.bots).toEqual([]);expect(other).not.toHaveBeenCalled();const data=await dashboard(db,policy.owner,load);expect(data.bots).toHaveLength(1);expect(data.bots[0]).toMatchObject({equity:100,available:80,pnl:10,riskUsed:5,positionCount:0});});
+it('preserves unknown balances instead of displaying zero after a venue failure',async()=>{const data=await dashboard(db,policy.owner,async()=>{throw Error('offline');});expect(data.bots[0].equity).toBeNull();expect(data.bots[0].riskUsed).toBeNull();expect(data.bots[0].error).toContain('unavailable');expect(total(data.bots,'equity')).toBeNull();});
+it('marks risk unknown for a position not tracked by the bot',async()=>{const data=await dashboard(db,policy.owner,async()=>{const response=await load();response.state.assetPositions=[{position:{coin:'BTC',szi:'1',positionValue:'100',entryPx:'95',unrealizedPnl:'5'}}];return response;});expect(data.bots[0].riskUsed).toBeNull();expect(data.bots[0].exposure).toBe(100);expect(data.bots[0].positions).toEqual([{market:'BTC',size:1,entry:95,pnl:5}]);});
+const bot=(points:[number,number][])=>({histories:{perpWeek:points}} as BotSummary);
+it('combines account histories only within their shared observed interval',()=>{expect(combinedHistory([bot([[1,10],[3,30],[5,50]]),bot([[2,2],[4,4],[6,6]])],'perpWeek')).toEqual([[2,12],[3,32],[4,34],[5,54]]);});
+it('does not manufacture chart data when one account has no history',()=>{expect(combinedHistory([bot([[1,10],[2,20]]),bot([])],'perpWeek')).toEqual([]);});
+it('does not chart disjoint time ranges',()=>{expect(combinedHistory([bot([[1,10],[2,20]]),bot([[3,30],[4,40]])],'perpWeek')).toEqual([]);});
