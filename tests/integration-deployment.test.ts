@@ -1,0 +1,10 @@
+import {it,expect} from 'vitest';
+import {getContractAddress,decodeFunctionData} from 'viem';
+import {buildDeployment,DeploymentInput} from '../packages/core/deployment.js';
+import {rootsAbi} from '../packages/core/contract-abis.js';
+import {pnlDrawdown} from '../packages/core/record-metrics.js';
+const addr=('0x'+'11'.repeat(20)) as `0x${string}`;
+const input={deployer:addr,governanceProposer:addr,guardian:addr,treasury:addr,workers:addr,tokenRecipient:addr,usdc:'0xb47c4c8f73f009cc0c0d3f92b388d13e293f0b65',hhivSupply:'100000000',minimumAuditorStake:'10000'};
+it('prepares seven nonce-bound mainnet deployments and delayed auditor wiring',async()=>{const p=await buildDeployment(input,5);expect(p.transactions).toHaveLength(7);for(const [i,t] of p.transactions.entries()){expect(t.chainId).toBe(99901);expect(t.nonce).toBe(5+i);expect(t.expectedAddress).toBe(getContractAddress({from:addr,nonce:BigInt(5+i)}));expect(t.data.length).toBeGreaterThan(100);}expect(p.governance.delay).toBe(172800);expect(decodeFunctionData({abi:rootsAbi,data:p.governance.data})).toEqual({functionName:'setAuditor',args:[p.addresses.AuditorStake]});});
+it('rejects zero role addresses and supply too small for two bonds',()=>{expect(DeploymentInput.safeParse({...input,guardian:'0x'+'00'.repeat(20)}).success).toBe(false);expect(DeploymentInput.safeParse({...input,hhivSupply:'19999'}).success).toBe(false);});
+it('uses cumulative profit instead of account balance for dollar drawdown',()=>{expect(pnlDrawdown([])).toBe(null);expect(pnlDrawdown([[1,0],[2,200],[3,50],[4,180],[5,-20]])).toBe(220);expect(pnlDrawdown([[1,0],[2,0],[3,0]])).toBe(0);});
