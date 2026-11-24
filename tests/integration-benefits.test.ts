@@ -1,0 +1,13 @@
+import {beforeAll,afterAll,it,expect,vi} from 'vitest';
+import {Database} from '../packages/core/db.js';
+import {crew} from './fixtures.js';
+import {subscriptionKey} from '../packages/core/domain.js';
+import {tokenBenefit,supplementalExpiry,builderFeeFor} from '../packages/core/entitlements.js';
+const state=vi.hoisted(()=>({balance:10000n*10n**18n,fail:false}));
+vi.mock('../packages/core/integration-settings.js',()=>({integrationSettings:async()=>({token:'0x'+'11'.repeat(20),tokenThreshold:'10000'})}));
+vi.mock('viem',async original=>({...await original<typeof import('viem')>(),createPublicClient:()=>({getChainId:async()=>99901,readContract:async({functionName}:any)=>{if(state.fail)throw Error('RPC unavailable');return functionName==='balanceOf'?state.balance:functionName==='decimals'?18:'HHIV';}})}));
+let db:Database,c:Awaited<ReturnType<typeof crew>>;
+beforeAll(async()=>{db=await new Database('memory').init();c=await crew();await db.query('INSERT INTO crews(id,owner,account,policy,signature,created_at) VALUES($1,$2,$3,$4,$5,$6)',[c.id,c.owner,c.account,JSON.stringify(c.policy),c.signature,c.created_at]);});afterAll(async()=>db.close());
+it('grants a discount only at the exact balance threshold',async()=>{expect((await tokenBenefit(c.owner,true)).eligible).toBe(true);expect(await builderFeeFor(c.owner)).toBe(20);state.balance-=1n;expect((await tokenBenefit(c.owner,true)).eligible).toBe(false);expect(await builderFeeFor(c.owner)).toBe(30);});
+it('limits free access to the assigned Crew plan and rechecks holdings',async()=>{state.balance=10000n*10n**18n;await tokenBenefit(c.owner,true);expect(await supplementalExpiry(db,c)).toBe(0);await db.query('INSERT INTO benefit_assignments VALUES($1,$2,$3)',[c.owner,c.id,Date.now()]);expect(await supplementalExpiry(db,c)).toBeGreaterThan(Date.now());expect(await supplementalExpiry(db,{...c,policy:{...c.policy,plan:'pro'}})).toBe(0);state.balance=0n;await tokenBenefit(c.owner,true);expect(await supplementalExpiry(db,c)).toBe(0);});
+it('retains paid access even when token RPC is down and defaults to the standard fee',async()=>{const until=Date.now()+86400000;await db.query('INSERT INTO paid_entitlements VALUES($1,$2,$3,$4)',[subscriptionKey(c.policy),c.owner,'crew',until]);state.fail=true;expect(await supplementalExpiry(db,c)).toBe(until);expect(await builderFeeFor('0x'+'22'.repeat(20))).toBe(30);});
