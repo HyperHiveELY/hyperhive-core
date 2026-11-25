@@ -1,0 +1,10 @@
+import {beforeAll,afterAll,it,expect,vi} from 'vitest';
+import {Database} from '../packages/core/db.js';
+import {crew} from './fixtures.js';
+import {collectRecordMetrics,recordMetrics,pnlDrawdown} from '../packages/core/record-metrics.js';
+const venue=vi.hoisted(()=>({funding:[] as any[],history:[] as any[]}));
+vi.mock('../packages/core/venue.js',()=>({info:{userFunding:vi.fn(async({startTime,endTime}:any)=>venue.funding.filter(f=>f.time>=startTime&&f.time<=endTime)),portfolio:async()=>venue.history}}));
+let db:Database;
+beforeAll(async()=>{db=await new Database('memory').init();});afterAll(async()=>db.close());
+it('distinguishes uncollected history from zero and keeps funding idempotent',async()=>{const c=await crew();expect((await recordMetrics(db,c.id)).netFunding).toBe(null);c.created_at=Date.now()-3600000;venue.funding=[{time:c.created_at+10,hash:'0x'+'11'.repeat(32),delta:{type:'funding',coin:'BTC',usdc:'-1.25',szi:'.1',fundingRate:'.001',nSamples:null}},{time:c.created_at+20,hash:'0x'+'22'.repeat(32),delta:{type:'funding',coin:'ETH',usdc:'.25',szi:'1',fundingRate:'.001',nSamples:null}}];venue.history=[['perpAllTime',{accountValueHistory:[[1,'100'],[2,'1100'],[3,'1080']],pnlHistory:[[1,'0'],[2,'0'],[3,'-20']]}]];await collectRecordMetrics(db,c);await db.query('UPDATE metric_state SET updated_at=0,funding_through=$1',[c.created_at]);await collectRecordMetrics(db,c);const m=await recordMetrics(db,c.id);expect(m.netFunding).toBe(-1);expect(m.maxDrawdownUsd).toBe(20);expect((await db.query('SELECT * FROM funding')).rows).toHaveLength(2);expect(m.fundingThrough).toBeGreaterThan(c.created_at);});
+it('orders P&L samples before calculating peak decline',()=>{expect(pnlDrawdown([[3,200],[1,0],[2,100]])).toBe(0);expect(pnlDrawdown([[3,50],[1,0],[2,200]])).toBe(150);});
