@@ -1,0 +1,6 @@
+import {it,expect,vi} from 'vitest';
+import {hostingBundle} from '../apps/api/hosting.js';
+const settings=vi.hoisted(()=>({imageDigest:'ghcr.io/hyperhive/app@sha256:'+'a'.repeat(64),hostedOrigin:'https://hyperhive.example',roots:'0x'+'11'.repeat(20),billing:'0x'+'22'.repeat(20)}));
+vi.mock('../packages/core/integration-settings.js',()=>({integrationSettings:async()=>settings}));
+vi.mock('../packages/core/secrets.js',()=>({modelSettings:async()=>({scout:'openai/scout',skeptic:'anthropic/skeptic'})}));
+it('exports a bootstrappable Phala stack without exporting local secrets',async()=>{const b=await hostingBundle(),s=b.compose.services;expect(Object.keys(s)).toEqual(['api','worker','notifications','signer']);expect(s.api.environment.PPQ_API_KEY).toBe('${PPQ_API_KEY:?Set PPQ key}');expect(s.signer.environment.MEASUREMENT_HASH).toBe('${MEASUREMENT_HASH:-}');expect(s.signer.environment.LIVE_TRADING_ENABLED).toBe('${LIVE_TRADING_ENABLED:-false}');expect(s.api.environment.INTEGRATION_SETTINGS).toContain('https://hyperhive.example');expect(JSON.stringify(b)).not.toContain('PRIVATE_KEY');expect(s.signer.volumes).toEqual(['/var/run/dstack.sock:/var/run/dstack.sock']);expect('volumes' in s.api).toBe(false);});
