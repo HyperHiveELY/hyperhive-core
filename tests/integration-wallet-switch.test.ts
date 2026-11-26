@@ -1,0 +1,11 @@
+import {it,expect,vi,afterAll} from 'vitest';
+import {connect,connectExternal,chainWallet,activeWalletMode} from '../apps/web/src/wallet.js';
+import {ownerWallet} from '../apps/web/src/integration-wallet.js';
+const saved=JSON.stringify({format:'hyperhive-wallet-v2',address:'0x'+'11'.repeat(20),ciphertext:'encrypted-test-backup'}),address='0x'+'22'.repeat(20),values=new Map([['hyperhive.owner.encrypted.v1',saved]]),methods:string[]=[];
+let rejectSwitch=false;
+vi.stubGlobal('localStorage',{getItem:(key:string)=>values.get(key)??null,setItem:(key:string,value:string)=>values.set(key,value),removeItem:(key:string)=>values.delete(key)});
+vi.stubGlobal('window',{ethereum:{request:async({method}:any)=>{methods.push(method);if(method==='wallet_switchEthereumChain'&&rejectSwitch)throw Object.assign(Error('Rejected by user'),{code:4001});if(method==='eth_chainId')return '0x1863d';if(method==='eth_requestAccounts'||method==='eth_accounts')return [address];return null;}}});
+afterAll(()=>vi.unstubAllGlobals());
+it('switches from a saved locked wallet without deleting its encrypted backup',async()=>{await expect(connect()).rejects.toThrow('Unlock');const external=await connectExternal();expect(external.address).toBe(address);expect(activeWalletMode()).toBe('external');expect(values.get('hyperhive.owner.encrypted.v1')).toBe(saved);});
+it('checks that financial actions use the signed-in owner account',async()=>{await expect(ownerWallet('0x'+'33'.repeat(20))).rejects.toThrow('signed-in owner');});
+it('does not turn a rejected chain switch into an add-chain request',async()=>{rejectSwitch=true;await expect(chainWallet(8453)).rejects.toThrow('Rejected');expect(methods).not.toContain('wallet_addEthereumChain');});
