@@ -5,6 +5,9 @@ import {loadFlags,walkthroughSeen,WALKTHROUGH_PREVIEW_PATH} from './flags.js';
 const root=createRoot(document.getElementById('root')!);
 const path=location.pathname.replace(/\/+$/,'')||'/';
 
+/** Search and link-preview bots keep no storage, so they would be redirected on every visit. */
+function crawler(){return navigator.webdriver||/bot|crawl|spider|slurp|preview|facebookexternalhit|embedly|lighthouse/i.test(navigator.userAgent);}
+
 /** True when this browser has no wallet session yet (a first-time visitor). */
 async function signedOut(){try{return (await fetch('/api/me',{credentials:'same-origin'})).status===401;}catch{return false;}}
 
@@ -26,5 +29,7 @@ if(import.meta.env.DEV&&path==='/__design'){
  if(flags.walkthrough&&firstVisit)location.replace('/demo');
  else root.render(<App/>);
 }else{
- const {default:Pages}=await import('./marketing/Pages.jsx');root.render(<Pages/>);
+ // With the flag on, a first-time human visitor to the home page sees the walkthrough once (the demo marks it seen).
+ if(path==='/'&&!walkthroughSeen()&&!crawler()&&(await loadFlags()).walkthrough)location.replace('/demo');
+ else{const {default:Pages}=await import('./marketing/Pages.jsx');root.render(<Pages/>);}
 }

@@ -3,6 +3,8 @@
    Motion is transform and opacity only. */
 @import '../ui/product-icons.css';
 
+/* The walkthrough loads without the site stylesheets, so reset the page edge here. */
+html,body{margin:0;background:#0c0e10}
 .dm-root{
  --canvas:#0c0e10;--panel:#111416;--raised:#15181b;--dialog:#191c20;
  --border:#2f3438;--border-strong:#3d4145;--hairline:#23282c;
