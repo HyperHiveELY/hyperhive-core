@@ -2,6 +2,7 @@ import React from 'react';
 
 // Small stroke icons for the marketing pages. Decorative unless a label is passed.
 const paths = {
+  search: 'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zM20.5 20.5l-4.5-4.5',
   move: 'M12 3v18M3 12h18M9 6l3-3 3 3M9 18l3 3 3-3M6 9l-3 3 3 3M18 9l3 3-3 3',
   shapes: 'M12 3.5l4 6.5H8zM14 14h6.5v6.5H14zM10 17.25a3.25 3.25 0 1 1-6.5 0 3.25 3.25 0 0 1 6.5 0z',
   gear: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1',

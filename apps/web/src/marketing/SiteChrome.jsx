@@ -11,12 +11,13 @@ const navLinks = [
   ['How it works', '/#how-it-works'],
   ['Technology', '/#features'],
   ['Docs', '/docs'],
+  ['Whitepaper', '/whitepaper'],
   ['Roadmap', '/roadmap'],
 ];
 
 const footerColumns = [
   ['Explore', [['1-minute demo', '/demo'], ['How it works', '/#how-it-works'], ['Technology', '/#features'], ['Process case study', '/case-study'], ['Pricing', '/#pricing']]],
-  ['HyperHive', [['Docs', '/docs'], ['Roadmap', '/roadmap'], ['FAQ', '/faq'], ['Workspace', '/dashboard']]],
+  ['HyperHive', [['Docs', '/docs'], ['Whitepaper', '/whitepaper'], ['Roadmap', '/roadmap'], ['FAQ', '/faq'], ['Workspace', '/dashboard']]],
   ['Resources', [['Risks & limits', '/risks'], ['Trading terms', '/terms'], ['Privacy', '/privacy']]],
 ];
 
@@ -58,15 +59,17 @@ export function SiteHeader() {
   const links = navLinks.filter(([, href]) => walkthrough || href !== '/demo').map(([label, href]) => (
     <a key={href} href={href} aria-current={href === path ? 'page' : undefined} onClick={() => setOpen(false)}>{label}</a>
   ));
+  // Split the links either side of the centred logo, the larger half on the left.
+  const half = Math.ceil(links.length / 2);
 
   return (
     <header className="site-header">
         <div className="site-header__inner">
-          <nav className="site-header__nav" aria-label="Main">{links}</nav>
+          <nav className="site-header__nav" aria-label="Main">{links.slice(0, half)}</nav>
           <Logo />
           <div className="site-header__end">
-            <span className="site-status"><span className="site-status__dot" aria-hidden="true" />Product preview</span>
-            <ActionLink href={primaryAction.href}>{primaryAction.label}</ActionLink>
+            <nav className="site-header__nav" aria-label="More">{links.slice(half)}</nav>
+            <ActionLink href={primaryAction.href} className="site-btn--small">{primaryAction.label}</ActionLink>
           </div>
           <button
             type="button"
@@ -82,7 +85,6 @@ export function SiteHeader() {
         <div id={menuId} className="site-menu" hidden={!open}>
           <nav aria-label="Mobile">{links}</nav>
           <ActionLink href={primaryAction.href} onClick={() => setOpen(false)}>{primaryAction.label}</ActionLink>
-          <span className="site-status"><span className="site-status__dot" aria-hidden="true" />Product preview</span>
         </div>
     </header>
   );
