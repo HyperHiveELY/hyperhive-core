@@ -42,6 +42,7 @@ const schema=`
 CREATE TABLE IF NOT EXISTS ai_billing_exemptions(owner text PRIMARY KEY,enabled boolean NOT NULL DEFAULT false,updated_at double precision NOT NULL);
 CREATE TABLE IF NOT EXISTS token_accounts(owner text PRIMARY KEY,available bigint NOT NULL DEFAULT 0 CHECK(available>=0),reserved bigint NOT NULL DEFAULT 0 CHECK(reserved>=0));
 CREATE TABLE IF NOT EXISTS token_invoices(id text PRIMARY KEY,owner text NOT NULL,amount text NOT NULL,pay_to text NOT NULL,units bigint NOT NULL CHECK(units>0),nonce double precision NOT NULL,status text NOT NULL DEFAULT 'OPEN',tx text UNIQUE,created_at double precision NOT NULL,expires_at double precision NOT NULL);
+ALTER TABLE token_invoices ADD COLUMN IF NOT EXISTS network text NOT NULL DEFAULT 'hypercore';
 CREATE INDEX IF NOT EXISTS token_invoices_owner ON token_invoices(owner,created_at);
 CREATE TABLE IF NOT EXISTS token_usage(id text PRIMARY KEY,owner text NOT NULL,crew_id text NOT NULL,model text NOT NULL,reserved bigint NOT NULL,charged bigint NOT NULL DEFAULT 0,markup_bps integer NOT NULL,status text NOT NULL DEFAULT 'RESERVED',cost_usd numeric,cost_basis text,created_at double precision NOT NULL,finished_at double precision);
 ALTER TABLE token_usage ADD COLUMN IF NOT EXISTS billing_exempt boolean NOT NULL DEFAULT false;

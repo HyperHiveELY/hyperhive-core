@@ -22,7 +22,7 @@ it('cross-checks contract relationships and returns correctly scaled operator an
  await validateContracts(s);const view=await networkState(wallet.address);expect(view).toMatchObject({configured:true,hour:6,operator:{stake:'100',pending:'1',strikes:1,listed:true}});
  expect(await subscriptionExpiry(c.policy)).toBe(Number(data.expiresAt)*1000);
  expect(await hasSubscription(c)).toBe(true);expect(h.read.mock.calls.filter(call=>call[0].functionName==='expiresAt')).toHaveLength(1);
- const plan=await prepareDeployment({deployer:wallet.address,governanceProposer:wallet.address,guardian:wallet.address,treasury:wallet.address,workers:wallet.address,tokenRecipient:wallet.address,usdc:ELYSIUM_USDC,hhivSupply:'100000',minimumAuditorStake:'100'});
+ const plan=await prepareDeployment({deployer:wallet.address,governanceProposer:wallet.address,guardian:wallet.address,phase:'core',usdc:ELYSIUM_USDC});
  expect(plan.transactions[0].nonce).toBe(2);expect(plan.gasPrice).toBe('3');
  h.code.mockResolvedValue(undefined);await expect(validateContracts(s)).rejects.toThrow('no deployed contract');
  h.chain.mockResolvedValue(1);await expect(networkState()).rejects.toThrow('Elysium');

@@ -15,7 +15,7 @@ import {tokenBenefit,benefitCrew} from '../../packages/core/entitlements.js';
 import {accessStatus} from '../../packages/core/access.js';
 import {Address,type Crew} from '../../packages/core/domain.js';
 import {auditorAbi,rootsAbi,tokenAbi} from '../../packages/core/contract-abis.js';
-import {prepareDeployment,buildDeployment,DeploymentInput} from '../../packages/core/deployment.js';
+import {prepareDeployment,reviewedDeployment,SavedDeploymentInput} from '../../packages/core/deployment.js';
 import {networkState} from './network.js';
 /** Verify Elysium bytecode, payment-token decimals and the configured links between contracts. */
 export async function validateContracts(s:IntegrationSettings){
@@ -67,11 +67,11 @@ export function registerIntegrations(app:FastifyInstance,db:Database,owner:(req:
  /** Read public network state and an optional operator's obligations. */
  app.get<{Querystring:{owner?:string;hour?:string}}>('/api/network',async req=>networkState(req.query.owner?Address.parse(req.query.owner):undefined,req.query.hour?z.coerce.number().int().positive().max(Math.floor(Date.now()/3600000)).parse(req.query.hour):undefined));
  /** Estimate gas for a reviewed deployment step for the connected deployer. */
- app.post('/api/deployment/quote',async req=>{local(req);const who=await owner(req),{input,nonce,index}=z.strictObject({input:DeploymentInput,nonce:z.number().int().nonnegative(),index:z.number().int().min(0).max(6)}).parse(req.body),plan=await buildDeployment(input,nonce),step=plan.transactions[index];if(step.from!==who)throw Error('Connect the deployer wallet');const rpc=createPublicClient({transport:http(config.ELYSIUM_RPC)});if(await rpc.getChainId()!==CONTRACT_CHAIN_ID)throw Error('Expected Elysium mainnet');const gas=await rpc.estimateGas({account:who,data:step.data}),price=await rpc.getGasPrice(),limit=(gas*120n+99n)/100n;return {gasLimit:String(limit),gasPrice:String(price),maxCost:String(limit*price),quotedAt:Date.now()};});
+ app.post('/api/deployment/quote',async req=>{local(req);const who=await owner(req),{input,nonce,index}=z.strictObject({input:SavedDeploymentInput,nonce:z.number().int().nonnegative(),index:z.number().int().min(0).max(6)}).parse(req.body),plan=await reviewedDeployment(input,nonce),step=plan.transactions[index];if(!step)throw Error('Unknown deployment step');if(step.from!==who)throw Error('Connect the deployer wallet');const rpc=createPublicClient({transport:http(config.ELYSIUM_RPC)});if(await rpc.getChainId()!==CONTRACT_CHAIN_ID)throw Error('Expected Elysium mainnet');const gas=await rpc.estimateGas({account:who,data:step.data}),price=await rpc.getGasPrice(),limit=(gas*120n+99n)/100n;return {gasLimit:String(limit),gasPrice:String(price),maxCost:String(limit*price),quotedAt:Date.now()};});
  /** Verify deployment receipts and active contract configuration against the local build. */
  app.post('/api/deployment/check',async req=>{local(req);await owner(req);return verifyDeployment(req.body);});
- /** Reconstruct a local seven-contract deployment from public inputs and nonce. */
- app.post('/api/deployment/validate',async req=>{local(req);await owner(req);const {input,nonce}=z.strictObject({input:DeploymentInput,nonce:z.number().int().nonnegative()}).parse(req.body);return buildDeployment(input,nonce);});
+ /** Reconstruct a reviewed deployment from public inputs and nonce. */
+ app.post('/api/deployment/validate',async req=>{local(req);await owner(req);const {input,nonce}=z.strictObject({input:SavedDeploymentInput,nonce:z.number().int().nonnegative()}).parse(req.body);return reviewedDeployment(input,nonce);});
  /** Prepare an unsigned deployer-bound plan using current chain state. */
  app.post('/api/deployment/prepare',async req=>{local(req);const who=await owner(req);if((req.body as any)?.deployer?.toLowerCase()!==who)throw Error('Use the signed-in deployer wallet');return prepareDeployment(req.body);});
 }

@@ -1,11 +1,7 @@
 {
+  "phase": "core",
   "deployer": "PUBLIC_DEPLOYER_ADDRESS",
-  "governanceProposer": "MULTISIG_OR_GOVERNANCE_ADDRESS",
+  "governanceProposer": "PUBLIC_GOVERNANCE_ADDRESS",
   "guardian": "PUBLIC_EMERGENCY_GUARDIAN_ADDRESS",
-  "treasury": "PUBLIC_TREASURY_ADDRESS",
-  "workers": "PUBLIC_WORKER_REVENUE_ADDRESS",
-  "tokenRecipient": "PUBLIC_TOKEN_RECIPIENT_ADDRESS",
-  "usdc": "0xb47c4c8f73f009cc0c0d3f92b388d13e293f0b65",
-  "hhivSupply": "SET_TOTAL_TOKEN_SUPPLY",
-  "minimumAuditorStake": "SET_HHIV_BOND_AMOUNT"
+  "usdc": "0xb47c4c8f73f009cc0c0d3f92b388d13e293f0b65"
 }

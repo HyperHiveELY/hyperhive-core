@@ -3,6 +3,7 @@ import {parseUnits,type Hex} from 'viem';
 import type {Database,Sql} from './db.js';
 import {integrationSettings} from './integration-settings.js';
 import {info} from './venue.js';
+import {verifyCreditTransfer} from './elysium-checkout.js';
 import {Address} from './domain.js';
 
 // Integer accounting: 1,000 units = one Token; 1,000 Tokens = one USDC.
@@ -70,17 +71,18 @@ export async function recoverTokenReservations(db:Database){
  const rows=(await db.query<{id:string}>("SELECT id FROM token_usage WHERE status='RESERVED' AND created_at<$1",[Date.now()-600000])).rows;
  for(const {id} of rows)await settleTokens(db,id,null,'interrupted','An interrupted AI request was refunded. Review usage accounting before resuming.');
 }
-export type TokenInvoice={id:string;owner:string;amount:string;pay_to:string;units:string;nonce:number;status:string;tx:string|null;created_at:number;expires_at:number};
+export type TokenInvoice={network?:'hypercore'|'elysium';id:string;owner:string;amount:string;pay_to:string;units:string;nonce:number;status:string;tx:string|null;created_at:number;expires_at:number};
 /** Create an owner-bound purchase quote with a receiving wallet, expiry and amount. */
-export async function createTokenInvoice(db:Database,owner:string,amount:number,payTo:string,now=Date.now()){
+export async function createTokenInvoice(db:Database,owner:string,amount:number,payTo:string,now=Date.now(),elysiumNonce?:number){
  if(!Number.isInteger(amount)||amount<5||amount>500)throw Error('Choose a whole USDC amount from 5 to 500');
  if(!/^0x[\da-f]{40}$/.test(payTo)||payTo==='0x'+'0'.repeat(40)||payTo===owner)throw Error('A different receiving wallet must be configured');
  return db.transaction(async q=>{
   await lockTokenAccount(q,owner);
-  const pending=(await q.query<TokenInvoice>("SELECT * FROM token_invoices WHERE owner=$1 AND status='OPEN' AND expires_at>$2 ORDER BY created_at DESC LIMIT 1",[owner,now])).rows[0];
+  const network=elysiumNonce===undefined?'hypercore':'elysium';
+  const pending=(await q.query<TokenInvoice>("SELECT * FROM token_invoices WHERE owner=$1 AND status='OPEN' AND expires_at>$2 AND network=$3 ORDER BY created_at DESC LIMIT 1",[owner,now,network])).rows[0];
   if(pending){if(Number(pending.amount)!==amount)throw Error('Finish the open purchase or wait for it to expire before changing the amount');return pending;}
-  const row={id:randomUUID(),owner,amount:String(amount),pay_to:payTo,units:String(amount*TOKEN_UNITS_PER_USDC),nonce:now,status:'OPEN',tx:null,created_at:now,expires_at:now+900000};
-  await q.query('INSERT INTO token_invoices(id,owner,amount,pay_to,units,nonce,created_at,expires_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',[row.id,owner,row.amount,payTo,row.units,now,now,row.expires_at]);return row;
+  const row={network:network as NonNullable<TokenInvoice['network']>,id:randomUUID(),owner,amount:String(amount),pay_to:payTo,units:String(amount*TOKEN_UNITS_PER_USDC),nonce:elysiumNonce??now,status:'OPEN',tx:null,created_at:now,expires_at:now+900000};
+  await q.query('INSERT INTO token_invoices(id,owner,amount,pay_to,units,nonce,created_at,expires_at,network) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)',[row.id,owner,row.amount,payTo,row.units,row.nonce,now,row.expires_at,network]);return row;
  });
 }
 type Ledger=Awaited<ReturnType<typeof info.userNonFundingLedgerUpdates>>;
@@ -101,11 +103,13 @@ async function ledgerFor(invoice:TokenInvoice,user:Hex){
 export async function confirmTokenInvoice(db:Database,owner:string,id:string,tx?:string,readLedger=ledgerFor){
  const invoice=(await db.query<TokenInvoice>('SELECT * FROM token_invoices WHERE id=$1 AND owner=$2',[id,owner])).rows[0];if(!invoice)throw Error('Purchase not found');
  if(invoice.status==='PAID'){if(tx&&tx.toLowerCase()!==invoice.tx)throw Error('Purchase was credited from a different transfer');return invoice;}
- // Never accept a client-supplied receipt. Query Hyperliquid mainnet independently.
- const [sent,received]=await Promise.all([readLedger(invoice,owner as Hex),readLedger(invoice,invoice.pay_to as Hex)]);
- const candidates=[...new Map(sent.filter(e=>matchesTokenPayment(invoice,e)&&(!tx||e.hash.toLowerCase()===tx.toLowerCase())&&received.some(r=>r.hash.toLowerCase()===e.hash.toLowerCase()&&matchesTokenPayment(invoice,r))).map(e=>[e.hash.toLowerCase(),e])).values()];
- if(candidates.length!==1)throw Error(candidates.length?'Multiple transfers match. Enter the transfer hash to recover this purchase.':'Transfer not yet verified. Check again; do not send a second payment.');
- const hash=candidates[0].hash.toLowerCase();
+ let hash: string;
+ if (invoice.network === 'elysium') {
+  if (!tx || !/^0x[\da-f]{64}$/i.test(tx)) throw Error('Enter the Elysium transaction hash to check this payment');
+  hash = await verifyCreditTransfer(invoice, tx as Hex);
+ } else {
+  hash = await hypercorePaymentHash(invoice, tx, readLedger);
+ }
  return db.transaction(async q=>{
   const row=(await q.query<TokenInvoice>('SELECT * FROM token_invoices WHERE id=$1 FOR UPDATE',[id])).rows[0];
   if(row.status==='PAID'){if(row.tx!==hash)throw Error('Purchase already credited');return row;}
@@ -116,6 +120,13 @@ export async function confirmTokenInvoice(db:Database,owner:string,id:string,tx?
   return {...row,status:'PAID',tx:hash};
  });
 }
+async function hypercorePaymentHash(invoice:TokenInvoice,tx:string|undefined,readLedger:typeof ledgerFor){
+ // Never accept a client-supplied receipt. Query Hyperliquid mainnet independently.
+ const [sent,received]=await Promise.all([readLedger(invoice,invoice.owner as Hex),readLedger(invoice,invoice.pay_to as Hex)]);
+ const candidates=[...new Map(sent.filter(e=>matchesTokenPayment(invoice,e)&&(!tx||e.hash.toLowerCase()===tx.toLowerCase())&&received.some(r=>r.hash.toLowerCase()===e.hash.toLowerCase()&&matchesTokenPayment(invoice,r))).map(e=>[e.hash.toLowerCase(),e])).values()];
+ if(candidates.length!==1)throw Error(candidates.length?'Multiple transfers match. Enter the transfer hash to recover this purchase.':'Transfer not yet verified. Check again; do not send a second payment.');
+ return candidates[0].hash.toLowerCase();
+}
 const receiverCache=new Map<string,{time:number;ready:boolean}>();
 /** Check whether the designated receiving account is active on Hyperliquid. */
 export async function receiverReady(address:string){
@@ -123,4 +134,4 @@ export async function receiverReady(address:string){
  try{const ready=(await info.userRole({user:address as Hex})).role==='user';receiverCache.set(address,{time:Date.now(),ready});return ready;}catch{return false;}
 }
 /** Report checkout bounds, token conversion, markup and current receiver readiness. */
-export async function tokenPricing(){const s=await integrationSettings();return {tokensPerUsdc:1000,markupBps:s.aiMarkupBps,payTo:s.tokenPayTo??null,checkoutReady:Boolean(s.tokenPayTo)&&await receiverReady(s.tokenPayTo!),minimumUsdc:5,maximumUsdc:500};}
+export async function tokenPricing(){const s=await integrationSettings();return {elysiumPayTo:s.elysiumCreditPayTo??null,elysiumCheckoutReady:Boolean(s.elysiumCreditPayTo),tokensPerUsdc:1000,markupBps:s.aiMarkupBps,payTo:s.tokenPayTo??null,checkoutReady:Boolean(s.tokenPayTo)&&await receiverReady(s.tokenPayTo!),minimumUsdc:5,maximumUsdc:500};}

@@ -34,7 +34,7 @@ export default function WalkthroughReview(){
  snapshot.current=detail;
  const data:DashboardData={bots:summary?[summary]:[],updatedAt:now,activity:card&&crew?[{id:card.id,crewId:crew.id,botName:crew.policy.name,kind:'idea',title:'HYPE long · rejected',message:card.body.card.why,reason:card.verdict.reasons[0],time:card.created_at,status:'REJECTED'}]:[]};
  const api=useCallback(async(path:string,body?:any):Promise<any>=>{
-  if(path==='/tokens/pricing')return {tokensPerUsdc:1000,markupBps:2500,payTo:receivingAddress,checkoutReady:true,meteringReady:true,minimumUsdc:5,maximumUsdc:500};
+  if(path==='/tokens/pricing')return {tokensPerUsdc:1000,markupBps:2500,payTo:receivingAddress,checkoutReady:true,elysiumCheckoutReady:true,meteringReady:true,minimumUsdc:5,maximumUsdc:500};
   if(path==='/tokens')return structuredClone(ledger.current);
   if(path==='/tokens/invoices'&&body){const invoice={id:'walkthrough-invoice',owner:ownerAddress,amount:String(body.amount),units:body.amount*1000000,pay_to:receivingAddress,nonce:Date.now(),created_at:Date.now(),expires_at:Date.now()+900000,status:'OPEN',tx:null};ledger.current.invoices=[invoice];return {...invoice};}
   if(path==='/tokens/invoices/walkthrough-invoice/confirm'){const invoice=ledger.current.invoices[0];if(invoice.status!=='PAID'){invoice.status='PAID';invoice.tx='0x'+'00'.repeat(32);ledger.current.available+=invoice.units/1000;setTokenVersion(v=>v+1);}return {...invoice};}

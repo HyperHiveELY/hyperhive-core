@@ -1,8 +1,9 @@
 import type {WalletProvider} from './wallet-providers.js';
-import { createWalletClient,custom,http,type Hex } from 'viem';
+import { createPublicClient,createWalletClient,custom,http,type Hex } from 'viem';
 import { privateKeyToAccount,generatePrivateKey,type PrivateKeyAccount } from 'viem/accounts';
 import {base} from 'viem/chains';
-import {CONTRACT_CHAIN_ID,contractChain} from '../../../packages/core/chain.js';
+import {creditTransferData} from '../../../packages/core/credit-transfer.js';
+import {CONTRACT_CHAIN_ID,contractChain,ELYSIUM_USDC} from '../../../packages/core/chain.js';
 import { ExchangeClient,InfoClient,HttpTransport } from '@nktkas/hyperliquid';
 import {formatPrice,formatSize} from '@nktkas/hyperliquid/utils';
 import {agentName} from '../../../packages/core/agent-name.js';
@@ -57,8 +58,21 @@ export async function connect(){
  const provider=externalProvider??window.ethereum;if(!provider)throw Error('Choose a wallet using the wallet button');const client=createWalletClient({transport:custom(provider)});const [address]=await client.requestAddresses();if(!address)throw Error('No wallet account selected');return {address:address.toLowerCase() as Hex,client:createWalletClient({account:address,transport:custom(provider)})};
 }
 export function exchange(wallet:PrivateKeyAccount|Awaited<ReturnType<typeof connect>>['client'],nonce?:number){return new ExchangeClient({transport:new HttpTransport({isTestnet:false}),wallet,signatureChainId:'0xa4b1',...(nonce===undefined?{}:{nonceManager:()=>nonce})});}
-export async function payForTokens(invoice:{owner:string;pay_to:string;amount:string;nonce:number;expires_at:number}){
+export async function payForTokens(invoice:{id?:string;network?:'hypercore'|'elysium';owner:string;pay_to:string;amount:string;nonce:number;expires_at:number}){
  if(Date.now()>=Number(invoice.expires_at))throw Error('This purchase expired. Check payment history before creating another.');
+ if(invoice.network==='elysium'){
+  if(!invoice.id)throw Error('Missing Elysium invoice');
+  const wallet=await chainWallet(CONTRACT_CHAIN_ID);
+  if(wallet.account.address.toLowerCase()!==invoice.owner.toLowerCase())throw Error('Connect the wallet that created this purchase');
+  const rpc=createPublicClient({chain:contractChain,transport:http()});
+  if(await rpc.getChainId()!==CONTRACT_CHAIN_ID)throw Error('Expected Elysium mainnet');
+  if(await rpc.getTransactionCount({address:wallet.account.address,blockTag:'pending'})!==Number(invoice.nonce))
+   throw Error('The wallet nonce changed. Recover an existing payment using its hash, or let this unpaid invoice expire.');
+  const payment={account:wallet.account,to:ELYSIUM_USDC,data:creditTransferData({...invoice,id:invoice.id}),nonce:Number(invoice.nonce)};
+  const simulation=await rpc.call(payment);
+  if(BigInt(simulation.data??'0x0')!==1n)throw Error('USDC transfer simulation did not succeed');
+  return wallet.sendTransaction({...payment,chain:contractChain});
+ }
  const {address,client}=await connect();if(address!==invoice.owner.toLowerCase())throw Error('Connect the wallet that created this purchase');
  // Every retry uses exactly the same nonce, recipient and amount. A lost response
  // must never lead to a second debit with a new nonce.

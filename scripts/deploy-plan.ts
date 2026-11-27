@@ -7,7 +7,7 @@ await mkdir('.data',{recursive:true,mode:0o700});
 await writeFile('.data/elysium-deployment-plan.json',JSON.stringify({...plan,notes:[
  'Unsigned Elysium transactions only. No key was read and nothing was broadcast.',
  'Use a dedicated funded deployer. Check pending nonce and gas before each signature.',
- 'Run deploy:verify after deployment. Schedule auditor wiring through governance; execute after 48 hours.',
- 'HyperCore remains the trading and customer Token-payment venue. Elysium gas is HYPE.'
+ 'Run deploy:verify after deployment. Review registry governance once the signer measurement is available.',
+ 'Elysium credit payments use USDC. Gas uses HYPE.'
 ]},null,2),{mode:0o600});
 console.log('Prepared .data/elysium-deployment-plan.json for Elysium (99901). Nothing broadcast.');

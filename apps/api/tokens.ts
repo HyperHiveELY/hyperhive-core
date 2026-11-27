@@ -1,5 +1,7 @@
 import type {FastifyInstance,FastifyRequest} from 'fastify';
 import {z} from 'zod';
+import {creditPaymentNonce} from '../../packages/core/elysium-checkout.js';
+import type {Hex} from 'viem';
 import type {Database} from '../../packages/core/db.js';
 import {integrationSettings,saveIntegrationSettings} from '../../packages/core/integration-settings.js';
 import {tokenPricing,tokenBalance,aiTestingExempt,meteringReady,createTokenInvoice,confirmTokenInvoice,receiverReady} from '../../packages/core/tokens.js';
@@ -14,7 +16,11 @@ export function registerTokens(app:FastifyInstance,db:Database,owner:(r:FastifyR
  });
  /** Create a credit purchase invoice for the signed-in owner and configured receiver. */
  app.post('/api/tokens/invoices',async req=>{
-  const who=await owner(req),{amount}=z.strictObject({amount:z.number().int().min(5).max(500)}).parse(req.body),s=await integrationSettings();
+  const who=await owner(req),{amount,network}=z.strictObject({amount:z.number().int().min(5).max(500),network:z.enum(['hypercore','elysium']).default('hypercore')}).parse(req.body),s=await integrationSettings();
+  if(network==='elysium'){
+   if(!s.elysiumCreditPayTo)throw Error('Elysium checkout is awaiting a receiving wallet');
+   return createTokenInvoice(db,who,amount,s.elysiumCreditPayTo,Date.now(),await creditPaymentNonce(who as Hex));
+  }
   if(!s.tokenPayTo)throw Error('Token checkout is awaiting a receiving wallet from the operator');
   if(!await receiverReady(s.tokenPayTo))throw Error('The receiving wallet must be active on Hyperliquid before checkout opens');
   return createTokenInvoice(db,who,amount,s.tokenPayTo);
@@ -28,8 +34,8 @@ export function registerTokens(app:FastifyInstance,db:Database,owner:(r:FastifyR
  app.get('/api/setup/tokens',async req=>{local(req);return {pricing:await tokenPricing(),alerts:(await db.query('SELECT * FROM ai_metering_alerts WHERE resolved_at IS NULL ORDER BY created_at')).rows};});
  /** Validate the receiving wallet and markup and persist the operator's checkout settings. */
  app.post('/api/setup/tokens',async req=>{
-  local(req);const {payTo,markupBps}=z.strictObject({payTo:z.string().regex(/^0x[\da-fA-F]{40}$/),markupBps:z.number().int().min(0).max(10000)}).parse(req.body);
-  await saveIntegrationSettings({...await integrationSettings(),tokenPayTo:payTo,aiMarkupBps:markupBps});return tokenPricing();
+  local(req);const {payTo,markupBps,network}=z.strictObject({network:z.enum(['hypercore','elysium']).default('hypercore'),payTo:z.string().regex(/^0x[\da-fA-F]{40}$/),markupBps:z.number().int().min(0).max(10000)}).parse(req.body);
+  await saveIntegrationSettings({...await integrationSettings(),...(network==='elysium'?{elysiumCreditPayTo:payTo}:{tokenPayTo:payTo}),aiMarkupBps:markupBps});return tokenPricing();
  });
  /** Acknowledge reviewed metering alerts from local operator setup. */
  app.post('/api/setup/tokens/metering',async req=>{local(req);const {reviewed}=z.strictObject({reviewed:z.literal(true)}).parse(req.body);if(reviewed)await db.query('UPDATE ai_metering_alerts SET resolved_at=$1 WHERE resolved_at IS NULL',[Date.now()]);return {ok:true};});

@@ -3,17 +3,17 @@ import {fundingPlan,type FundingSnapshot} from '../apps/web/src/dashboard/fundin
 const state:FundingSnapshot={owner:'0xowner',account:'0xcrew',available:0,equity:0,ownerActivation:true,crewActivation:true,checkedAt:1};
 describe('customer funding estimates',()=>{
  it('includes both first-use fees without counting the Token purchase twice',()=>{
-  expect(fundingPlan(state,50,100,true)).toEqual({topUp:50,transfer:51,tokens:5,crewActivation:1,ownerActivation:1,required:56,shortfall:56,incoming:57});
+  expect(fundingPlan(state,50,100,true)).toEqual({topUp:50,transfer:51,tokens:5,crewActivation:1,ownerActivation:1,required:51,shortfall:51,incoming:52});
  });
  it('credits existing funds and activation rather than requesting a full deposit again',()=>{
   const p=fundingPlan({...state,available:20,equity:30,crewActivation:false,ownerActivation:false},50,100,true);
-  expect(p).toMatchObject({topUp:20,transfer:20,required:25,shortfall:5,incoming:5});
+  expect(p).toMatchObject({topUp:20,transfer:20,required:20,shortfall:0,incoming:0});
  });
  it('does not require another AI purchase or fund a target already reached',()=>{
   expect(fundingPlan({...state,equity:60},50,100,false)).toMatchObject({required:0,incoming:0,crewActivation:0,ownerActivation:0});
  });
  it('never rounds a needed transfer down below the target',()=>{
-  const p=fundingPlan({...state,available:10.999999,equity:39.123456,crewActivation:false,ownerActivation:false},50,100,true);
+  const p=fundingPlan({...state,available:5.999999,equity:39.123456,crewActivation:false,ownerActivation:false},50,100,true);
   expect(p.transfer).toBe(10.876544);expect(p.shortfall).toBe(4.876545);
  });
  it('requires finite data and respects the signed cap',()=>{
