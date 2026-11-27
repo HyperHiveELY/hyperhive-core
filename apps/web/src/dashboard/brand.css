@@ -1,0 +1,74 @@
+/*
+ * HyperHive shared brand, dark mode.
+ * The marketing site is the light mode of the same brand: deep green #096c55,
+ * mint #97fce3, Adamina for display headings, Geist for text, IBM Plex Mono for labels.
+ * This file maps those tokens onto the workspace. Load it after theme.css.
+ */
+@font-face{font-family:"Adamina";src:url("/vital/media/bdc283516f4d82.woff2") format("woff2");font-display:swap;font-style:normal;font-weight:400}
+
+:root{
+ --brand-deep:#096c55;
+ --brand-mint:#97fce3;
+ --green:#6fe3b8;
+ --accent-soft:#6fe3b814;
+ --accent-line:#6fe3b866;
+ --font-display:"Adamina","Times New Roman",serif;
+}
+
+/* Primary action: the brand mint, with dark ink for contrast. */
+.primary{color:#04261d;background:#8ff2d2;border-color:#a3f6dc}
+.primary:hover:not(:disabled){background:#b2f9e4;border-color:#c2fbea}
+
+/* Wordmark matches the marketing header. */
+.site-brand{font-weight:600;letter-spacing:-.45px}
+
+/* Display type: page titles and step headlines use the brand serif. */
+.page-heading h1,.journey-focus h2,.builder-stage>h2,.activation-next h2,.first-crew-hero h1{font-family:var(--font-display);font-weight:400;letter-spacing:-.4px}
+.page-heading h1{font-size:34px;line-height:1.15}
+
+/* Selected states that used the old neon green. */
+.market-presets>button[aria-pressed=true],.configuration-choice button[aria-pressed=true],.deployment-paths>button[aria-pressed=true]{border-color:var(--accent-line);background:var(--accent-soft)}
+.step-rail .complete>span,.activation-rail .complete>span,.journey-outline .complete .journey-number{background:var(--accent-soft)}
+.status-key-saved,.verdict-badge.verdict-pass,.status-local_signed,.status-signed{color:var(--green)}
+.allocation-stack i:nth-child(1){background:var(--green)}
+
+/* Newcomer home: hero, explainer and risk note. */
+.first-crew-hero{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:28px}
+.first-crew-hero h1{font-size:40px;line-height:1.12;margin-bottom:10px}
+.first-crew-hero p{color:var(--muted);max-width:620px;line-height:1.55;margin:0}
+.journey-time{display:block;margin-top:14px;font-size:12px;color:var(--muted)}
+.journey-step-help{margin:18px 0 22px;padding:0;list-style:none;display:grid;gap:10px;max-width:460px}
+.journey-step-help li{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.5;color:var(--muted)}
+.journey-step-help li svg{flex:0 0 auto;margin-top:3px;color:var(--green)}
+.crew-explainer{margin-top:40px}
+.crew-explainer-heading{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:16px}
+.crew-explainer-heading h2{font-family:var(--font-display);font-weight:400;font-size:26px}
+.crew-explainer-heading a{font-size:14px;color:var(--muted)}
+.crew-roles{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border:1px solid #292e33;border-radius:14px;overflow:hidden;counter-reset:role}
+.crew-roles li{padding:20px 18px 22px;border-left:1px solid #292e33;background:#121417;counter-increment:role;min-width:0}
+.crew-roles li:first-child{border-left:0}
+.crew-roles li::before{content:"0" counter(role);display:block;font-family:"IBM Plex Mono","Geist Mono Variable",monospace;font-size:11px;letter-spacing:.08em;color:var(--green);margin-bottom:14px}
+.crew-roles b{display:block;font-size:15px;margin-bottom:2px}
+.crew-roles small{display:block;font-family:"IBM Plex Mono","Geist Mono Variable",monospace;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#8b939e;margin-bottom:10px}
+.crew-roles p{font-size:13.5px;line-height:1.5;color:var(--muted)}
+.crew-risk-note{display:flex;gap:12px;align-items:flex-start;margin-top:16px;padding:16px 18px;border:1px solid #4a3f24;border-radius:12px;background:#f4c65d0a;font-size:13.5px;line-height:1.55;color:#d9d2bf}
+.crew-risk-note svg{flex:0 0 auto;margin-top:2px;color:var(--amber)}
+.crew-risk-note a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+
+/* Empty states that lead somewhere. */
+.page-empty .empty-description p{max-width:420px;margin:6px auto 0;line-height:1.55}
+.page-empty .empty-action{margin-top:18px}
+
+@media(max-width:1100px){.crew-roles{grid-template-columns:repeat(2,minmax(0,1fr))}.crew-roles li{border-left:0;border-top:1px solid #292e33}.crew-roles li:nth-child(-n+2){border-top:0}.crew-roles li:nth-child(even){border-left:1px solid #292e33}.crew-roles li:last-child{grid-column:1/-1;border-left:0}}
+@media(max-width:640px){.crew-explainer-heading{flex-direction:column;align-items:flex-start;gap:6px}.first-crew-hero{display:block}.first-crew-hero h1{font-size:31px}.page-heading h1{font-size:28px}.crew-roles{grid-template-columns:1fr}.crew-roles li,.crew-roles li:nth-child(even){border-left:0;border-top:1px solid #292e33}.crew-roles li:first-child{border-top:0}.crew-roles li:last-child{grid-column:auto}}
+
+/* Invitation to the guided demo, shown before setup. */
+.tour-invite{display:flex;align-items:center;gap:16px;margin:0 0 18px;padding:16px 18px;border:1px solid #2f5446;border-radius:14px;background:linear-gradient(90deg,#6fe3b812,#6fe3b803);color:var(--text);text-decoration:none;transition:border-color .3s,transform .4s cubic-bezier(.16,1,.3,1),background-color .3s}
+.tour-invite:hover{border-color:#4a8a71;transform:translateY(-1px)}
+.tour-invite-play{flex:0 0 auto;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:#8ff2d2;color:#04261d}
+.tour-invite b{display:block;font-size:15px;font-weight:600}
+.tour-invite small{display:block;margin-top:2px;font-size:13px;color:var(--muted)}
+.tour-invite-cta{margin-left:auto;display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:600;color:var(--green);white-space:nowrap}
+.tour-invite-cta svg{transition:transform .3s cubic-bezier(.16,1,.3,1)}
+.tour-invite:hover .tour-invite-cta svg{transform:translateX(3px)}
+@media(max-width:640px){.tour-invite{flex-wrap:wrap}.tour-invite-cta{margin-left:56px}}

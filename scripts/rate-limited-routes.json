@@ -37,6 +37,11 @@
   {
     "source": "apps/api/server.ts",
     "method": "GET",
+    "url": "/api/flags"
+  },
+  {
+    "source": "apps/api/server.ts",
+    "method": "GET",
     "url": "/api/config"
   },
   {

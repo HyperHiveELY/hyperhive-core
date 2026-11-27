@@ -9,8 +9,8 @@ export function TradingToolbar({mode,onMode,onCreate,hasBots,balance,enabled,cou
  return <div className="tu-workbar-actions">
   <label className="tu-mode-select"><span className="tu-sr-only">Trading mode</span><select aria-label="Trading mode" value={mode} onChange={e=>onMode(e.target.value as 'paper'|'mainnet')}><option value="paper">Paper</option><option value="mainnet">Mainnet</option></select><ChevronDown size={13}/></label>
   <details ref={menu} className="tu-workmenu" onKeyDown={e=>{if(e.key==='Escape'&&menu.current){menu.current.open=false;menu.current.querySelector('summary')?.focus();}}}><summary aria-label="Workspace options"><Settings2 size={18}/></summary><div>
-   {mode==='paper'?<p>Virtual funds · live market data</p>:<dl><div><dt>Bot balance</dt><dd>{balance??'—'}</dd></div><div><dt>Bots enabled</dt><dd>{enabled??'—'} / {count??'—'}</dd></div></dl>}
-   {hasBots&&<button onClick={e=>{e.currentTarget.closest('details')?.removeAttribute('open');onCreate();}}><Plus size={16}/>New bot</button>}
+   {mode==='paper'?<p>Virtual funds · live market data</p>:<dl><div><dt>Crew balance</dt><dd>{balance??'—'}</dd></div><div><dt>Crews running</dt><dd>{enabled??'—'} / {count??'—'}</dd></div></dl>}
+   {hasBots&&<button onClick={e=>{e.currentTarget.closest('details')?.removeAttribute('open');onCreate();}}><Plus size={16}/>New crew</button>}
   </div></details>
  </div>;
 }
