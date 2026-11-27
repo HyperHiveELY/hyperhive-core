@@ -1,0 +1,82 @@
+[
+  {
+    "source": "apps/api/integrations.ts",
+    "method": "GET",
+    "url": "/api/integrations"
+  },
+  {
+    "source": "apps/api/integrations.ts",
+    "method": "GET",
+    "url": "/api/terms"
+  },
+  {
+    "source": "apps/api/integrations.ts",
+    "method": "POST",
+    "url": "/api/deployment/check"
+  },
+  {
+    "source": "apps/api/payments.ts",
+    "method": "GET",
+    "url": "/api/verify/:id"
+  },
+  {
+    "source": "apps/api/payments.ts",
+    "method": "POST",
+    "url": "/api/verify/:id/recover"
+  },
+  {
+    "source": "apps/api/payments.ts",
+    "method": "GET",
+    "url": "/api/payments/invoices/:id"
+  },
+  {
+    "source": "apps/api/tokens.ts",
+    "method": "GET",
+    "url": "/api/tokens/pricing"
+  },
+  {
+    "source": "apps/api/server.ts",
+    "method": "GET",
+    "url": "/api/config"
+  },
+  {
+    "source": "apps/api/server.ts",
+    "method": "POST",
+    "url": "/api/auth/verify"
+  },
+  {
+    "source": "apps/api/server.ts",
+    "method": "POST",
+    "url": "/api/crews"
+  },
+  {
+    "source": "apps/api/server.ts",
+    "method": "GET",
+    "url": "/api/crews/:id"
+  },
+  {
+    "source": "apps/api/server.ts",
+    "method": "POST",
+    "url": "/api/crews/:id/control"
+  },
+  {
+    "source": "apps/api/server.ts",
+    "method": "GET",
+    "url": "/api/crews/:id/attestation"
+  },
+  {
+    "source": "apps/api/server.ts",
+    "method": "POST",
+    "url": "/api/crews/:id/renew"
+  },
+  {
+    "source": "apps/api/server.ts",
+    "method": "GET",
+    "url": "/api/records/:id"
+  },
+  {
+    "source": "apps/api/server.ts",
+    "method": "GET",
+    "url": "/api/records"
+  }
+]

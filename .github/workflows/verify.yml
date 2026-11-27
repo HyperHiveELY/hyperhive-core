@@ -1,0 +1,109 @@
+name: Verify HyperHive
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  application:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with: {node-version-file: .nvmrc}
+      - name: Install the pinned npm toolchain
+        run: |
+          sh scripts/npm-toolchain/install.sh "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/hyperhive-npm/node_modules/.bin" >> "$GITHUB_PATH"
+      - run: npm ci --ignore-scripts
+      - uses: foundry-rs/foundry-toolchain@50d5a8956f2e319df19e6b57539d7e2acb9f8c1e
+        with: {version: v1.7.1}
+      - name: Start isolated PostgreSQL
+        run: |
+          docker build -f deploy/Dockerfile.postgres-ci -t hyperhive-postgres-ci .
+          docker run -d --name hyperhive-postgres-ci -p 127.0.0.1:5432:5432 -e POSTGRES_PASSWORD=disposable hyperhive-postgres-ci
+          for attempt in {1..60}; do
+            if docker exec hyperhive-postgres-ci pg_isready -h 127.0.0.1 -U postgres; then exit 0; fi
+            sleep 1
+          done
+          exit 1
+      - run: npm run build && npm run test:coverage
+        env:
+          DATABASE_URL: postgresql://postgres:disposable@127.0.0.1:5432/postgres
+      - run: npm run test:mutation
+      - run: npm audit --audit-level=high
+  contracts:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with: {node-version-file: .nvmrc}
+      - name: Install the pinned npm toolchain
+        run: |
+          sh scripts/npm-toolchain/install.sh "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/hyperhive-npm/node_modules/.bin" >> "$GITHUB_PATH"
+      - run: npm ci --ignore-scripts
+      - uses: foundry-rs/foundry-toolchain@50d5a8956f2e319df19e6b57539d7e2acb9f8c1e
+        with: {version: v1.7.1}
+      - run: npm run contracts:build && npx vitest run tests/deployment-rehearsal.test.ts
+        env: {HYPERHIVE_TEST_ANVIL: "1"}
+      - run: forge test --fuzz-seed 0x8275353
+      - run: npm run contracts:coverage
+      - run: |
+          python3 -m venv "$RUNNER_TEMP/security"
+          "$RUNNER_TEMP/security/bin/pip" install slither-analyzer==0.11.6 z3-solver==4.13.3.0
+          "$RUNNER_TEMP/security/bin/python" scripts/prove-accounting.py
+          "$RUNNER_TEMP/security/bin/slither" . --filter-paths "node_modules|contracts/test" --exclude-dependencies --fail-high
+  source:
+    permissions:
+      contents: read
+      actions: read
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        with: {persist-credentials: false, fetch-depth: 0}
+      - run: |
+          go install github.com/zricethezav/gitleaks/v8@v8.30.1
+          "$(go env GOPATH)/bin/gitleaks" git --redact --log-opts="--all"
+      - uses: github/codeql-action/init@db2c8fe24a75c0f28f87ed1a6fe918a5ccf7b1e6
+        with: {languages: "javascript-typescript,python"}
+      - uses: github/codeql-action/analyze@db2c8fe24a75c0f28f87ed1a6fe918a5ccf7b1e6
+        with: {upload: never, upload-database: false, output: '../results'}
+      - name: Check CodeQL results
+        run: python3 scripts/check-codeql.py ../results
+  image:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        with: {persist-credentials: false}
+      - name: Build application and database images
+        run: |
+          docker build --target build -t hyperhive-builder .
+          docker build -t hyperhive-ci .
+          docker build -f deploy/Dockerfile.postgres-ci -t hyperhive-postgres-ci .
+      - name: Start the runtime on the native runner
+        run: |
+          cid=$(docker run --detach --network none --read-only --tmpfs /tmp \
+            -e NODE_ENV=test -e DATABASE_URL=memory -e LIVE_TRADING_ENABLED=false hyperhive-ci)
+          trap 'docker rm -f "$cid" >/dev/null' EXIT
+          for attempt in {1..60}; do
+            if docker exec "$cid" wget -q -O /dev/null http://127.0.0.1:8788/api/health; then exit 0; fi
+            if [ "$(docker inspect -f '{{.State.Running}}' "$cid")" != true ]; then break; fi
+            sleep 1
+          done
+          docker logs "$cid"
+          exit 1
+      - name: Scan application and database packages
+        run: |
+          curl --fail --location --silent --show-error https://github.com/aquasecurity/trivy/releases/download/v0.76.2/trivy_0.76.2_Linux-64bit.tar.gz --output "$RUNNER_TEMP/trivy.tgz"
+          echo "bc0fc726e017b8927a62b2d3531d7a84ee01769daf5c99ed866dced54089fdbf  $RUNNER_TEMP/trivy.tgz" | sha256sum --check
+          tar -xzf "$RUNNER_TEMP/trivy.tgz" -C "$RUNNER_TEMP" trivy
+          for image in hyperhive-builder hyperhive-ci hyperhive-postgres-ci; do
+            report="$RUNNER_TEMP/$image.json"
+            "$RUNNER_TEMP/trivy" image --scanners vuln --format json --output "$report" "$image"
+            jq -e '[.Results[].Vulnerabilities[]?
+              | select(.Severity == "HIGH" or .Severity == "CRITICAL" or
+                       .VulnerabilityID == "CVE-2026-118773" or .VulnerabilityID == "CVE-2026-118764")
+              | {VulnerabilityID, PkgName, InstalledVersion}]
+              | if length == 0 then true else error(tostring) end' "$report"
+          done

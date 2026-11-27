@@ -2,7 +2,9 @@
 
 ## Reporting and incident ownership
 
-HyperHive’s designated public disclosure channel is GitHub Private Vulnerability Reporting. On the official public HyperHive repository, open **Security and quality** and select **Report a vulnerability**. Send the affected version or commit, the impact and the minimum information maintainers need to investigate. Keep wallet backups, credentials and private keys out of the report. [GitHub reporting instructions](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/report-privately)
+HyperHive’s designated public disclosure channel is GitHub Private Vulnerability Reporting. On the official public HyperHive repository, open **Security and quality** and select **Report a vulnerability**. Send the affected version or commit, the impact and the minimum information maintainers need to investigate. Keep wallet backups, credentials and private keys out of the report. [Report privately on GitHub](https://github.com/HyperHiveELY/hyperhive-core/security/advisories/new)
+
+The two HyperHive developers share incident response. Operational alerts are assigned through private GitHub issues.
 
 If the reporting form is unavailable, ask the maintainers for a private contact through a GitHub issue. Share vulnerability details only through the private channel.
 

@@ -53,3 +53,29 @@ it('retries the same alert at a loopback receiver and advances the durable curso
   await run();expect(received).toHaveLength(3);
  }finally{process.argv=savedArgv;process.exitCode=savedExit;vi.unstubAllEnvs();vi.restoreAllMocks();receiver.closeAllConnections();await new Promise<void>(r=>receiver.close(()=>r()));}
 });
+
+it('delivers one private GitHub issue for a retried incident and requires the on-call assignees',async()=>{
+ const {sendGitHubAlert}=await import('../scripts/github-alert.mjs');
+ const repository='example/private', credentials={repository,token:'test-fixture',assignees:'dev-a,dev-b',key:'drill',title:'Test',body:'A drill'};
+ let privateRepo=true,posts=0;const issues:any[]=[];
+ const fetcher=vi.fn(async(url:string, options:RequestInit)=>{
+  if(url.endsWith(repository)) return Response.json({private:privateRepo,full_name:repository});
+  if(options.method==='POST'){
+   posts++;const payload=JSON.parse(String(options.body));
+   issues.push({...payload,html_url:'https://example.invalid/issue',assignees:payload.assignees.map((login:string)=>({login}))});
+   return Response.json(issues[0]);
+  }
+  return Response.json(issues);
+ });
+ vi.stubGlobal('fetch',fetcher);
+ try {
+  expect(await sendGitHubAlert(credentials)).toBe('https://example.invalid/issue');
+  expect(await sendGitHubAlert(credentials)).toBe('https://example.invalid/issue');
+  expect(posts).toBe(1);
+  issues[0].assignees=[];
+  await expect(sendGitHubAlert(credentials)).rejects.toThrow('assignees');
+  privateRepo=false;
+  await expect(sendGitHubAlert(credentials)).rejects.toThrow('private repository');
+  expect(posts).toBe(1);
+ } finally {vi.unstubAllGlobals();}
+});

@@ -4,6 +4,7 @@ import {config} from '../packages/core/config.js';
 import {Database} from '../packages/core/db.js';
 import {runtimeHealth} from '../packages/core/runtime-health.js';
 import {integrationSettings} from '../packages/core/integration-settings.js';
+import {sendGitHubAlert} from './github-alert.mjs';
 import {Address,hash} from '../packages/core/domain.js';
 
 // Standard mode prints a cursor for an external supervisor. Delivery mode stores
@@ -54,7 +55,8 @@ async function monitor(){
   report(batch);
   return;
  }
- const destination=new URL(process.env.MONITOR_WEBHOOK_URL??'');
+ const repository=process.env.MONITOR_GITHUB_REPOSITORY;
+ const destination=new URL(repository ? 'https://api.github.com/repos/'+repository+'/issues' : process.env.MONITOR_WEBHOOK_URL??'');
  const loopback=['localhost','127.0.0.1','[::1]'].includes(destination.hostname);
  if(destination.protocol!=='https:'&&!(destination.protocol==='http:'&&loopback))throw Error('Alert destination must use HTTPS or loopback HTTP');
  const cursor='monitor/'+hash({chain:CONTRACT_CHAIN_ID,roots:s.roots,destination:destination.href});
@@ -70,9 +72,15 @@ async function monitor(){
   if(batch.alerts.length){
    const body=JSON.stringify(batch);
    if(!pending)await save(body);
-   const res=await fetch(destination,{method:'POST',redirect:'error',headers:{'content-type':'application/json','idempotency-key':hash({cursor,start:batch.fromBlock,end:batch.throughBlock})},body,signal:AbortSignal.timeout(10000)});
+   const key=hash({cursor,start:batch.fromBlock,end:batch.throughBlock});
+   if(repository){
+    await sendGitHubAlert({repository,token:process.env.MONITOR_GITHUB_TOKEN,assignees:process.env.MONITOR_GITHUB_ASSIGNEES,key,
+     title:'HyperHive monitor · blocks '+batch.fromBlock+'–'+batch.throughBlock,body:batch.alerts.join('\n')});
+   }else{
+   const res=await fetch(destination,{method:'POST',redirect:'error',headers:{'content-type':'application/json','idempotency-key':key},body,signal:AbortSignal.timeout(10000)});
    await res.body?.cancel();
    if(!res.ok)throw Error('Alert receiver rejected delivery with HTTP '+res.status);
+   }
   }
   await save(batch.nextBlock);
   report(batch);
