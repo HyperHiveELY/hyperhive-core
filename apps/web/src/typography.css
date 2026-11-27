@@ -1,0 +1,31 @@
+@import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist/wght-italic.css';
+@import '@fontsource-variable/geist-mono';
+
+/* One self-hosted type system for the public pages and dashboard. */
+:root {
+  --hh-font-sans: 'Geist Variable', Geist, Arial, sans-serif;
+  --hh-font-mono: 'Geist Mono Variable', ui-monospace, monospace;
+}
+body, .source-chrome { font-family:var(--hh-font-sans)!important; font-weight:400; }
+body :is(h1,h2,h3,h4,h5,h6,p,button,input,select,textarea,label,summary,.framer-text,.eyebrow,.mono) {
+  font-family:var(--hh-font-sans)!important;
+}
+body :is(h1,h2,h3,h4,h5,h6) {
+  font-weight:600!important;
+  font-optical-sizing:auto;
+  letter-spacing:-.035em;
+}
+body :is(p,input,select,textarea) { font-weight:400; }
+body :is(button,summary,nav a,nav button) { font-weight:500; }
+body :is(header a,footer a,button) .framer-text { font-weight:500!important; }
+/* Preserve semantic emphasis and reserve mono for addresses, code and chart data. */
+body :is(code,kbd,pre,.wallet-address,.candle-canvas text) {
+  font-family:var(--hh-font-mono)!important;
+}
+body :is(table,.metric-value,.portfolio-value,.market-price) {
+  font-variant-numeric:tabular-nums;
+}
+
+body :is(.lp,.document-shell) :is(h1,h2,h3,h4,h5,h6) { font-weight:600; }
+body :is(.lp-btn,.site-action,.site-nav a,.hh-button) { font-family:var(--hh-font-sans); font-weight:500; }

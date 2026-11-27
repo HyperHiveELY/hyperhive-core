@@ -13,9 +13,9 @@
   --lp-card: #f2f2f2;
   --lp-dark: #141414;
   --lp-guide: #d9d9d9;
-  --lp-serif: Adamina, 'Adamina Placeholder', Georgia, serif;
-  --lp-sans: Geist, 'Geist Placeholder', Arial, sans-serif;
-  --lp-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --lp-serif: 'Geist Variable', Geist, Arial, sans-serif;
+  --lp-sans: 'Geist Variable', Geist, Arial, sans-serif;
+  --lp-mono: 'Geist Variable', Geist, Arial, sans-serif;
   --lp-gutter: 80px;
   background: #fff;
   color: var(--lp-ink);

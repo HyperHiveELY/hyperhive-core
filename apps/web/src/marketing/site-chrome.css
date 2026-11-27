@@ -7,8 +7,8 @@
   --site-notice: #148a6c;
   --site-mint: #97fce3;
   --site-gutter: 80px;
-  --site-sans: Geist, 'Geist Placeholder', Arial, sans-serif;
-  --site-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --site-sans: 'Geist Variable', Geist, Arial, sans-serif;
+  --site-mono: 'Geist Variable', Geist, Arial, sans-serif;
 }
 @media (max-width: 1199px) { :root { --site-gutter: 40px; } }
 @media (max-width: 809px) { :root { --site-gutter: 16px; } }
