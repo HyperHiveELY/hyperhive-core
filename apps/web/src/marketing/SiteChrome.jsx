@@ -40,7 +40,7 @@ export function ActionLink({href, children, variant = 'primary', className = '',
   );
 }
 
-export function SiteHeader({notice = false}) {
+export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const menuId = useId();
   const path = currentPath();
@@ -60,17 +60,7 @@ export function SiteHeader({notice = false}) {
   ));
 
   return (
-    <>
-      {notice && (
-        <div className="site-notice">
-          <span className="site-notice__dot" aria-hidden="true" />
-          <span>Meet HyperHive</span>
-          <span className="site-notice__dot" aria-hidden="true" />
-          <a href="/#features">Explore the crew</a>
-          <span className="site-notice__dot" aria-hidden="true" />
-        </div>
-      )}
-      <header className="site-header">
+    <header className="site-header">
         <div className="site-header__inner">
           <nav className="site-header__nav" aria-label="Main">{links}</nav>
           <Logo />
@@ -94,8 +84,7 @@ export function SiteHeader({notice = false}) {
           <ActionLink href={primaryAction.href} onClick={() => setOpen(false)}>{primaryAction.label}</ActionLink>
           <span className="site-status"><span className="site-status__dot" aria-hidden="true" />Product preview</span>
         </div>
-      </header>
-    </>
+    </header>
   );
 }
 

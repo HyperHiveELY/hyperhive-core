@@ -102,8 +102,8 @@ export async function createServer(db:Database){
   app.post('/api/crews',async(req)=>{
     const who=await owner(req);await requireAccess(db,who);const {policy,signature}=z.strictObject({policy:Policy,signature:Signature}).parse(req.body);
     if(policy.owner!==who||policy.origin!==config.PUBLIC_ORIGIN||!await verifyPolicy(policy,signature))throw Error('Trading policy signature invalid');
-    if(policy.plan==='crew'&&policy.markets.length>10)throw Error('Crew supports up to 10 markets');
-    const count=(await db.query<{n:string}>("SELECT count(*)::text n FROM crews WHERE owner=$1 AND policy->>'plan'='pro'",[who])).rows[0];if(policy.plan==='pro'&&Number(count.n)>=3)throw Error('Crew Pro supports up to three crews per owner');
+    if(policy.plan==='crew'&&policy.markets.length>10)throw Error('A 3-scout crew can trade up to 10 markets');
+    const count=(await db.query<{n:string}>("SELECT count(*)::text n FROM crews WHERE owner=$1 AND policy->>'plan'='pro'",[who])).rows[0];if(policy.plan==='pro'&&Number(count.n)>=3)throw Error('Each wallet can run up to three 5-scout crews');
     const allowed=(await markets()).map(m=>m.name);if(policy.markets.some(m=>!allowed.includes(m)))throw Error('Unsupported market');
     await db.query('INSERT INTO crews(id,owner,account,policy,signature,created_at) VALUES($1,$2,$3,$4,$5,$6)',[policy.crewId,who,policy.account,JSON.stringify(policy),signature,Date.now()]);return {id:policy.crewId};
   });

@@ -114,11 +114,11 @@ export default function Demo(){
  if(past('idea'))feed.push({id:'idea1',node:<IdeaCard approved={past('check')}/>});
  if(past('check'))feed.push({id:'eth',node:<Event tone="no" title="ETH idea turned down" detail="The second AI said it was too risky right now."/>});
  if(past('order'))feed.push({id:'order1',node:<Event tone="buy" title="Bought $625 of BTC at $100,000" detail="Target $104,800 · Safety exit $98,400"/>});
- if(locked)feed.push({id:'lock1',node:<Event tone="lock" title="Safety exit moved to $100,000" detail="This trade can’t lose money now."/>});
+ if(locked)feed.push({id:'lock1',node:<Event tone="lock" title="Safety exit moved to $100,000" detail="A turn back down now costs little or nothing."/>});
  if(reached(MARK.target1))feed.push({id:'win1',node:<Event tone="win" title="Sold at the target" amount="+$30.00"/>});
  if(reached(MARK.target1)&&past('loss'))feed.push({id:'idea2',node:<Event tone="idea" title="New BTC idea approved" detail="Wrong if it falls below $103,800."/>});
  if(reached(MARK.entry2))feed.push({id:'order2',node:<Event tone="buy" title="Bought $1,308 of BTC at $104,600" detail="Target $107,000 · Safety exit $103,800"/>});
- if(reached(MARK.stop2))feed.push({id:'loss2',node:<Event tone="loss" title="Safety exit sold" detail="Lost what it planned to risk." amount="−$10.00"/>});
+ if(reached(MARK.stop2))feed.push({id:'loss2',node:<Event tone="loss" title="Safety exit sold" detail="About what it planned to risk." amount="−$10.00"/>});
  feed.reverse();
 
  const trades=[
@@ -236,7 +236,7 @@ function Event({tone,title,detail,amount}:{tone:'buy'|'lock'|'win'|'loss'|'idea'
 }
 
 function Sizer({visible}:{visible:boolean}){
- const rows:[string,string][]=[['Weekly limit','$50'],['Most this trade can lose','$10'],['So it buys','≈ $625 of BTC']];
+ const rows:[string,string][]=[['Weekly limit','$50'],['Planned risk on this trade','≈ $10'],['So it buys','≈ $625 of BTC']];
  return <div className={'dm-sizer'+(visible?' is-on':'')} aria-hidden={!visible}>
   <ol>{rows.map(([k,v],i)=><li key={k} style={{'--i':i} as React.CSSProperties} className={i===rows.length-1?'is-result':''}><span>{k}</span><b>{v}</b></li>)}</ol>
  </div>;

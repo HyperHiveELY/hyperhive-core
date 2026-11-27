@@ -19,7 +19,8 @@ export function CrewGlyph({variant='forest',large=false}:{variant?:string;large?
  const Glyph=variant==='violet'?CrewLattice:variant==='blue'?CrewPrism:variant==='ochre'?CrewNodes:CrewStack;
  return <span className={'crew-glyph '+variant+(large?' large':'')} aria-hidden="true"><Glyph size={large?36:28}/></span>;
 }
-export function Status({value}:{value:string}){return <span className={'bot-status status-'+value.toLowerCase().replaceAll(' ','-')}><i/>{value.replaceAll('_',' ')}</span>;}
+const statusLabels:Record<string,string>={AWAITING_TRADES:'Waiting for trades',RECONCILING:'Checking fills',LOCAL_SIGNED:'Signed locally',SIGNED:'Signed',INVALID:'Invalid',BROKEN:'Broken'};
+export function Status({value}:{value:string}){return <span className={'bot-status status-'+value.toLowerCase().replaceAll(' ','-')}><i/>{statusLabels[value]??value.replaceAll('_',' ')}</span>;}
 export function PageEmpty({icon='bots',title,children}:{icon?:string;title:string;children?:React.ReactNode}){return <div className="page-empty"><Icon name={icon} size={22}/><h3>{title}</h3>{children&&<div className="empty-description">{children}</div>}</div>;}
 export function Plot({points,compact=false,color='#6fe3b8',label='Account equity history'}:{points:Point[];compact?:boolean;color?:string;label?:string}){
  const [hover,setHover]=useState<number|null>(null),id=useId().replaceAll(':','');

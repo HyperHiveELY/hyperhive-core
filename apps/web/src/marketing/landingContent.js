@@ -24,16 +24,10 @@ export const featureItems = [
   },
 ];
 
-export const architecture = [
-  {title: 'Your Own Crew Account', text: 'A fresh Hyperliquid account. Owner authority stays separate from the trading key.', art: 'owner'},
-  {title: 'A Record You Can Inspect', text: 'Signed slips explain the fills. Unmatched activity stays visible in the record.', art: 'review'},
-  {title: 'A Narrow Execution Key', text: 'The enclave signer permits orders and exits. It refuses transfers and withdrawals.', art: 'key'},
-];
-
 export const roles = [
   {
     label: 'Scouts Propose', icon: 'scouts', kind: 'AI · IDEA FINDERS', title: 'Start with a trade idea.',
-    intro: 'Scouts study trend, crowded positioning and key price levels, then propose ideas for your selected markets. Crew has three Scouts; Crew Pro has five.',
+    intro: 'Scouts study trend, crowded positioning and key price levels, then propose ideas for your selected markets. A crew runs three or five Scouts.',
     rows: [
       ['Look at', 'Price action, funding, open interest and market levels.'],
       ['Write down', 'The market, direction, reasoning, time horizon and price that would prove the idea wrong.'],
@@ -56,7 +50,7 @@ export const roles = [
     intro: 'You set a weekly risk budget. Code uses the remaining allowance, current volatility and stop distance to calculate position size and leverage.',
     rows: [
       ['Risk limit', 'At most 20% of the weekly budget per trade, capped by the remaining allowance.'],
-      ['Stop distance', 'The greater of the card’s invalidation distance and 1.2 × one-hour ATR, a measure of market movement.'],
+      ['Stop distance', 'The card’s invalidation price, widened when the market is moving fast so normal swings don’t stop the trade out.'],
       ['Leverage cap', 'Up to 5× for BTC and ETH, 3× for other markets. Volatility and venue limits can reduce it further.'],
     ],
     next: 'A valid size and exit plan go to the Executor. Failed checks stop the entry.',
@@ -67,7 +61,7 @@ export const roles = [
     rows: [
       ['Execute', 'Place the entry and exchange-side exit brackets in the same batch.'],
       ['Manage', 'Run break-even, trailing, time and funding-cost exits. Stand down pauses new entries; existing exits keep working.'],
-      ['Record', 'Create a signed slip that binds the trade card, sizing inputs, policy and code measurement to the order.'],
+      ['Record', 'Create a signed slip that ties the order to its trade card, sizing inputs, policy and the exact code version.'],
     ],
     next: 'The public fill and signed slip become evidence for the Auditor.',
   },
@@ -75,8 +69,8 @@ export const roles = [
     label: 'Auditor Checks', icon: 'auditor', kind: 'STAKED CHECKER · PUBLIC RECORD', title: 'Match the fill to the evidence.',
     intro: 'The Auditor checks public exchange fills against the Executor’s signed slips. The record shows how the account was traded, without promising a profitable trade.',
     rows: [
-      ['Match', 'Resolve each fill to its signed slip and the code measurement that produced it.'],
-      ['Publish', 'Commit the hourly record on HyperEVM so the evidence can be checked.'],
+      ['Match', 'Link each fill to the signed slip that explains it.'],
+      ['Publish', 'Publish an hourly fingerprint of the record so anyone can check it later.'],
       ['Keep visible', 'Unmatched fills, venue events and unaudited hours. A gap is not hidden or counted as a verified result.'],
     ],
     next: 'You can inspect the record. At launch, the studio runs the Auditor operators.',
@@ -90,56 +84,11 @@ export const principles = [
   '“A record is useful only when the gaps stay visible. Unmatched fills and unaudited hours belong on the page.”',
 ];
 
-export const cases = [
-  {
-    role: 'The Scouts', title: 'A proposal with fixed fields and a defined purpose.',
-    text: 'The Scouts supply a market, direction and invalidation price. They cannot choose position size or leverage, or reach a signing key.',
-    caption: 'Scouts in the base crew propose ideas through three defined lenses.',
-    number: '03', numberLabel: 'Three Scouts', image: 'scout-setup.png',
-  },
-  {
-    role: 'The Skeptic', title: 'A second model is allowed to say no.',
-    text: 'The Skeptic has a fixed fact sheet and a pass-or-kill choice. It cannot rewrite the trade card or choose a different size.',
-    caption: 'A separate Skeptic reviews the same facts and can reject a proposal.',
-    number: '01', numberLabel: 'One Skeptic', image: 'skeptic-review.png',
-  },
-  {
-    role: 'The Executor', title: 'An entry carries an exit plan.',
-    text: 'Deterministic code sizes the position. The sealed Executor places the entry and brackets, then records a signed slip.',
-    caption: 'Exchange-side brackets accompany the entry: take-profit and stop.',
-    number: '02', numberLabel: 'Two exit brackets', image: 'bracket-order.png',
-  },
-  {
-    role: 'The Auditor', title: 'The fill must answer to the record.',
-    text: 'The Auditor matches venue activity against signed evidence. Gaps, venue events and unaudited hours remain visible.',
-    caption: 'Each fill must resolve to a valid signed slip in the public record.',
-    number: '01', numberLabel: 'One signed slip', image: 'fill-reconciliation.png',
-  },
-];
-
 export const controls = [
   {title: 'Weekly Risk Budget', text: 'Lower it immediately. An increase takes effect at the start of the following week.', icon: 'bolt'},
   {title: 'Stand Down', text: 'Pause new entries while the system keeps managing existing stops and exits.', icon: 'pause'},
-  {title: 'Key Expiry', text: 'Agent approval lasts at most 180 days. The planned reminder arrives at day 170.', icon: 'clock'},
+  {title: 'Key Expiry', text: 'Trading access lasts up to 180 days. New entries stop when it ends; stops and take-profits stay in place.', icon: 'clock'},
   {title: 'Public Record', text: 'Inspect fills, signed slips and gaps. Records are sorted by age, never by returns.', icon: 'edit'},
-];
-
-export const metrics = [
-  {
-    title: 'AI Signing Keys',
-    text: 'No language model holds or reaches the trading key. Sizing, entry signing and exit management are handled by deterministic code behind a defined execution boundary.',
-    value: '0', note: 'The agents propose. Code signs and manages the order.',
-  },
-  {
-    title: 'Market Herd Cap',
-    text: 'The specification limits aggregate HyperHive notional in a market to 1% of its open interest. Entries are reduced or rejected when this cap is reached.',
-    value: '1%', note: 'A shared exposure limit across the active crews.',
-  },
-  {
-    title: 'Approval Term',
-    text: 'A named agent approval lasts at most 180 days. New entries stop on expiry. Existing exchange-side take-profit and stop orders remain at the venue.',
-    value: '180 Days', note: 'A defined expiry. A renewal reminder at day 170.',
-  },
 ];
 
 export const tokenPacks = [
@@ -147,7 +96,7 @@ export const tokenPacks = [
   {tokens: '25,000 Tokens', price: '25'},
 ];
 
-export const included = ['HyperHive AI included', 'Shared across your crews', 'Deterministic sizing and exits', 'Signed slips and public record'];
+export const included = ['Pay only for the AI your crews use', 'Shared across your crews', 'Deterministic sizing and exits', 'Signed slips and public record'];
 
 // Simple role marks shown in the "Five roles" tickers.
 export const roleMarks = [

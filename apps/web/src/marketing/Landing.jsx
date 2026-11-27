@@ -3,7 +3,7 @@ import {SiteHeader, SiteFooter, ActionLink, primaryAction} from './SiteChrome';
 import {useFlags} from '../flags';
 import {Icon} from './LandingIcons';
 import {artwork} from './landingArt';
-import {media, featureItems, architecture, roles, principles, cases, controls, metrics, tokenPacks, included, roleMarks} from './landingContent';
+import {media, featureItems, roles, principles, controls, tokenPacks, included, roleMarks} from './landingContent';
 import './landing.css';
 
 const reducedMotion = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -160,54 +160,6 @@ function Principle() {
   );
 }
 
-function Architecture() {
-  return (
-    <section id="technology" className="lp-section lp-section--soft lp-guides" aria-labelledby="lp-architecture-title">
-      <div className="lp-container lp-architecture">
-        <div className="lp-split-head" data-reveal>
-          <div>
-            <Kicker>The Architecture</Kicker>
-            <h2 id="lp-architecture-title" className="lp-h2">Intelligence, With <span className="lp-line lp-mint">A Clear Boundary.</span></h2>
-          </div>
-          <p className="lp-lead">Ideas, authority and evidence have separate jobs. Each stays within a defined boundary.</p>
-        </div>
-        <div className="lp-cards3">
-          {architecture.map(card => (
-            <article key={card.title} className="lp-arch-card" data-reveal>
-              <Art type={card.art} uid={`lp-arch-${card.art}`} className="lp-arch-card__art" />
-              <h3>{card.title}</h3>
-              <p>{card.text}</p>
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function InsideCrew() {
-  return (
-    <section className="lp-inside" aria-labelledby="lp-inside-title">
-      <div className="lp-inside__media" aria-hidden="true">
-        <img className="lp-inside__bg" src={img('crew-halftone.png')} alt="" />
-        <img className="lp-inside__slip" src="/art/slip-confirmation.svg" alt="" />
-        <img className="lp-inside__meeting lp-sketch" src={sketch('scout-setup.png')} alt="" />
-        <img className="lp-inside__card" src="/art/proposal-card.svg" alt="" />
-        <img className="lp-inside__laptop lp-sketch" src={sketch('bracket-order.png')} alt="" />
-      </div>
-      <div className="lp-inside__copy" data-reveal>
-        <Kicker tone="white">Inside The Crew</Kicker>
-        <h2 id="lp-inside-title" className="lp-h2">Follow An Idea Through The Hive.</h2>
-        <p>Inspect the roles, the boundaries and the record. See what each stage is allowed to do.</p>
-        <a className="lp-inside__link" href="/#how-it-works">
-          <span>See the five roles</span>
-          <span className="lp-inside__arrow" aria-hidden="true"><Icon name="arrowRight" size={16} strokeWidth={2} /></span>
-        </a>
-      </div>
-    </section>
-  );
-}
-
 function HowItWorks() {
   const [active, setActive] = useState(0);
   const tabs = useRef([]);
@@ -307,55 +259,6 @@ function Quotes() {
   );
 }
 
-function CaseStudy() {
-  const track = useRef(null);
-  const [edges, setEdges] = useState({start: true, end: false});
-  const update = () => {
-    const el = track.current;
-    if (!el) return;
-    setEdges({start: el.scrollLeft < 8, end: el.scrollLeft + el.clientWidth >= el.scrollWidth - 8});
-  };
-  useEffect(() => { update(); window.addEventListener('resize', update); return () => window.removeEventListener('resize', update); }, []);
-  const move = direction => {
-    const el = track.current;
-    const card = el?.querySelector('article');
-    if (!el || !card) return;
-    el.scrollBy({left: direction * (card.getBoundingClientRect().width + 10), behavior: reducedMotion() ? 'auto' : 'smooth'});
-  };
-  return (
-    <section id="case-study" className="lp-cases" aria-labelledby="lp-cases-title">
-      <div className="lp-container lp-cases__head" data-reveal>
-        <div>
-          <Kicker tone="white">A Process Case Study</Kicker>
-          <h2 id="lp-cases-title" className="lp-h1like">Trace The Decision, Step By Step.</h2>
-        </div>
-        <div className="lp-cases__controls">
-          <a className="lp-cases__link" href="/case-study">Read the case study</a>
-          <button type="button" onClick={() => move(-1)} disabled={edges.start}><Icon name="arrowLeft" size={18} strokeWidth={2} /><span className="lp-sr">Previous role</span></button>
-          <button type="button" onClick={() => move(1)} disabled={edges.end}><Icon name="arrowRight" size={18} strokeWidth={2} /><span className="lp-sr">Next role</span></button>
-        </div>
-      </div>
-      <div className="lp-cases__track" ref={track} onScroll={update} tabIndex={0} aria-label="Crew roles, scrollable">
-        {cases.map(item => (
-          <article key={item.role} className="lp-case">
-            <div className="lp-case__media">
-              <img className="lp-sketch" src={sketch(item.image)} alt="" loading="lazy" />
-              <p className="lp-case__caption">{item.caption}</p>
-              <p className="lp-case__number"><span aria-hidden="true">{item.number}</span><span className="lp-sr">{item.numberLabel}</span></p>
-            </div>
-            <div className="lp-case__body">
-              <Kicker tone="dark" as="p">{item.role}</Kicker>
-              <h3>{item.title}</h3>
-              <p>{item.text}</p>
-              <span className="lp-case__icon" aria-hidden="true"><Icon name="cube" size={56} strokeWidth={1.8} /></span>
-            </div>
-          </article>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 function AutoVideo({src, className}) {
   const ref = useRef(null);
   useEffect(() => {
@@ -383,7 +286,7 @@ function Workflow() {
           <div className="lp-workflow__copy" data-reveal>
             <Kicker>A Separate Account</Kicker>
             <h2 className="lp-h3like">Your account. A narrowly scoped key.</h2>
-            <p>Use a fresh Hyperliquid account for your crew. The design keeps the owner key in your browser and the trading key inside the enclave. The signer refuses transfers and withdrawals. Launch testing must establish what a stolen agent key could still do at the venue.</p>
+            <p>Use a fresh Hyperliquid account for your crew. The design keeps the owner key in your browser and the trading key inside the enclave. The signer refuses transfers and withdrawals.</p>
             <ActionLink href="/risks" variant="light">Risks &amp; limits</ActionLink>
           </div>
         </div>
@@ -447,31 +350,6 @@ function Controls() {
   );
 }
 
-function Metrics() {
-  return (
-    <section id="policy" className="lp-metrics" aria-labelledby="lp-metrics-title">
-      <div className="lp-container lp-pad">
-        <div data-reveal>
-          <Kicker tone="white">Policy, In Numbers</Kicker>
-          <h2 id="lp-metrics-title" className="lp-h2">Weekly Budget. Fixed Risk Rules.</h2>
-        </div>
-      </div>
-      <ul className="lp-container lp-metrics__grid">
-        {metrics.map(item => (
-          <li key={item.title} className="lp-metrics__cell">
-            <Corners />
-            <article className="lp-metric" data-reveal>
-              <h3>{item.title}</h3>
-              <p>{item.text}</p>
-              <div className="lp-metric__value"><strong>{item.value}</strong><span>{item.note}</span></div>
-            </article>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
 function Pricing() {
   const [pack, setPack] = useState(0);
   const current = tokenPacks[pack];
@@ -483,7 +361,7 @@ function Pricing() {
           <Kicker tone="white">Pricing</Kicker>
           <h2 id="lp-pricing-title" className="lp-h2">AI that fits your pace.</h2>
           <div className="lp-pricing__note">
-            <p>“1 USDC buys 1,000 Tokens. Current model rates and service markup are shown in the dashboard. No monthly plan. Trading fees apply separately.”</p>
+            <p>“1 USDC buys 1,000 Tokens for AI scans and reviews. No monthly plan. Each filled order also pays a 0.03% HyperHive fee (0.02% for eligible $HHIV holders), plus Hyperliquid’s own fees.”</p>
             <p className="lp-pricing__by"><img src="/art/hyperhive-logo.svg" alt="" width="24" height="24" /><strong>Tokens &amp; Fees</strong><span aria-hidden="true" />Pay As You Go</p>
           </div>
         </div>
@@ -519,7 +397,7 @@ function FinalCta() {
           <div className="lp-cta__body" data-reveal>
             <Kicker>Get Started</Kicker>
             <h2 id="lp-cta-title" className="lp-h1like">Meet Your Crew. <span className="lp-line lp-gradient-text">Inspect Its Record.</span></h2>
-            <p>Explore the product preview. Live trading awaits launch validation.</p>
+            <p>Practise with paper trading first, or fund a crew and sign Start to trade live on Hyperliquid.</p>
             <div className="lp-actions">
               <ActionLink href="/docs" variant="light">Read the docs</ActionLink>
               <ActionLink href={primaryAction.href}>{primaryAction.label}</ActionLink>
@@ -573,21 +451,17 @@ export default function Landing() {
           </feComponentTransfer>
         </filter>
       </svg>
-      <SiteHeader notice />
+      <SiteHeader />
       <main id="main">
         <Hero />
         <RolesStrip />
         <Features />
         <Principle />
-        <Architecture />
-        <InsideCrew />
         <HowItWorks />
         <Quotes />
-        <CaseStudy />
         <Workflow />
         <Ownership />
         <Controls />
-        <Metrics />
         <Pricing />
         <FinalCta />
       </main>

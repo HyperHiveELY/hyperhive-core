@@ -37,7 +37,7 @@ export function FirstCrewJourney({owner,signerOnline,onWallet,onCreate,onSetup,t
   action:'Connect wallet',run:onWallet,icon:<Wallet size={27}/>,
  };
  return <div className="first-crew">
-  <div className="first-crew-hero"><div><h1>Welcome to HyperHive.</h1><p>Set up a crew that trades Hyperliquid perps for you. AI suggests trades, plain code sizes them, and every order leaves a signed record you can check. Nothing trades until you sign.</p></div><span className="badge">Hyperliquid mainnet</span></div>
+  <div className="first-crew-hero"><div><h1>Welcome to HyperHive.</h1><p>Set up a crew that trades Hyperliquid perps for you. AI suggests trades, plain code sizes them, and every order leaves a signed record you can check.</p></div><span className="badge">Hyperliquid mainnet</span></div>
   {tour&&<a className="tour-invite" href="/demo"><span className="tour-invite-play" aria-hidden="true"><ArrowRight size={18}/></span><span><b>New here? Watch a crew make two trades, start to finish.</b><small>A 1-minute guided demo with sample money. No wallet needed.</small></span><span className="tour-invite-cta">Start the demo<ArrowRight size={15}/></span></a>}
   <section className="journey-card first-crew-card" aria-label="Set up your first crew">
   <aside className="journey-outline"><span className="guided-eyebrow">Your first crew</span>{steps.map((s,i)=><div className={s.done?'complete':i===(owner?1:0)?'current':''} key={s.title} aria-current={i===(owner?1:0)?'step':undefined}><span className="journey-number">{s.done?<Check size={15}/>:i+1}</span><span><b>{s.title}</b><small>{s.note}</small></span></div>)}<div className="journey-outline-foot"><ShieldCheck size={15}/><span>Trading starts only with your signature.</span></div></aside>
@@ -51,7 +51,7 @@ export function CrewSetupJourney({api,cfg,unlocked=true,onFund,detail,busy,onMod
  if(checks.some(c=>c.id==='paper'))return <section className="journey-card crew-activation" aria-label="Practice trading"><div className="activation-next"><div><h2>Your crew is set up for practice trading.</h2><p>It trades 100 virtual USDC against live market data with real AI scouts, so you can see how it behaves before risking money. Mainnet trading stays blocked for this crew.</p></div><button className="primary" onClick={()=>onNavigate('trading')}>Open practice trading<ArrowRight size={15}/></button></div></section>;
  const done=(id:string)=>checks.find(c=>c.id===id)?.ok===true;
  const ready=detail.readiness?.ready===true&&next==='start';
- const tasks=[{key:'fund',label:'Trading balance',done:done('funded')&&done('cap')},{key:'tokens',label:detail.readiness?.aiTestingExempt?'AI testing':'AI Tokens',done:done('tokens')},{key:'approve',label:'Trading access',done:done('agent')},{key:'start',label:'Start trading',done:!detail.crew.paused&&ready}];
+ const tasks=[{key:'fund',label:'Trading balance',done:done('funded')&&done('cap')},{key:'tokens',label:detail.readiness?.aiTestingExempt?'AI usage':'AI Tokens',done:done('tokens')},{key:'approve',label:'Trading access',done:done('agent')},{key:'start',label:'Start trading',done:!detail.crew.paused&&ready}];
  const copy:Record<string,[string,string,string,()=>void]>={
   access:['Review your access','Accept the current terms and confirm your country before continuing.','Review access',()=>onNavigate('access')],
   fund:['Add your trading balance','Send at least 10 USDC to this crew’s Hyperliquid account. Only fund what you are willing to have traded.','Fund trading account',()=>onModal('fund')],
