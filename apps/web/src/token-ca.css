@@ -1,0 +1,12 @@
+.token-ca{display:inline-flex;align-items:center;gap:10px;min-height:36px;padding:6px 6px 6px 12px;border:1px solid;border-radius:8px;font:500 12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.01em;cursor:pointer;transition:border-color .15s,background-color .15s;white-space:nowrap}
+.token-ca__label{opacity:.7}
+.token-ca__address{font:inherit}
+.token-ca__action{padding:6px 9px;border-radius:5px;font-weight:600;min-width:52px;text-align:center}
+.token-ca--light{color:#13271e;background:#fff;border-color:#cad8ce}
+.token-ca--light:hover{border-color:#16765b}
+.token-ca--light .token-ca__action{background:#07523f;color:#fff}
+.token-ca--dark{color:#e7ecea;background:transparent;border-color:#2f3438}
+.token-ca--dark:hover{border-color:#6fe3b8}
+.token-ca--dark .token-ca__action{background:#8ff2d2;color:#04261d}
+.token-ca:focus-visible{outline:2px solid #6fe3b8;outline-offset:3px}
+@media (max-width:720px){.token-ca--dark .token-ca__label{display:none}}

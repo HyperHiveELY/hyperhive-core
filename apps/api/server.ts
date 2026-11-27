@@ -62,7 +62,7 @@ export async function createServer(db:Database){
   /** Report API process liveness for the container health check. */
   app.get('/api/health',async()=>({ok:true,network:'mainnet',chainId:CONTRACT_CHAIN_ID}));
   /** Return public network and application settings without private operator credentials. */
-  app.get('/api/flags',async(_req,reply)=>{reply.header('cache-control','public, max-age=30');return {walkthrough:config.WALKTHROUGH_ENABLED==='true'};});
+  app.get('/api/flags',async(_req,reply)=>{reply.header('cache-control','public, max-age=30');return {walkthrough:config.WALKTHROUGH_ENABLED==='true',tokenCa:config.TOKEN_CA};});
   app.get('/api/config',async()=>({network:'mainnet',chainId:CONTRACT_CHAIN_ID,contractNetwork:'Elysium',tradingNetwork:'HyperCore',signerMode:isLocal?'local':'phala',subscriptionRequired:false,origin:config.PUBLIC_ORIGIN,builder:config.BUILDER_ADDRESS??null,billing:(await integrationSettings()).billing??null,roots:(await integrationSettings()).roots??null,integrations:await integrationSettings(),aiConfigured:Boolean(await ppqKey()),localSetup:config.NODE_ENV!=='production',localProjectFolder:config.NODE_ENV!=='production'?resolve('.'):null,liveEnabled:config.LIVE_TRADING_ENABLED==='true',walkthrough:config.WALKTHROUGH_ENABLED==='true',postgres:Boolean(config.DATABASE_URL),measurement:config.MEASUREMENT_HASH??null,models:await modelSettings(),services:(await db.query('SELECT * FROM heartbeats')).rows}));
   /** Validate and store the inference credential from local setup. */
   app.post('/api/setup/ai',async(req)=>{local(req);const {key}=z.strictObject({key:z.string().min(10).max(512)}).parse(req.body);await savePpq(key);return {saved:true};});

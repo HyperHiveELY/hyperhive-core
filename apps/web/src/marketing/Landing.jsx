@@ -1,6 +1,7 @@
 import React, {useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react';
 import {SiteHeader, SiteFooter, ActionLink, primaryAction} from './SiteChrome';
 import {useFlags} from '../flags';
+import {TokenCa} from '../TokenCa';
 import {Icon} from './LandingIcons';
 import {artwork} from './landingArt';
 import {media, featureItems, roles, principles, controls, tokenPacks, included, roleMarks} from './landingContent';
@@ -71,6 +72,7 @@ function Hero() {
               ? <ActionLink href="/demo" variant="light">Watch the 1-minute demo</ActionLink>
               : <ActionLink href="/#how-it-works" variant="light">See how it works</ActionLink>}
           </div>
+          <TokenCa className="lp-hero__ca" />
         </div>
       </div>
       <div className="lp-glow" aria-hidden="true" />
