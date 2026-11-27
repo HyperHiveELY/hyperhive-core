@@ -53,7 +53,7 @@ export function CrewSetupJourney({api,cfg,unlocked=true,onFund,detail,busy,onMod
  const ready=detail.readiness?.ready===true&&next==='start';
  const tasks=[{key:'fund',label:'Trading balance',done:done('funded')&&done('cap')},{key:'tokens',label:detail.readiness?.aiTestingExempt?'AI usage':'AI Tokens',done:done('tokens')},{key:'approve',label:'Trading access',done:done('agent')},{key:'start',label:'Start trading',done:!detail.crew.paused&&ready}];
  const copy:Record<string,[string,string,string,()=>void]>={
-  access:['Review your access','Accept the current terms and confirm your country before continuing.','Review access',()=>onNavigate('access')],
+  access:['Review your access','Read and accept the trading acknowledgment before continuing.','Review access',()=>onNavigate('access')],
   fund:['Add your trading balance','Send at least 10 USDC to this crew’s Hyperliquid account. Only fund what you are willing to have traded.','Fund trading account',()=>onModal('fund')],
   limits:['Your balance exceeds the account limit','Withdraw the excess or review a new signed policy in Account & access.','Review account',()=>onModal('account')],
   margin:['Free up trading margin','Review your positions and open orders before starting new trades.','Review account',()=>onModal('account')],

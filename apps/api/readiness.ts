@@ -26,7 +26,7 @@ export async function executionReadiness(db:Database,crew:Crew,state:Awaited<Ret
  const healthy=(role:string)=>services.rows.some(s=>s.role===role&&serviceHealthy(s));
  const accountValue=Number(state.marginSummary.accountValue),models=await modelSettings();
  const checks=[
-  {id:'access',label:'Current terms and country eligibility',ok:(await accessStatus(db,crew.owner)).eligible},
+  {id:'access',label:'Trading eligibility acknowledged',ok:(await accessStatus(db,crew.owner)).eligible},
   {id:'policy',label:'Signed policy is valid',ok:await verifyPolicy(crew.policy,crew.signature)},
   {id:'ai',label:'HyperHive AI models are available',ok:Boolean(await ppqKey())&&Boolean(models.scout&&models.skeptic&&models.scout.split('/')[0]!==models.skeptic.split('/')[0])},
   {id:'worker',label:'AI worker is running',ok:healthy('worker')},

@@ -60,8 +60,21 @@ export function registerIntegrations(app:FastifyInstance,db:Database,owner:(req:
  app.get('/api/access',async req=>accessStatus(db,await owner(req)));
  /** Return the deployment's published terms and version. */
  app.get('/api/terms',async()=>{const s=await integrationSettings();return {version:s.termsVersion,text:s.termsText,url:s.termsUrl,published:s.eligibilityEnabled};});
- /** Record acceptance of the current terms for a permitted country. */
- app.post('/api/access/accept',async req=>{const who=await owner(req),b=z.strictObject({country:z.string().refine(s=>countryCodes.includes(s),'Choose a valid country'),version:z.string(),accepted:z.literal(true)}).parse(req.body),s=await integrationSettings();if(!s.eligibilityEnabled||b.version!==s.termsVersion)throw Error('Refresh the current published terms');if(s.blockedCountries.includes(b.country))throw Error('This deployment is unavailable in the selected country');await db.query('INSERT INTO access_acceptances VALUES($1,$2,$3,$4) ON CONFLICT(owner) DO UPDATE SET version=excluded.version,country=excluded.country,accepted_at=excluded.accepted_at',[who,b.version,b.country,Date.now()]);return accessStatus(db,who);});
+ /** Record the exact published statement accepted by this signed-in wallet. */
+ app.post('/api/access/accept',async req=>{
+  const who=await owner(req),s=await integrationSettings();
+  const b=z.strictObject({country:z.string().refine(c=>countryCodes.includes(c),'Choose a valid country').optional(),version:z.string(),accepted:z.literal(true)}).parse(req.body);
+  if(!s.eligibilityEnabled || !s.termsVersion || b.version!==s.termsVersion || !(s.termsText.trim()||s.termsUrl))throw Error('Refresh the current published terms');
+  if(s.blockedCountries.length && (!b.country||s.blockedCountries.includes(b.country)))throw Error('This deployment requires an eligible country');
+  const now=Date.now();
+  await db.transaction(async tx=>{
+   await tx.query('INSERT INTO access_terms_history(owner,version,terms_text,terms_url,accepted_at) VALUES($1,$2,$3,$4,$5) ON CONFLICT(owner,version) DO NOTHING',[who,b.version,s.termsText,s.termsUrl??null,now]);
+   const {rows:[record]}=await tx.query<{terms_text:string;terms_url:string|null}>('SELECT terms_text,terms_url FROM access_terms_history WHERE owner=$1 AND version=$2',[who,b.version]);
+   if(record.terms_text!==s.termsText||record.terms_url!==(s.termsUrl??null))throw Error('The operator must publish these changes under a new terms version');
+   await tx.query('INSERT INTO access_acceptances(owner,version,country,accepted_at) VALUES($1,$2,$3,$4) ON CONFLICT(owner) DO UPDATE SET version=excluded.version,country=excluded.country,accepted_at=excluded.accepted_at',[who,b.version,b.country??'',now]);
+  });
+  return accessStatus(db,who);
+ });
  /** Compute an independent completed-hour result for the signed-in operator. */
  app.post('/api/network/audit',async req=>{await owner(req);const {hour}=z.strictObject({hour:z.number().int().positive().max(Math.floor(Date.now()/3600000)-1)}).parse(req.body),s=await integrationSettings();if(!s.measurement||!s.roots)throw Error('Configure the independently verified Phala measurement and root contract before computing a network vote');return auditHour(s.hostedOrigin??config.PUBLIC_ORIGIN,hour,s.measurement as Hex,s.roots as Hex,config.ELYSIUM_RPC);});
  /** Read public network state and an optional operator's obligations. */

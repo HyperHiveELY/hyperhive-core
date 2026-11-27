@@ -17,7 +17,7 @@ const navLinks = [
 const footerColumns = [
   ['Explore', [['1-minute demo', '/demo'], ['How it works', '/#how-it-works'], ['Technology', '/#features'], ['Process case study', '/case-study'], ['Pricing', '/#pricing']]],
   ['HyperHive', [['Docs', '/docs'], ['Roadmap', '/roadmap'], ['FAQ', '/faq'], ['Workspace', '/dashboard']]],
-  ['Resources', [['Risks & limits', '/risks'], ['Preview terms', '/terms'], ['Privacy', '/privacy']]],
+  ['Resources', [['Risks & limits', '/risks'], ['Trading terms', '/terms'], ['Privacy', '/privacy']]],
 ];
 
 const currentPath = () => (typeof location === 'undefined' ? '/' : location.pathname.replace(/\/+$/, '') || '/');

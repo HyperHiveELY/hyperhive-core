@@ -132,7 +132,7 @@ export default function App(){
  {view==='network'&&<NetworkPage cfg={cfg} api={api} onNavigate={setView} onRecord={id=>{setRecordId(id);setView('records');}}/>}
  {view==='hosted'&&<HostingPage api={api} cfg={cfg} onNavigate={setView}/>}
  {view==='deployment'&&<DeploymentPage api={api} owner={owner} cfg={cfg} onNavigate={setView}/>}
- {view==='access'&&<AccessPage api={api} cfg={cfg} owner={owner} onNavigate={setView}/>}
+ {view==='access'&&<AccessPage key={owner} api={api} cfg={cfg} owner={owner} onNavigate={setView}/>}
  {view==='auditor'&&<AuditorPage api={api} owner={owner} onNavigate={setView}/>}
  <footer><span>HyperHive</span><div><a href="/risks">Risk & limits</a><a href="/privacy">Privacy</a><a href="/docs">Documentation</a></div></footer></section>
  {modal&&<div className="modal-backdrop" onClick={closeDialog}><section className={'modal '+(['create','renew'].includes(modal)?'crew-form':'')} data-kind={modal} role="dialog" aria-modal="true" aria-labelledby="dialog-title" onClick={e=>e.stopPropagation()}><button disabled={busy} className="modal-close" aria-label="Close dialog" onClick={closeDialog}><UiClose size={18}/></button>

@@ -74,6 +74,7 @@ CREATE TABLE IF NOT EXISTS telegram_pairings(digest text PRIMARY KEY,owner text 
 CREATE TABLE IF NOT EXISTS integration_cursors(name text PRIMARY KEY,value text NOT NULL);
 CREATE TABLE IF NOT EXISTS notification_outbox(id text PRIMARY KEY,owner text NOT NULL,category text NOT NULL,message text NOT NULL,status text NOT NULL DEFAULT 'PENDING',attempts integer NOT NULL DEFAULT 0,next_at double precision NOT NULL DEFAULT 0,last_error text,sent_at double precision,created_at double precision NOT NULL);
 CREATE TABLE IF NOT EXISTS access_acceptances(owner text PRIMARY KEY,version text NOT NULL,country text NOT NULL,accepted_at double precision NOT NULL);
+CREATE TABLE IF NOT EXISTS access_terms_history(owner text NOT NULL,version text NOT NULL,terms_text text NOT NULL,terms_url text,accepted_at double precision NOT NULL,PRIMARY KEY(owner,version));
 CREATE TABLE IF NOT EXISTS benefit_assignments(owner text PRIMARY KEY,crew_id text UNIQUE NOT NULL REFERENCES crews(id),updated_at double precision NOT NULL);
 CREATE TABLE IF NOT EXISTS paid_entitlements(key text PRIMARY KEY,owner text NOT NULL,plan text NOT NULL,expires_at double precision NOT NULL);
 CREATE TABLE IF NOT EXISTS verification_payments(payment_hash text PRIMARY KEY,crew_id text NOT NULL,payment_payload jsonb NOT NULL,status text NOT NULL DEFAULT 'OPEN',tx text UNIQUE,created_at double precision NOT NULL);
