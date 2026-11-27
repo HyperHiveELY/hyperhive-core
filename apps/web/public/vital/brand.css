@@ -22,3 +22,38 @@ img[data-hh-duotone],video[data-hh-duotone]{filter:url(#hyperhive-duotone)}
 @keyframes hh-selection{from{opacity:0;transform:scaleY(.6)}to{opacity:1;transform:scaleY(1)}}
 @keyframes hh-profile-ring{from{stroke-dasharray:0 616}to{stroke-dasharray:470 146}}
 @media(prefers-reduced-motion:reduce){.hh-template-illustration *{animation:none!important}}
+
+/* Printed artwork sits directly on the section surface. */
+[data-framer-name="Hero Section"] [data-framer-name^="Hero"][data-border]::after,
+[data-framer-name="Hero Section"] [data-framer-name^="Hero"] > [data-framer-name="Frame"] {
+  display: none !important;
+}
+[data-framer-name="Hero Section"] img[src^="/art/sketches/"],
+video[src^="/art/sketches/"] {
+  object-fit: contain !important;
+  filter: none;
+}
+#case-study [data-framer-name="Image"]:has(img[src^="/art/sketches/"]) {
+  background: transparent;
+}
+#case-study [data-framer-name="Image"]:has(img[src^="/art/sketches/"]) > [data-framer-name="Filter"] {
+  display: none;
+}
+#case-study [data-framer-name="Image"]:has(img[src^="/art/sketches/"]) > [data-framer-background-image-wrapper] {
+  bottom: 34% !important;
+}
+#case-study [data-framer-name="Image"] img[src^="/art/sketches/"] {
+  object-fit: contain !important;
+}
+#case-study [data-framer-name="Stat"] :is(p, span) {
+  color: #095c48 !important;
+}
+/* Keep the cutout charts inside the hero grid as it narrows. */
+[data-framer-name="Hero Section"] [data-framer-name="Hero1"] { left: 2%; }
+[data-framer-name="Hero Section"] [data-framer-name="Hero5"] { bottom: 0; }
+@media (max-width: 809px) {
+  [data-framer-name="Hero Section"] [data-framer-name="Hero1"] { left: 3%; top: 8%; }
+  [data-framer-name="Hero Section"] [data-framer-name="Hero3"] { right: 3%; top: 5%; }
+  [data-framer-name="Hero Section"] :is([data-framer-name="Hero4"], [data-framer-name="Hero6"]) { display: none; }
+  [data-framer-name="Hero Section"] [data-framer-name="Hero5"] { bottom: 1%; }
+}
