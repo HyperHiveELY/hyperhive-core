@@ -2,6 +2,7 @@ import React, {useEffect, useId, useState} from 'react';
 import {Icon} from './LandingIcons';
 import '../dashboard/brand-fonts.css';
 import {useFlags} from '../flags';
+import {TokenCa} from '../TokenCa';
 import './site-chrome.css';
 
 export const primaryAction = {label: 'Get started', href: '/dashboard'};
@@ -49,7 +50,7 @@ export function SiteHeader() {
   useEffect(() => {
     if (!open) return undefined;
     const onKey = event => { if (event.key === 'Escape') setOpen(false); };
-    const onResize = () => { if (window.innerWidth > 1099) setOpen(false); };
+    const onResize = () => { if (window.innerWidth > 1279) setOpen(false); };
     window.addEventListener('keydown', onKey);
     window.addEventListener('resize', onResize);
     return () => { window.removeEventListener('keydown', onKey); window.removeEventListener('resize', onResize); };
@@ -65,12 +66,16 @@ export function SiteHeader() {
   return (
     <header className="site-header">
         <div className="site-header__inner">
-          <nav className="site-header__nav" aria-label="Main">{links.slice(0, half)}</nav>
+          <div className="site-header__start">
+            <TokenCa className="site-header__ca" label="$HHIV CA" />
+            <nav className="site-header__nav" aria-label="Main">{links.slice(0, half)}</nav>
+          </div>
           <Logo />
           <div className="site-header__end">
             <nav className="site-header__nav" aria-label="More">{links.slice(half)}</nav>
             <ActionLink href={primaryAction.href} className="site-btn--small">{primaryAction.label}</ActionLink>
           </div>
+          <TokenCa className="site-header__mobile-ca" label="CA" />
           <button
             type="button"
             className="site-header__toggle"

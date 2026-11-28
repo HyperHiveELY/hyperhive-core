@@ -10,3 +10,11 @@
 .token-ca--dark .token-ca__action{background:#8ff2d2;color:#04261d}
 .token-ca:focus-visible{outline:2px solid #6fe3b8;outline-offset:3px}
 @media (max-width:720px){.token-ca--dark .token-ca__label{display:none}}
+.token-ca.token-ca--empty{cursor:default}
+.token-ca--empty .token-ca__address{opacity:.8}
+.token-ca--empty .token-ca__action{opacity:.45}
+.token-ca--light.token-ca--empty:hover{border-color:#cad8ce}
+.token-ca--dark.token-ca--empty:hover{border-color:#2f3438}
+.token-ca__short{display:none;opacity:.7}
+/* Narrow workspace header: just "CA" and the button. */
+@media (max-width:560px){.token-ca--dark{gap:6px;padding:4px 4px 4px 9px;min-height:34px}.token-ca--dark .token-ca__address{display:none}.token-ca--dark .token-ca__short{display:inline}.token-ca--dark .token-ca__action{min-width:0;padding:5px 8px}}
