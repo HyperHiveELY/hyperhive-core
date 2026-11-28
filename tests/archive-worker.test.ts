@@ -7,6 +7,8 @@ import {crew,wallet} from './fixtures.js';
 const h=vi.hoisted(()=>({fills:vi.fn(),order:vi.fn()}));
 vi.mock('../packages/core/venue.js',()=>({allFills:h.fills,info:{orderStatus:h.order}}));
 it('reconciles signed fills and venue events, matures unmatched fills and archives completed hours once',async()=>{
+ // Pin the clock to mid-hour: hours close a few minutes after they end, so the result must not depend on when CI runs.
+ vi.useFakeTimers({toFake:['Date']});vi.setSystemTime(Math.floor(Date.now()/3600000)*3600000+30*60000);
  const c=await crew(),db=await new Database('memory').init();const now=Date.now(),at=(Math.floor(now/3600000)-2)*3600000+1;
  try{
   await db.query('INSERT INTO crews(id,owner,account,policy,signature,created_at) VALUES($1,$2,$3,$4,$5,$6)',[c.id,c.owner,c.account,JSON.stringify(c.policy),c.signature,at]);
@@ -21,7 +23,7 @@ it('reconciles signed fills and venue events, matures unmatched fills and archiv
   expect(await verifyRecord(db,c.id)).toMatchObject({status:'BROKEN',matched:1,unmatched:1,pending:1,venue:1});
   await archiveHour(db);await archiveHour(db);
   const {rows}=await db.query<any>('SELECT count,root FROM roots ORDER BY hour');expect(rows).toEqual([{count:1,root:slip.digest},{count:0,root:ZERO}]);
- }finally{await db.close();}
+ }finally{vi.useRealTimers();await db.close();}
 });
 it('waits a few minutes past the hour before closing it, so a late-arriving slip is still included',async()=>{
  const db=await new Database('memory').init();
