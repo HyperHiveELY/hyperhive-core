@@ -1,3 +1,4 @@
+import {uiText} from "./i18n/language.js";
 import React,{useEffect,useState} from 'react';
 import {useFlags} from './flags.js';
 import './token-ca.css';
@@ -8,10 +9,10 @@ export function TokenCa({tone='light',className='',hideEmpty=false,label='$HIVE 
  useEffect(()=>{if(!copied)return;const t=setTimeout(()=>setCopied(false),1600);return()=>clearTimeout(t);},[copied]);
  if(!tokenCa){
   if(hideEmpty)return null;
-  return <button type="button" disabled className={`token-ca token-ca--${tone} token-ca--empty ${className}`} aria-label="$HIVE contract address, not published yet">
-   <span className="token-ca__label">{label}</span><span className="token-ca__short" aria-hidden="true">CA</span>
-   <code className="token-ca__address">Coming soon</code>
-   <span className="token-ca__action">Copy</span>
+  return <button type="button" disabled className={`token-ca token-ca--${tone} token-ca--empty ${className}`} aria-label={uiText("$HIVE contract address, not published yet")}>
+   <span className="token-ca__label">{uiText(label)}</span><span className="token-ca__short" aria-hidden="true">{uiText("CA")}</span>
+   <code className="token-ca__address">{uiText("Coming soon")}</code>
+   <span className="token-ca__action">{uiText("Copy")}</span>
   </button>;
  }
  const fallback=()=>{const t=document.createElement('textarea');t.value=tokenCa;t.setAttribute('readonly','');t.style.position='fixed';t.style.opacity='0';document.body.append(t);t.select();try{document.execCommand('copy');}finally{t.remove();}};
@@ -20,9 +21,9 @@ export function TokenCa({tone='light',className='',hideEmpty=false,label='$HIVE 
   if(navigator.clipboard?.writeText)navigator.clipboard.writeText(tokenCa).catch(fallback);else fallback();
   setCopied(true);
  };
- return <button type="button" className={`token-ca token-ca--${tone} ${className}`} onClick={copy} title={tokenCa} aria-label={`Copy the $HIVE contract address, ${tokenCa}`}>
-  <span className="token-ca__label">{label}</span><span className="token-ca__short" aria-hidden="true">CA</span>
+ return <button type="button" className={`token-ca token-ca--${tone} ${className}`} onClick={copy} title={tokenCa} aria-label={(uiText("Copy the $HIVE contract address, ") + String(tokenCa) + "")}>
+  <span className="token-ca__label">{uiText(label)}</span><span className="token-ca__short" aria-hidden="true">{uiText("CA")}</span>
   <code className="token-ca__address">{tokenCa.length>14?`${tokenCa.slice(0,6)}…${tokenCa.slice(-4)}`:tokenCa}</code>
-  <span className="token-ca__action" aria-live="polite">{copied?'Copied':'Copy'}</span>
+  <span className="token-ca__action" aria-live="polite">{copied?uiText("Copied"):uiText("Copy")}</span>
  </button>;
 }

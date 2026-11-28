@@ -1,3 +1,4 @@
+import {uiText} from "../i18n/language.js";
 import React,{useEffect,useRef,useState} from 'react';
 import type {Crew} from '../../../../packages/core/domain.js';
 import {hash} from '../../../../packages/core/domain.js';
@@ -66,33 +67,33 @@ export function TradeBuilder(p:Props){
  }
  const valid=!!crew&&crew.policy.markets.includes(market),s=preview?.sizing;
  return <dialog ref={dialog} className="trade-builder" aria-labelledby="trade-builder-title" onCancel={e=>{e.preventDefault();if(!busy)p.onClose();}}>
-  <div className="trade-builder-head"><span>{preview?preview.mode==='paper'?'Paper trade':'Live trade':'New trade'}</span><button type="button" aria-label="Close trade builder" disabled={busy} onClick={p.onClose}>×</button></div>
-  <h2 id="trade-builder-title">{sent?`${market} ${side}`:'New trade'}</h2>
-  <p className="trade-builder-intro">{sent?'Sent to your crew. Stop and take-profit go on with the entry.':'Choose a direction. Your crew sizes the trade within your limits.'}</p>
-  {!p.owner?<div className="trade-builder-empty"><p>Connect or unlock your wallet to choose a crew. Your trade idea stays here.</p><button className="primary" onClick={()=>p.onWallet(intent())}>Connect wallet</button></div>:!p.crews.length?<div className="trade-builder-empty"><p>Create a crew first. Your trade idea will be ready when you return.</p><button className="primary" onClick={()=>p.onCreate(intent())}>Create crew</button></div>:sent?<>
-   <div className="trade-builder-status" role="status"><b>{labels[sent.status]??sent.status}</b><span>{sent.reason??(sent.status==='READY'?'Your crew is checking the trade. Keep this sheet open for updates.':sent.status==='SENDING'?'Waiting for the entry to be confirmed.':sent.status==='FILLED'?sent.mode==='paper'?'Recorded with virtual funds.':'Your entry has filled.':sent.status==='UNFILLED'?'The entry did not fill. No new position was opened.':'Check your crew’s activity for details.')}</span></div>
-   <p className="trade-builder-disclaimer">Not financial advice{sent.mode==='paper'?' · Virtual funds only':''}</p>
-   {error&&<p role="alert" className="negative">{error}</p>}
-   <button className="primary trade-builder-submit" onClick={()=>{p.onClose();p.onCrew(crewId);}}>View crew</button>
+  <div className="trade-builder-head"><span>{preview?preview.mode==='paper'?uiText("Paper trade"):uiText("Live trade"):uiText("New trade")}</span><button type="button" aria-label={uiText("Close trade builder")} disabled={busy} onClick={p.onClose}>×</button></div>
+  <h2 id="trade-builder-title">{sent?`${market} ${side}`:uiText("New trade")}</h2>
+  <p className="trade-builder-intro">{sent?uiText("Sent to your crew. Stop and take-profit go on with the entry."):uiText("Choose a direction. Your crew sizes the trade within your limits.")}</p>
+  {!p.owner?<div className="trade-builder-empty"><p>{uiText("Connect or unlock your wallet to choose a crew. Your trade idea stays here.")}</p><button className="primary" onClick={()=>p.onWallet(intent())}>{uiText("Connect wallet")}</button></div>:!p.crews.length?<div className="trade-builder-empty"><p>{uiText("Create a crew first. Your trade idea will be ready when you return.")}</p><button className="primary" onClick={()=>p.onCreate(intent())}>{uiText("Create crew")}</button></div>:sent?<>
+   <div className="trade-builder-status" role="status"><b>{labels[sent.status]??uiText(sent.status)}</b><span>{uiText(sent.reason)??(sent.status==='READY'?uiText("Your crew is checking the trade. Keep this sheet open for updates."):sent.status==='SENDING'?uiText("Waiting for the entry to be confirmed."):sent.status==='FILLED'?sent.mode==='paper'?uiText("Recorded with virtual funds."):uiText("Your entry has filled."):sent.status==='UNFILLED'?uiText("The entry did not fill. No new position was opened."):uiText("Check your crew’s activity for details."))}</span></div>
+   <p className="trade-builder-disclaimer">{uiText("Not financial advice")}{sent.mode==='paper'?uiText(" · Virtual funds only"):''}</p>
+   {error&&<p role="alert" className="negative">{uiText(error)}</p>}
+   <button className="primary trade-builder-submit" onClick={()=>{p.onClose();p.onCrew(crewId);}}>{uiText("View crew")}</button>
   </>:<form onSubmit={e=>{e.preventDefault();void place();}}>
    <fieldset disabled={busy}>
-    {p.crews.length>1?<label>Crew<select value={crewId} onChange={e=>{change();setCrewId(e.target.value);const next=p.crews.find(c=>c.id===e.target.value);if(next&&!next.policy.markets.includes(market)){setMarket(next.policy.markets[0]);setStop('');}}}>{p.crews.map(c=><option key={c.id} value={c.id}>{c.policy.name}</option>)}</select></label>:<p className="trade-builder-crew">{crew?.policy.name}</p>}
-    <label>Market<select value={valid?market:''} onChange={e=>{change();setMarket(e.target.value);setStop('');}}>{!valid&&<option value="">Choose a market</option>}{crew?.policy.markets.map(m=><option key={m}>{m}</option>)}</select></label>
-    {!valid&&<p role="status">{market?`${market} is outside this crew’s markets. Choose another crew or market.`:'Choose a market to continue.'}</p>}
-    <div className="trade-builder-sides" role="group" aria-label="Trade direction">{(['long','short'] as const).map(value=><button key={value} type="button" aria-pressed={side===value} onClick={()=>{change();setSide(value);setStop('');}}>{value==='long'?'↗ Long':'↘ Short'}</button>)}</div>
-    <label>Where is this idea wrong?<div className="trade-builder-price"><span>$</span><input aria-label="Where is this idea wrong? Price" type="number" inputMode="decimal" step="any" min="0.00000001" required value={stop} onChange={e=>{change();setStop(e.target.value);}} placeholder="Fetching price…"/></div><small>{preview?`Current price ${dollars(preview.mark)}. Your crew may move the stop farther away to allow for price swings.`:'The suggested stop uses recent price swings.'}</small></label>
-    <label>How many hours?<input type="number" min="4" max="72" step="1" required value={horizon} onChange={e=>{request.current=null;setHorizon(Number(e.target.value));}}/></label>
-    <div className="trade-builder-horizons" role="group" aria-label="Time horizon">{[4,24,72].map(hours=><button type="button" key={hours} aria-pressed={horizon===hours} onClick={()=>{request.current=null;setHorizon(hours);}}>{hours}h</button>)}</div>
+    {p.crews.length>1?<label>{uiText("Crew")}<select value={crewId} onChange={e=>{change();setCrewId(e.target.value);const next=p.crews.find(c=>c.id===e.target.value);if(next&&!next.policy.markets.includes(market)){setMarket(next.policy.markets[0]);setStop('');}}}>{p.crews.map(c=><option key={c.id} value={c.id}>{c.policy.name}</option>)}</select></label>:<p className="trade-builder-crew">{crew?.policy.name}</p>}
+    <label>{uiText("Market")}<select value={valid?market:''} onChange={e=>{change();setMarket(e.target.value);setStop('');}}>{!valid&&<option value="">{uiText("Choose a market")}</option>}{crew?.policy.markets.map(m=><option key={m}>{m}</option>)}</select></label>
+    {!valid&&<p role="status">{market?("" + String(market) + uiText(" is outside this crew’s markets. Choose another crew or market.")):uiText("Choose a market to continue.")}</p>}
+    <div className="trade-builder-sides" role="group" aria-label={uiText("Trade direction")}>{(['long','short'] as const).map(value=><button key={value} type="button" aria-pressed={side===value} onClick={()=>{change();setSide(value);setStop('');}}>{value==='long'?uiText("↗ Long"):uiText("↘ Short")}</button>)}</div>
+    <label>{uiText("Where is this idea wrong?")}<div className="trade-builder-price"><span>$</span><input aria-label={uiText("Where is this idea wrong? Price")} type="number" inputMode="decimal" step="any" min="0.00000001" required value={stop} onChange={e=>{change();setStop(e.target.value);}} placeholder={uiText("Fetching price…")}/></div><small>{preview?(uiText("Current price ") + String(dollars(preview.mark)) + uiText(". Your crew may move the stop farther away to allow for price swings.")):uiText("The suggested stop uses recent price swings.")}</small></label>
+    <label>{uiText("How many hours?")}<input type="number" min="4" max="72" step="1" required value={horizon} onChange={e=>{request.current=null;setHorizon(Number(e.target.value));}}/></label>
+    <div className="trade-builder-horizons" role="group" aria-label={uiText("Time horizon")}>{[4,24,72].map(hours=><button type="button" key={hours} aria-pressed={horizon===hours} onClick={()=>{request.current=null;setHorizon(hours);}}>{hours}{uiText("h")}</button>)}</div>
    </fieldset>
    <div className="trade-builder-preview" aria-live="polite" aria-busy={loading}>
-    {loading?<p>Checking size and prices…</p>:error?<p role="alert" className="negative">{error}</p>:preview&&!preview.ok?<p>{preview.reason}</p>:s?<><div><span>Size</span><b>{dollars(s.notional)}</b><span>Leverage</span><b>{s.leverage}x</b><span>Stop</span><b>{dollars(s.stop)}</b><span>Take-profit</span><b>{dollars(s.tp)}</b></div><p>Most you can lose ≈ <strong>{dollars(s.risk)}</strong></p><small>Estimate at the stop, including fees. Gaps and slippage can increase losses. Size updates again when your crew places the trade.</small></>:<p>Choose a market to see your trade size.</p>}
+    {loading?<p>{uiText("Checking size and prices…")}</p>:error?<p role="alert" className="negative">{uiText(error)}</p>:preview&&!preview.ok?<p>{uiText(preview.reason)}</p>:s?<><div><span>{uiText("Size")}</span><b>{dollars(s.notional)}</b><span>{uiText("Leverage")}</span><b>{s.leverage}{uiText("x")}</b><span>{uiText("Stop")}</span><b>{dollars(s.stop)}</b><span>{uiText("Take-profit")}</span><b>{dollars(s.tp)}</b></div><p>{uiText("Most you can lose ≈ ")}<strong>{dollars(s.risk)}</strong></p><small>{uiText("Estimate at the stop, including fees. Gaps and slippage can increase losses. Size updates again when your crew places the trade.")}</small></>:<p>{uiText("Choose a market to see your trade size.")}</p>}
    </div>
-   <p className="trade-builder-disclaimer">Not financial advice{preview?.mode==='paper'?' · Virtual funds only':''}</p>
-   {preview&&!preview.ok&&<button className="trade-builder-wallet" type="button" disabled={busy} onClick={()=>p.onSetup(intent())}>Open crew setup · keep this idea</button>}
-   <button className="primary trade-builder-submit" disabled={busy||loading||!valid||!preview?.ok||!s||!stop||horizon<4||horizon>72||!Number.isInteger(horizon)}>{busy?'Waiting for wallet or network…':'Place trade'}</button>
-   {error&&<button className="trade-builder-retry" type="button" disabled={busy} onClick={()=>{setRetry(n=>n+1);}}>Refresh preview</button>}
-   {request.current&&<button className="trade-builder-retry" type="button" disabled={busy} onClick={()=>void checkStatus()}>Check trade status</button>}
-   <button className="trade-builder-wallet" type="button" disabled={busy} onClick={()=>p.onWallet(intent())}>Connect or unlock wallet</button>
+   <p className="trade-builder-disclaimer">{uiText("Not financial advice")}{preview?.mode==='paper'?uiText(" · Virtual funds only"):''}</p>
+   {preview&&!preview.ok&&<button className="trade-builder-wallet" type="button" disabled={busy} onClick={()=>p.onSetup(intent())}>{uiText("Open crew setup · keep this idea")}</button>}
+   <button className="primary trade-builder-submit" disabled={busy||loading||!valid||!preview?.ok||!s||!stop||horizon<4||horizon>72||!Number.isInteger(horizon)}>{busy?uiText("Waiting for wallet or network…"):uiText("Place trade")}</button>
+   {error&&<button className="trade-builder-retry" type="button" disabled={busy} onClick={()=>{setRetry(n=>n+1);}}>{uiText("Refresh preview")}</button>}
+   {request.current&&<button className="trade-builder-retry" type="button" disabled={busy} onClick={()=>void checkStatus()}>{uiText("Check trade status")}</button>}
+   <button className="trade-builder-wallet" type="button" disabled={busy} onClick={()=>p.onWallet(intent())}>{uiText("Connect or unlock wallet")}</button>
   </form>}
  </dialog>;
 }

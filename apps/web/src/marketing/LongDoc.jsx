@@ -1,3 +1,4 @@
+import {uiText} from "../i18n/language.js";
 import React, {useEffect, useRef, useState} from 'react';
 import {Eyebrow, Button} from './Components';
 import {TokenCa} from '../TokenCa';
@@ -7,18 +8,18 @@ import './long-docs.css';
 function Block({block}) {
   const [kind, a, b] = block;
   switch (kind) {
-    case 'p': return <p>{a}</p>;
-    case 'h3': return <h3>{a}</h3>;
-    case 'note': return <p className="ld-note">{a}</p>;
-    case 'list': return <ul className="ld-list">{a.map(x => <li key={x}>{x}</li>)}</ul>;
-    case 'steps': return <ol className="ld-steps">{a.map(x => <li key={x}>{x}</li>)}</ol>;
-    case 'defs': return <dl className="ld-defs">{a.map(([t, d]) => <div key={t}><dt>{t}</dt><dd>{d}</dd></div>)}</dl>;
-    case 'formula': return <figure className="ld-formula"><pre>{a.join('\n')}</pre>{b && <figcaption>{b}</figcaption>}</figure>;
-    case 'link': return <p><a className="ld-link" href={b} target="_blank" rel="noreferrer">{a} ↗</a></p>;
+    case 'p': return <p>{uiText(a)}</p>;
+    case 'h3': return <h3>{uiText(a)}</h3>;
+    case 'note': return <p className="ld-note">{uiText(a)}</p>;
+    case 'list': return <ul className="ld-list">{a.map(x => <li key={x}>{uiText(x)}</li>)}</ul>;
+    case 'steps': return <ol className="ld-steps">{a.map(x => <li key={x}>{uiText(x)}</li>)}</ol>;
+    case 'defs': return <dl className="ld-defs">{a.map(([t, d]) => <div key={t}><dt>{uiText(t)}</dt><dd>{uiText(d)}</dd></div>)}</dl>;
+    case 'formula': return <figure className="ld-formula"><pre>{a.join('\n')}</pre>{b && <figcaption>{uiText(b)}</figcaption>}</figure>;
+    case 'link': return <p><a className="ld-link" href={b} target="_blank" rel="noreferrer">{uiText(a)} ↗</a></p>;
     case 'ca': return <TokenCa className="ld-ca" hideEmpty />;
     case 'table': return <div className="ld-table"><table>
-      <thead><tr>{a.map((h, i) => <th key={i}>{h}</th>)}</tr></thead>
-      <tbody>{b.map((r, i) => <tr key={i}>{r.map((c, j) => j === 0 ? <th key={j} scope="row">{c}</th> : <td key={j}>{c}</td>)}</tr>)}</tbody>
+      <thead><tr>{a.map((h, i) => <th key={i}>{uiText(h)}</th>)}</tr></thead>
+      <tbody>{b.map((r, i) => <tr key={i}>{r.map((c, j) => j === 0 ? <th key={j} scope="row">{uiText(c)}</th> : <td key={j}>{uiText(c)}</td>)}</tr>)}</tbody>
     </table></div>;
     default: return null;
   }
@@ -45,11 +46,11 @@ function useActive(ids) {
 
 function Toc({groups, active, numbered}) {
   let n = 0;
-  return <nav className="ld-toc" aria-label="On this page">
+  return <nav className="ld-toc" aria-label={uiText("On this page")}>
     {groups.map(g => <div className="ld-toc__group" key={g.name || 'all'}>
-      {g.name && <span className="ld-toc__label">{g.name}</span>}
+      {g.name && <span className="ld-toc__label">{uiText(g.name)}</span>}
       {g.sections.map(s => { n++; return <a key={s.id} href={'#' + s.id} className={active === s.id ? 'is-active' : ''} aria-current={active === s.id ? 'location' : undefined}>
-        {numbered && <span className="ld-toc__num">{String(n).padStart(2, '0')}</span>}{s.title}</a>; })}
+        {numbered && <span className="ld-toc__num">{uiText(String(n).padStart(2, '0'))}</span>}{uiText(s.title)}</a>; })}
     </div>)}
   </nav>;
 }
@@ -84,35 +85,35 @@ export function DocsPage({doc}) {
   return <main className="ld ld--docs">
     <header className="ld-dhero">
       <div className="ld-dhero__top">
-        <span className="ld-dhero__eyebrow"><i />{doc.eyebrow}</span>
-        <span className="ld-dhero__meta">{doc.groups.reduce((n, g) => n + g.sections.length, 0)} topics · plain language</span>
+        <span className="ld-dhero__eyebrow"><i />{uiText(doc.eyebrow)}</span>
+        <span className="ld-dhero__meta">{uiText(doc.groups.reduce((n, g) => n + g.sections.length, 0))}{uiText(" topics · plain language")}</span>
       </div>
-      <h1>{doc.title}</h1>
-      <p className="ld-dhero__intro">{doc.intro}</p>
+      <h1>{uiText(doc.title)}</h1>
+      <p className="ld-dhero__intro">{uiText(doc.intro)}</p>
       <label className="ld-search">
         <Icon name="search" size={18} />
-        <span className="site-sr">Search the docs</span>
-        <input ref={search} type="search" value={query} onChange={e => setQuery(e.target.value)} placeholder="Search the docs" onKeyDown={e => { if (e.key === 'Escape') setQuery(''); }} />
+        <span className="site-sr">{uiText("Search the docs")}</span>
+        <input ref={search} type="search" value={query} onChange={e => setQuery(e.target.value)} placeholder={uiText("Search the docs")} onKeyDown={e => { if (e.key === 'Escape') setQuery(''); }} />
         <kbd>/</kbd>
       </label>
-      <ol className="ld-pipe" aria-label="The five roles in a crew">
+      <ol className="ld-pipe" aria-label={uiText("The five roles in a crew")}>
         {pipeline.map(([icon, name, job, href], i) => <li key={name}><a href={href}>
-          <span className="ld-pipe__n">0{i + 1}</span><Icon name={icon} size={20} /><b>{name}</b><small>{job}</small></a></li>)}
+          <span className="ld-pipe__n">0{uiText(i) + 1}</span><Icon name={icon} size={20} /><b>{uiText(name)}</b><small>{uiText(job)}</small></a></li>)}
       </ol>
     </header>
     <div className="ld-cards">
       {shortcuts.map(([icon, title, text, href]) => <a key={title} className="ld-card" href={href}>
-        <span className="ld-card__icon"><Icon name={icon} size={20} /></span><b>{title}</b><span>{text}</span><span className="ld-card__arrow" aria-hidden="true">→</span></a>)}
+        <span className="ld-card__icon"><Icon name={icon} size={20} /></span><b>{uiText(title)}</b><span>{uiText(text)}</span><span className="ld-card__arrow" aria-hidden="true">→</span></a>)}
     </div>
     <div className="ld-layout">
       <aside className="ld-side"><Toc groups={groups} active={active} /></aside>
       <div className="ld-body">
-        {q && <p className="ld-results" role="status">{ids.length ? `${ids.length} topic${ids.length === 1 ? '' : 's'} match “${query.trim()}”` : `Nothing matches “${query.trim()}”.`}{' '}<button type="button" onClick={() => setQuery('')}>Clear</button></p>}
+        {q && <p className="ld-results" role="status">{ids.length ? ("" + String(ids.length) + uiText(" topic") + String(ids.length === 1 ? '' : 's') + uiText(" match “") + String(query.trim()) + "”") : (uiText("Nothing matches “") + String(query.trim()) + "”.")}{' '}<button type="button" onClick={() => setQuery('')}>{uiText("Clear")}</button></p>}
         {groups.map(g => <div className="ld-group" key={g.name}>
-          <span className="ld-group__label"><span>{String(doc.groups.findIndex(x => x.name === g.name) + 1).padStart(2, '0')}</span>{g.name}</span>
-          {g.sections.map(s => <section key={s.id} id={s.id} className="ld-section"><h2><a href={'#' + s.id}>{s.title}<span className="ld-hash" aria-hidden="true">#</span></a></h2>{s.blocks.map((b, i) => <Block key={i} block={b} />)}</section>)}
+          <span className="ld-group__label"><span>{uiText(String(doc.groups.findIndex(x => x.name === g.name) + 1).padStart(2, '0'))}</span>{uiText(g.name)}</span>
+          {g.sections.map(s => <section key={s.id} id={s.id} className="ld-section"><h2><a href={'#' + s.id}>{uiText(s.title)}<span className="ld-hash" aria-hidden="true">#</span></a></h2>{s.blocks.map((b, i) => <Block key={i} block={b} />)}</section>)}
         </div>)}
-        <div className="ld-end"><div><b>Try it with paper money first.</b><span>Same process, no funds at risk.</span></div><Button href="/dashboard">Open the workspace</Button></div>
+        <div className="ld-end"><div><b>{uiText("Try it with paper money first.")}</b><span>{uiText("Same process, no funds at risk.")}</span></div><Button href="/dashboard">{uiText("Open the workspace")}</Button></div>
       </div>
     </div>
   </main>;
@@ -123,15 +124,15 @@ export function WhitepaperPage({doc}) {
   const active = useActive(ids);
   const groups = [{sections: doc.sections}];
   return <main className="ld ld--paper">
-    <header className="ld-hero ld-hero--paper"><Eyebrow>{doc.eyebrow}</Eyebrow><h1>{doc.title}</h1>
-      <div className="ld-meta"><span>{doc.meta}</span><button type="button" className="ld-print" onClick={() => print()}>Save as PDF</button></div></header>
+    <header className="ld-hero ld-hero--paper"><Eyebrow>{uiText(doc.eyebrow)}</Eyebrow><h1>{uiText(doc.title)}</h1>
+      <div className="ld-meta"><span>{uiText(doc.meta)}</span><button type="button" className="ld-print" onClick={() => print()}>{uiText("Save as PDF")}</button></div></header>
     <div className="ld-layout">
       <aside className="ld-side"><Toc groups={groups} active={active} numbered /></aside>
       <article className="ld-body">
-        <section id="abstract" className="ld-abstract"><h2>Abstract</h2><p>{doc.abstract}</p></section>
+        <section id="abstract" className="ld-abstract"><h2>{uiText("Abstract")}</h2><p>{uiText(doc.abstract)}</p></section>
         {doc.sections.map((s, i) => <section key={s.id} id={s.id} className="ld-section">
-          <h2><a href={'#' + s.id}><span className="ld-num">{i + 1}.</span>{s.title}</a></h2>{s.blocks.map((b, j) => <Block key={j} block={b} />)}</section>)}
-        <p className="ld-disclaimer">{doc.disclaimer}</p>
+          <h2><a href={'#' + s.id}><span className="ld-num">{uiText(i) + 1}.</span>{uiText(s.title)}</a></h2>{s.blocks.map((b, j) => <Block key={j} block={b} />)}</section>)}
+        <p className="ld-disclaimer">{uiText(doc.disclaimer)}</p>
       </article>
     </div>
   </main>;

@@ -1,3 +1,5 @@
+import {uiText} from "../i18n/language.js";
+import {LanguagePicker} from '../i18n/LanguagePicker.js';
 import React, {useEffect, useId, useState} from 'react';
 import {Icon} from './LandingIcons';
 import '../dashboard/brand-fonts.css';
@@ -39,7 +41,7 @@ export function ActionLink({href, children, variant = 'primary', className = '',
   return (
     <a className={`site-btn site-btn--${variant} ${className}`} href={href} {...props}>
       <span className="site-btn__dot" aria-hidden="true" />
-      {children}
+      {uiText(children)}
     </a>
   );
 }
@@ -60,7 +62,7 @@ export function SiteHeader() {
 
   const {walkthrough} = useFlags();
   const links = navLinks.filter(([, href]) => walkthrough || href !== '/demo').map(([label, href]) => (
-    <a key={href} href={href} aria-current={href === path ? 'page' : undefined} onClick={() => setOpen(false)}>{label}</a>
+    <a key={href} href={href} aria-current={href === path ? 'page' : undefined} onClick={() => setOpen(false)}>{uiText(label)}</a>
   ));
   // Split the links either side of the centred logo, the larger half on the left.
   const half = Math.ceil(links.length / 2);
@@ -70,12 +72,12 @@ export function SiteHeader() {
         <div className="site-header__inner">
           <div className="site-header__start">
             <TokenCa className="site-header__ca" label="$HIVE CA" />
-            <nav className="site-header__nav" aria-label="Main">{links.slice(0, half)}</nav>
+            <nav className="site-header__nav" aria-label={uiText("Main")}>{links.slice(0, half)}</nav>
           </div>
           <Logo />
           <div className="site-header__end">
-            <nav className="site-header__nav" aria-label="More">{links.slice(half)}</nav>
-            <span className="site-header__actions"><ThemeToggle /><ActionLink href={primaryAction.href} className="site-btn--small">{primaryAction.label}</ActionLink></span>
+            <nav className="site-header__nav" aria-label={uiText("More")}>{links.slice(half)}</nav>
+            <span className="site-header__actions"><LanguagePicker/><ThemeToggle /><ActionLink href={primaryAction.href} className="site-btn--small">{uiText(primaryAction.label)}</ActionLink></span>
           </div>
           <TokenCa className="site-header__mobile-ca" label="CA" />
           <ThemeToggle className="site-header__mobile-theme" />
@@ -87,12 +89,13 @@ export function SiteHeader() {
             onClick={() => setOpen(value => !value)}
           >
             <Icon name={open ? 'close' : 'menu'} size={26} strokeWidth={2} />
-            <span className="site-sr">{open ? 'Close menu' : 'Open menu'}</span>
+            <span className="site-sr">{open ? uiText("Close menu") : uiText("Open menu")}</span>
           </button>
         </div>
         <div id={menuId} className="site-menu" hidden={!open}>
-          <nav aria-label="Mobile">{links}</nav>
-          <ActionLink href={primaryAction.href} onClick={() => setOpen(false)}>{primaryAction.label}</ActionLink>
+          <nav aria-label={uiText("Mobile")}>{uiText(links)}</nav>
+          <LanguagePicker/>
+          <ActionLink href={primaryAction.href} onClick={() => setOpen(false)}>{uiText(primaryAction.label)}</ActionLink>
         </div>
     </header>
   );
@@ -105,24 +108,24 @@ export function SiteFooter() {
       <div className="site-footer__inner">
         <div className="site-footer__brand">
           <Logo light />
-          <p>Explore your crew workspace</p>
+          <p>{uiText("Explore your crew workspace")}</p>
           <a className="site-footer__cta" href={primaryAction.href}>
-            <span>Your crew starts here</span>{' '}
-            <span className="site-footer__cta-btn">{primaryAction.label}</span>
+            <span>{uiText("Your crew starts here")}</span>{' '}
+            <span className="site-footer__cta-btn">{uiText(primaryAction.label)}</span>
           </a>
         </div>
         <div className="site-footer__columns">
           {footerColumns.map(([title, all]) => [title, all.filter(([, href]) => walkthrough || href !== '/demo')]).map(([title, links]) => (
-            <nav key={title} aria-label={title}>
-              <h2>{title}</h2>
-              <ul>{links.map(([label, href]) => <li key={href}><a href={href}>{label}</a></li>)}</ul>
+            <nav key={title} aria-label={uiText(title)}>
+              <h2>{uiText(title)}</h2>
+              <ul>{links.map(([label, href]) => <li key={href}><a href={href}>{uiText(label)}</a></li>)}</ul>
             </nav>
           ))}
         </div>
       </div>
       <div className="site-footer__bottom">
-        <p>© {new Date().getFullYear()} HyperHive. All rights reserved</p>
-        <p className="site-footer__legal">Built on Hyperliquid’s public API. HyperHive is independent software, not affiliated with or endorsed by Hyperliquid. Not financial advice.</p>
+        <p>© {uiText(new Date().getFullYear())}{uiText(" HyperHive. All rights reserved")}</p>
+        <p className="site-footer__legal">{uiText("Built on Hyperliquid’s public API. HyperHive is independent software, not affiliated with or endorsed by Hyperliquid. Not financial advice.")}</p>
       </div>
     </footer>
   );

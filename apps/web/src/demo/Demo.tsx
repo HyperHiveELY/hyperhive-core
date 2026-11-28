@@ -1,3 +1,5 @@
+import {uiText} from "../i18n/language.js";
+import {LanguagePicker} from '../i18n/LanguagePicker.js';
 import React,{useCallback,useEffect,useLayoutEffect,useRef,useState} from 'react';
 import '@fontsource-variable/geist';
 import '../dashboard/brand-fonts.css';
@@ -41,7 +43,8 @@ export default function Demo(){
  const board=useRef<HTMLElement>(null),callout=useRef<HTMLDivElement>(null),nextButton=useRef<HTMLButtonElement>(null);
  const panels=useRef<Partial<Record<Panel,HTMLElement|null>>>({});
 
- useEffect(()=>{document.title='HyperHive — See a crew trade';markWalkthroughSeen();},[]);
+ useEffect(()=>{document.title='HyperHive — '+uiText('See a crew trade');});
+ useEffect(()=>{markWalkthroughSeen();},[]);
 
  const go=useCallback((to:number)=>{const target=Math.max(0,Math.min(last,to));setInstant(target<step);setStep(target);},[last,step]);
  const next=useCallback(()=>go(step+1),[go,step]);
@@ -113,13 +116,13 @@ export default function Demo(){
 
  const feed:{id:string;node:React.ReactNode}[]=[];
  if(past('idea'))feed.push({id:'idea1',node:<IdeaCard approved={past('check')}/>});
- if(past('check'))feed.push({id:'eth',node:<Event tone="no" title="ETH idea turned down" detail="The second AI said it was too risky right now."/>});
- if(past('order'))feed.push({id:'order1',node:<Event tone="buy" title="Bought $625 of BTC at $100,000" detail="Target $104,800 · Safety exit $98,400"/>});
- if(locked)feed.push({id:'lock1',node:<Event tone="lock" title="Safety exit moved to $100,000" detail="A turn back down now costs little or nothing."/>});
- if(reached(MARK.target1))feed.push({id:'win1',node:<Event tone="win" title="Sold at the target" amount="+$30.00"/>});
- if(reached(MARK.target1)&&past('loss'))feed.push({id:'idea2',node:<Event tone="idea" title="New BTC idea approved" detail="Wrong if it falls below $103,800."/>});
- if(reached(MARK.entry2))feed.push({id:'order2',node:<Event tone="buy" title="Bought $1,308 of BTC at $104,600" detail="Target $107,000 · Safety exit $103,800"/>});
- if(reached(MARK.stop2))feed.push({id:'loss2',node:<Event tone="loss" title="Safety exit sold" detail="About what it planned to risk." amount="−$10.00"/>});
+ if(past('check'))feed.push({id:'eth',node:<Event tone="no" title={uiText("ETH idea turned down")} detail="The second AI said it was too risky right now."/>});
+ if(past('order'))feed.push({id:'order1',node:<Event tone="buy" title={uiText("Bought $625 of BTC at $100,000")} detail="Target $104,800 · Safety exit $98,400"/>});
+ if(locked)feed.push({id:'lock1',node:<Event tone="lock" title={uiText("Safety exit moved to $100,000")} detail="A turn back down now costs little or nothing."/>});
+ if(reached(MARK.target1))feed.push({id:'win1',node:<Event tone="win" title={uiText("Sold at the target")} amount="+$30.00"/>});
+ if(reached(MARK.target1)&&past('loss'))feed.push({id:'idea2',node:<Event tone="idea" title={uiText("New BTC idea approved")} detail="Wrong if it falls below $103,800."/>});
+ if(reached(MARK.entry2))feed.push({id:'order2',node:<Event tone="buy" title={uiText("Bought $1,308 of BTC at $104,600")} detail="Target $107,000 · Safety exit $103,800"/>});
+ if(reached(MARK.stop2))feed.push({id:'loss2',node:<Event tone="loss" title={uiText("Safety exit sold")} detail="About what it planned to risk." amount="−$10.00"/>});
  feed.reverse();
 
  const trades=[
@@ -130,115 +133,115 @@ export default function Demo(){
 
  return <div className={'dm-root'+(touring?' is-touring':'')+(mode==='explore'?' is-exploring':'')+(reduced?' is-reduced':'')} data-step={current.id}>
   <header className="dm-header">
-   <a className="dm-brand" href="/" aria-label="HyperHive home"><BrandMark/><span>HyperHive</span></a>
-   <span className="dm-tag"><i/>Demo · sample data</span>
-   <div className="dm-header-actions">
-    {touring&&<button className="dm-button dm-quiet" onClick={explore}>Skip tour</button>}
-    {mode==='explore'&&<button className="dm-button dm-quiet" onClick={replay}><RefreshCw size={15}/>Watch again</button>}
-    <a className="dm-button dm-primary" href="/dashboard">Set up my crew<ArrowRight size={15}/></a>
+   <a className="dm-brand" href="/" aria-label={uiText("HyperHive home")}><BrandMark/><span>HyperHive</span></a>
+   <span className="dm-tag"><i/>{uiText("Demo · sample data")}</span>
+   <div className="dm-header-actions"><LanguagePicker/>
+    {touring&&<button className="dm-button dm-quiet" onClick={explore}>{uiText("Skip tour")}</button>}
+    {mode==='explore'&&<button className="dm-button dm-quiet" onClick={replay}><RefreshCw size={15}/>{uiText("Watch again")}</button>}
+    <a className="dm-button dm-primary" href="/dashboard">{uiText("Set up my crew")}<ArrowRight size={15}/></a>
    </div>
   </header>
 
   <div className="dm-page">
-   <div className="dm-heading"><h1>Your workspace</h1><span>Sample crew · not real money</span></div>
+   <div className="dm-heading"><h1>{uiText("Your workspace")}</h1><span>{uiText("Sample crew · not real money")}</span></div>
    <main className="dm-board" ref={board} aria-hidden={mode==='tour'&&(step===0||step===last)?true:undefined}>
     <section {...panelProps('crew','Your crew')}>
-     <div className="dm-crew-id"><span className="dm-glyph" aria-hidden="true"><BrandMark/></span><div><h2>Steady BTC</h2><small>Trades Bitcoin</small></div></div>
-     <span className={'dm-status is-'+status.replace(/\s/g,'-').toLowerCase()}><i/>{status}</span>
-     <div className="dm-balance"><span>Balance</span><strong ref={balanceRef}>{usd(START_BALANCE)}</strong><small className={balance>START_BALANCE?'is-up':''}>{balance===START_BALANCE?'Started with $1,000.00':(balance>START_BALANCE?'+':'')+usd(balance-START_BALANCE)+' so far'}</small></div>
+     <div className="dm-crew-id"><span className="dm-glyph" aria-hidden="true"><BrandMark/></span><div><h2>{uiText("Steady BTC")}</h2><small>{uiText("Trades Bitcoin")}</small></div></div>
+     <span className={'dm-status is-'+status.replace(/\s/g,'-').toLowerCase()}><i/>{uiText(status)}</span>
+     <div className="dm-balance"><span>{uiText("Balance")}</span><strong ref={balanceRef}>{usd(START_BALANCE)}</strong><small className={balance>START_BALANCE?'is-up':''}>{balance===START_BALANCE?uiText("Started with $1,000.00"):(balance>START_BALANCE?'+':'')+usd(balance-START_BALANCE)+uiText(" so far")}</small></div>
      <div className="dm-limit">
-      <div className="dm-row"><span>Weekly limit</span><b>{usd(WEEKLY_LIMIT,0)}</b></div>
-      <div className="dm-meter" role="img" aria-label={`${usd(lost+atRisk,0)} of ${usd(WEEKLY_LIMIT,0)} used`}><i className="dm-meter-lost" style={{transform:`scaleX(${lost/WEEKLY_LIMIT})`}}/><i className="dm-meter-risk" style={{transform:`translateX(${lost/WEEKLY_LIMIT*100}%) scaleX(${atRisk/WEEKLY_LIMIT})`}}/></div>
-      <div className="dm-row dm-row-small"><span><i className="dm-key dm-key-risk"/>At risk {usd(atRisk,0)}</span><span><i className="dm-key dm-key-lost"/>Lost {usd(lost,0)}</span></div>
+      <div className="dm-row"><span>{uiText("Weekly limit")}</span><b>{usd(WEEKLY_LIMIT,0)}</b></div>
+      <div className="dm-meter" role="img" aria-label={("" + String(usd(lost+atRisk,0)) + uiText(" of ") + String(usd(WEEKLY_LIMIT,0)) + uiText(" used"))}><i className="dm-meter-lost" style={{transform:`scaleX(${lost/WEEKLY_LIMIT})`}}/><i className="dm-meter-risk" style={{transform:`translateX(${lost/WEEKLY_LIMIT*100}%) scaleX(${atRisk/WEEKLY_LIMIT})`}}/></div>
+      <div className="dm-row dm-row-small"><span><i className="dm-key dm-key-risk"/>{uiText("At risk ")}{usd(atRisk,0)}</span><span><i className="dm-key dm-key-lost"/>{uiText("Lost ")}{usd(lost,0)}</span></div>
      </div>
     </section>
 
     <section {...panelProps('chart','Bitcoin price chart')}>
-     <div className="dm-panel-head"><div><h2>Bitcoin</h2><small>Price, last few days</small></div><span className="dm-scouts" aria-label="Three scouts watching">{['Trend','Crowd','Levels'].map((n,i)=><span key={n} className={touring&&current.id==='watch'?'is-live':''} style={{'--i':i} as React.CSSProperties}>{n}</span>)}</span></div>
+     <div className="dm-panel-head"><div><h2>{uiText("Bitcoin")}</h2><small>{uiText("Price, last few days")}</small></div><span className="dm-scouts" aria-label={uiText("Three scouts watching")}>{['Trend','Crowd','Levels'].map((n,i)=><span key={n} className={touring&&current.id==='watch'?'is-live':''} style={{'--i':i} as React.CSSProperties}>{uiText(n)}</span>)}</span></div>
      <DemoChart head={head} dur={dur} reduced={reduced} lines={lines} pins={pins} scanning={false} marks={marks} onPassed={setPassed}>
       <Sizer visible={touring&&current.id==='size'}/>
      </DemoChart>
     </section>
 
     <section {...panelProps('feed','Crew activity')}>
-     <div className="dm-panel-head"><div><h2>Activity</h2><small>Newest first</small></div></div>
-     <div className="dm-feed">{feed.length?feed.map(f=><div key={f.id} className="dm-feed-item">{f.node}</div>):<p className="dm-empty">Nothing yet. The scouts are watching.</p>}</div>
+     <div className="dm-panel-head"><div><h2>{uiText("Activity")}</h2><small>{uiText("Newest first")}</small></div></div>
+     <div className="dm-feed">{feed.length?feed.map(f=><div key={f.id} className="dm-feed-item">{uiText(f.node)}</div>):<p className="dm-empty">{uiText("Nothing yet. The scouts are watching.")}</p>}</div>
     </section>
 
     <section {...panelProps('record','Trade record')}>
-     <div className="dm-panel-head"><div><h2>Trade record</h2><small>Public, anyone can check it</small></div>{trades.length>0&&<span className={'dm-proof'+(verified?' is-on':'')}><ShieldCheck size={14}/>{verified?`${trades.length} of ${trades.length} verified`:'Checking'}</span>}</div>
-     {trades.length?<ol className="dm-record">{trades.map((t,i)=><li key={t.id} style={{'--i':i} as React.CSSProperties}><span>{t.label}</span><b className={'is-'+t.tone}>{t.result}</b><span className={'dm-verify'+(verified?' is-on':'')}>{verified?<><Check size={13}/>Matches signed record</>:'Checking'}</span></li>)}</ol>:<p className="dm-empty">Finished trades show up here.</p>}
+     <div className="dm-panel-head"><div><h2>{uiText("Trade record")}</h2><small>{uiText("Public, anyone can check it")}</small></div>{trades.length>0&&<span className={'dm-proof'+(verified?' is-on':'')}><ShieldCheck size={14}/>{verified?("" + String(trades.length) + uiText(" of ") + String(trades.length) + uiText(" verified")):uiText("Checking")}</span>}</div>
+     {trades.length?<ol className="dm-record">{trades.map((t,i)=><li key={t.id} style={{'--i':i} as React.CSSProperties}><span>{uiText(t.label)}</span><b className={'is-'+t.tone}>{uiText(t.result)}</b><span className={'dm-verify'+(verified?' is-on':'')}>{verified?<><Check size={13}/>{uiText("Matches signed record")}</>:uiText('Checking')}</span></li>)}</ol>:<p className="dm-empty">{uiText("Finished trades show up here.")}</p>}
     </section>
 
     <section {...panelProps('controls','Your controls')}>
-     <div className="dm-panel-head"><div><h2>Controls</h2>{mode==='explore'&&<small>Try them. Nothing real happens.</small>}</div></div>
+     <div className="dm-panel-head"><div><h2>{uiText("Controls")}</h2>{mode==='explore'&&<small>{uiText("Try them. Nothing real happens.")}</small>}</div></div>
      <div className="dm-controls">
-      <button className="dm-control" disabled={mode==='tour'} aria-pressed={paused} onClick={()=>{setPaused(p=>!p);setToast(paused?'Crew resumed.':'Crew paused. Open trades keep their exits.');}}>{paused?<Play size={16}/>:<Pause size={16}/>}<span><b>{paused?'Resume':'Pause'}</b><small>{paused?'Start looking for trades again':'Stop new trades'}</small></span></button>
-      <button className="dm-control" disabled={mode==='tour'} onClick={()=>setToast('Lowering the limit applies right away. Raising it waits until next week.')}><LockKeyhole size={16}/><span><b>Weekly limit</b><small>Lower it any time</small></span></button>
-      <button className="dm-control" disabled={mode==='tour'} onClick={()=>setToast('Only your wallet can withdraw. The crew can trade, but never move money out.')}><Wallet size={16}/><span><b>Withdraw</b><small>Only your wallet can</small></span></button>
+      <button className="dm-control" disabled={mode==='tour'} aria-pressed={paused} onClick={()=>{setPaused(p=>!p);setToast(paused?'Crew resumed.':'Crew paused. Open trades keep their exits.');}}>{paused?<Play size={16}/>:<Pause size={16}/>}<span><b>{paused?uiText("Resume"):uiText("Pause")}</b><small>{paused?uiText("Start looking for trades again"):uiText("Stop new trades")}</small></span></button>
+      <button className="dm-control" disabled={mode==='tour'} onClick={()=>setToast('Lowering the limit applies right away. Raising it waits until next week.')}><LockKeyhole size={16}/><span><b>{uiText("Weekly limit")}</b><small>{uiText("Lower it any time")}</small></span></button>
+      <button className="dm-control" disabled={mode==='tour'} onClick={()=>setToast('Only your wallet can withdraw. The crew can trade, but never move money out.')}><Wallet size={16}/><span><b>{uiText("Withdraw")}</b><small>{uiText("Only your wallet can")}</small></span></button>
      </div>
     </section>
 
-    {touring&&<div className={'dm-callout'+(spot?' is-anchored':' is-sheet')} ref={callout} style={spot?{transform:`translate3d(${spot.x}px,${spot.y}px,0)`}:undefined} role="dialog" aria-label="Tour">
+    {touring&&<div className={'dm-callout'+(spot?' is-anchored':' is-sheet')} ref={callout} style={spot?{transform:`translate3d(${spot.x}px,${spot.y}px,0)`}:undefined} role="dialog" aria-label={uiText("Tour")}>
      <div className="dm-callout-body" key={current.id} aria-live="polite">
-      <span className="dm-callout-step">Step {step} of {last-1}</span>
-      <h2>{current.title}</h2>
-      <p>{current.body}</p>
+      <span className="dm-callout-step">{uiText("Step ")}{uiText(step)}{uiText(" of ")}{last-1}</span>
+      <h2>{uiText(current.title)}</h2>
+      <p>{uiText(current.body)}</p>
      </div>
      <div className="dm-callout-nav">
       <span className="dm-progress" aria-hidden="true"><i style={{transform:`scaleX(${step/(last-1)})`}}/></span>
-      <button className="dm-button dm-icon" onClick={back} aria-label="Back"><ArrowLeft size={16}/></button>
-      <button className="dm-button dm-primary" ref={nextButton} onClick={next}>{step===last-1?'Finish':'Next'}<ArrowRight size={15}/></button>
+      <button className="dm-button dm-icon" onClick={back} aria-label={uiText("Back")}><ArrowLeft size={16}/></button>
+      <button className="dm-button dm-primary" ref={nextButton} onClick={next}>{step===last-1?uiText("Finish"):uiText("Next")}<ArrowRight size={15}/></button>
      </div>
     </div>}
    </main>
   </div>
 
   {mode==='tour'&&step===0&&<Modal labelledBy="dm-intro-title">
-   <h1 id="dm-intro-title">See how a crew trades.</h1>
-   <p>We’ll follow a sample crew through two trades: one that wins, one that doesn’t. It takes about a minute, and none of it is real money.</p>
-   <div className="dm-modal-actions"><button className="dm-button dm-primary dm-large" onClick={next} autoFocus>Start<ArrowRight size={16}/></button><button className="dm-button dm-quiet" onClick={explore}>Skip to the dashboard</button></div>
+   <h1 id="dm-intro-title">{uiText("See how a crew trades.")}</h1>
+   <p>{uiText("We’ll follow a sample crew through two trades: one that wins, one that doesn’t. It takes about a minute, and none of it is real money.")}</p>
+   <div className="dm-modal-actions"><button className="dm-button dm-primary dm-large" onClick={next} autoFocus>{uiText("Start")}<ArrowRight size={16}/></button><button className="dm-button dm-quiet" onClick={explore}>{uiText("Skip to the dashboard")}</button></div>
   </Modal>}
 
   {mode==='tour'&&step===last&&<Modal labelledBy="dm-end-title">
-   <h1 id="dm-end-title">That’s HyperHive.</h1>
+   <h1 id="dm-end-title">{uiText("That’s HyperHive.")}</h1>
    <ul className="dm-recap">
-    <li>AI suggests trades. A second AI checks them.</li>
-    <li>Simple math sets the size, with exits set up front.</li>
-    <li>Every trade is on the record, and only you can withdraw.</li>
+    <li>{uiText("AI suggests trades. A second AI checks them.")}</li>
+    <li>{uiText("Simple math sets the size, with exits set up front.")}</li>
+    <li>{uiText("Every trade is on the record, and only you can withdraw.")}</li>
    </ul>
-   <p className="dm-note">Trading can lose money. These numbers are just an example.</p>
-   <div className="dm-modal-actions"><a className="dm-button dm-primary dm-large" href="/dashboard">Set up my crew<ArrowRight size={16}/></a><button className="dm-button dm-quiet" onClick={explore}>Explore the dashboard</button><button className="dm-button dm-quiet" onClick={replay}><RefreshCw size={14}/>Watch again</button></div>
+   <p className="dm-note">{uiText("Trading can lose money. These numbers are just an example.")}</p>
+   <div className="dm-modal-actions"><a className="dm-button dm-primary dm-large" href="/dashboard">{uiText("Set up my crew")}<ArrowRight size={16}/></a><button className="dm-button dm-quiet" onClick={explore}>{uiText("Explore the dashboard")}</button><button className="dm-button dm-quiet" onClick={replay}><RefreshCw size={14}/>{uiText("Watch again")}</button></div>
   </Modal>}
 
-  {mode==='explore'&&<div className="dm-explore-bar"><span>This is a sample crew. Try the controls.</span><button className="dm-button dm-quiet" onClick={replay}><RefreshCw size={14}/>Watch again</button></div>}
-  <div className="dm-toast" role="status" aria-live="polite">{toast&&<span key={toast}>{toast}<button onClick={()=>setToast('')} aria-label="Dismiss"><X size={14}/></button></span>}</div>
+  {mode==='explore'&&<div className="dm-explore-bar"><span>{uiText("This is a sample crew. Try the controls.")}</span><button className="dm-button dm-quiet" onClick={replay}><RefreshCw size={14}/>{uiText("Watch again")}</button></div>}
+  <div className="dm-toast" role="status" aria-live="polite">{toast&&<span key={toast}>{uiText(toast)}<button onClick={()=>setToast('')} aria-label={uiText("Dismiss")}><X size={14}/></button></span>}</div>
  </div>;
 }
 
 function Modal({labelledBy,children}:{labelledBy:string;children:React.ReactNode}){
- return <div className="dm-modal-layer"><div className="dm-modal" role="dialog" aria-modal="true" aria-labelledby={labelledBy}>{children}</div></div>;
+ return <div className="dm-modal-layer"><div className="dm-modal" role="dialog" aria-modal="true" aria-labelledby={labelledBy}>{uiText(children)}</div></div>;
 }
 
 function IdeaCard({approved}:{approved:boolean}){
  return <article className={'dm-idea'+(approved?' is-approved':'')}>
-  <div className="dm-idea-top"><span>Trend scout</span>{approved&&<span className="dm-badge is-yes"><Check size={12}/>Approved</span>}</div>
-  <div className="dm-idea-title"><b>BTC</b><span>Long</span></div>
+  <div className="dm-idea-top"><span>{uiText("Trend scout")}</span>{approved&&<span className="dm-badge is-yes"><Check size={12}/>{uiText("Approved")}</span>}</div>
+  <div className="dm-idea-title"><b>BTC</b><span>{uiText("Long")}</span></div>
   <dl>
-   <div><dt>Why</dt><dd>Steady climb, just bounced</dd></div>
-   <div><dt>Wrong if</dt><dd>Below $98,400</dd></div>
-   <div><dt>Time limit</dt><dd>2 days</dd></div>
+   <div><dt>{uiText("Why")}</dt><dd>{uiText("Steady climb, just bounced")}</dd></div>
+   <div><dt>{uiText("Wrong if")}</dt><dd>{uiText("Below $98,400")}</dd></div>
+   <div><dt>{uiText("Time limit")}</dt><dd>{uiText("2 days")}</dd></div>
   </dl>
  </article>;
 }
 
 function Event({tone,title,detail,amount}:{tone:'buy'|'lock'|'win'|'loss'|'idea'|'no';title:string;detail?:string;amount?:string}){
- return <div className={'dm-event is-'+tone}><span className="dm-event-dot" aria-hidden="true"/><div><b>{title}</b>{detail&&<small>{detail}</small>}</div>{amount&&<strong>{amount}</strong>}</div>;
+ return <div className={'dm-event is-'+tone}><span className="dm-event-dot" aria-hidden="true"/><div><b>{uiText(title)}</b>{detail&&<small>{uiText(detail)}</small>}</div>{amount&&<strong>{uiText(amount)}</strong>}</div>;
 }
 
 function Sizer({visible}:{visible:boolean}){
  const rows:[string,string][]=[['Weekly limit','$50'],['Planned risk on this trade','≈ $10'],['So it buys','≈ $625 of BTC']];
  return <div className={'dm-sizer'+(visible?' is-on':'')} aria-hidden={!visible}>
-  <ol>{rows.map(([k,v],i)=><li key={k} style={{'--i':i} as React.CSSProperties} className={i===rows.length-1?'is-result':''}><span>{k}</span><b>{v}</b></li>)}</ol>
+  <ol>{rows.map(([k,v],i)=><li key={k} style={{'--i':i} as React.CSSProperties} className={i===rows.length-1?'is-result':''}><span>{uiText(k)}</span><b>{uiText(v)}</b></li>)}</ol>
  </div>;
 }

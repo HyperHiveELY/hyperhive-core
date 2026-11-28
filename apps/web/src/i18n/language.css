@@ -1,0 +1,25 @@
+select.hh-language {
+  box-sizing: border-box;
+  width: auto;
+  min-width: 0;
+  min-height: 32px;
+  max-width: 8em;
+  margin: 0;
+  padding: 4px 6px;
+  border: 1px solid currentColor;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.hh-language option { color: CanvasText; background: Canvas; }
+.site-menu .hh-language { margin-top: 12px; }
+html:lang(zh-CN) { line-break: strict; }
+html:lang(zh-CN) :is(h1,h2,h3,p,button) { letter-spacing: normal; }
+select.profile-language {display:none}
+@media (max-width: 760px) {
+  select.workspace-language {display:none}
+  select.profile-language {display:block;margin:7px 10px}
+}

@@ -1,3 +1,4 @@
+import {uiText} from "../i18n/language.js";
 import React,{useEffect,useLayoutEffect,useRef,useState} from 'react';
 import {series,LAST,PRICE_LO,PRICE_HI,usd} from './story.js';
 import {onThemeChange} from '../theme.js';
@@ -67,10 +68,10 @@ export function DemoChart({head,dur,reduced,lines,pins,scanning,marks,onPassed,c
   </svg>
   {scanning&&!reduced&&<div className="dm-scan" aria-hidden="true"><i/></div>}
   {lines.map(l=><div key={l.id} className={'dm-level dm-level-'+l.kind+(l.visible?' is-on':'')} style={{transform:`translate3d(0,${size.h?y(l.price):0}px,0)`,width:size.w}} aria-hidden={!l.visible}>
-   <span className="dm-level-rule"/><span className="dm-level-label"><b>{l.label}</b>{usd(l.price,0)}</span>
+   <span className="dm-level-rule"/><span className="dm-level-label"><b>{uiText(l.label)}</b>{usd(l.price,0)}</span>
   </div>)}
-  {pins.map(p=><div key={p.id} className={'dm-pin dm-pin-'+p.tone+(p.visible?' is-on':'')+(p.minor?' is-minor':'')} style={{transform:`translate3d(${size.w?x(p.index):0}px,${size.h?y(p.price):0}px,0)`}} aria-hidden={!p.visible}><span>{p.label}</span></div>)}
+  {pins.map(p=><div key={p.id} className={'dm-pin dm-pin-'+p.tone+(p.visible?' is-on':'')+(p.minor?' is-minor':'')} style={{transform:`translate3d(${size.w?x(p.index):0}px,${size.h?y(p.price):0}px,0)`}} aria-hidden={!p.visible}><span>{uiText(p.label)}</span></div>)}
   <div className="dm-dot" ref={dot} aria-hidden="true"><i/><span className="dm-readout" ref={readout}/></div>
-  {children}
+  {uiText(children)}
  </div>;
 }
