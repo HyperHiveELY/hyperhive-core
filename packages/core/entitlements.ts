@@ -7,7 +7,7 @@ import {type Sql} from './db.js';
 import {type Crew,subscriptionKey} from './domain.js';
 const cache=new Map<string,{at:number;value:Awaited<ReturnType<typeof readBenefit>>}>();
 async function readBenefit(owner:string){
- const s=await integrationSettings();if(!s.token||!s.tokenThreshold)return {configured:false,eligible:false,token:s.token??null,threshold:s.tokenThreshold??'10000',balance:null,decimals:18,symbol:'HIVE'};
+ const s=await integrationSettings();if(!s.token||!s.tokenThreshold)return {configured:false,eligible:false,token:s.token??null,threshold:s.tokenThreshold??'100000',balance:null,decimals:18,symbol:'HIVE'};
  const rpc=createPublicClient({transport:http(config.ELYSIUM_RPC)});if(await rpc.getChainId()!==CONTRACT_CHAIN_ID)throw Error('Token benefits require Elysium mainnet');
  const [decimals,balance,symbol]=await Promise.all([rpc.readContract({address:s.token as Hex,abi:tokenAbi,functionName:'decimals'}),rpc.readContract({address:s.token as Hex,abi:tokenAbi,functionName:'balanceOf',args:[owner as Hex]}),rpc.readContract({address:s.token as Hex,abi:tokenAbi,functionName:'symbol'})]);
  return {configured:true,eligible:balance>=parseUnits(s.tokenThreshold,decimals),token:s.token,threshold:s.tokenThreshold,balance:formatUnits(balance,decimals),decimals,symbol};

@@ -1,0 +1,9 @@
+.panel.hive-drop{border-color:var(--accent-line,#6fe3b866);background:#10241e}
+.hive-drop .panel-heading{flex-wrap:wrap}
+.hive-drop h3{font-size:22px;font-weight:550;line-height:1.35;letter-spacing:-.4px;max-width:660px}
+.hive-drop p{max-width:680px;line-height:1.6}
+.hive-drop button{max-width:100%;white-space:normal;margin:4px 10px 8px 0}
+.hive-drop .token-ca{vertical-align:middle}
+.hive-drop-note{display:block;color:var(--muted);font-size:12px;line-height:1.6;margin-top:14px;max-width:680px}
+.hive-drop-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--brand-mint,#97fce3);flex-shrink:0;margin-left:3px}
+@media(max-width:600px){.hive-drop h3{font-size:20px}.hive-drop .primary{width:100%;min-height:44px}.hive-drop .panel-heading{gap:10px}}

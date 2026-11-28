@@ -3,8 +3,12 @@ import {assertProductionConfig} from '../../packages/core/production.js';
 import {runtimeHealth} from '../../packages/core/runtime-health.js';
 import {productionCsp} from './security.js';
 import {registerPaper} from './paper.js';
+import {registerScan} from './scan.js';
+import {registerTrades} from './trades.js';
 import {registerTokens} from './tokens.js';
+import {registerExits} from './exits.js';
 import {registerHosting} from './hosting.js';
+import {registerWalletCheck,walletCheckRequestLog} from './wallet-check.js';
 import {registerIntegrations} from './integrations.js';
 import {integrationSettings} from '../../packages/core/integration-settings.js';
 import {requireAccess} from '../../packages/core/access.js';
@@ -40,7 +44,7 @@ export async function createServer(db:Database){
   assertProductionConfig(config);
   const csp=config.NODE_ENV==='production'?await productionCsp():null;
   const isLocal=localMode();
-  const app=Fastify({logger:config.NODE_ENV==='test'?false:{level:'info',redact:['req.headers.authorization','req.headers.cookie','res.headers.set-cookie','key','signature','token','authorization','req.headers.payment-signature']},bodyLimit:32768,trustProxy:(_address:string,hop:number)=>hop<config.TRUSTED_PROXY_HOPS});
+  const app=Fastify({logger:config.NODE_ENV==='test'?false:{level:'info',serializers:{req:walletCheckRequestLog},redact:['req.headers.authorization','req.headers.cookie','res.headers.set-cookie','key','signature','token','authorization','req.headers.payment-signature']},bodyLimit:32768,trustProxy:(_address:string,hop:number)=>hop<config.TRUSTED_PROXY_HOPS});
   // Behind a reverse proxy, TRUSTED_PROXY_HOPS makes req.ip the real client address so each visitor gets their own
   // request bucket instead of every user sharing the proxy's.
   // A landing page can load >120 static assets. Assets must not consume API
@@ -60,6 +64,9 @@ export async function createServer(db:Database){
   const crew=async(req:FastifyRequest,id:string)=>{const who=await owner(req);const c=(await db.query<Crew>('SELECT * FROM crews WHERE id=$1 AND owner=$2',[id,who])).rows[0];if(!c)throw Object.assign(Error('Crew not found'),{statusCode:404});return c;};
   const local=(req:FastifyRequest)=>{const addr=req.socket.remoteAddress;if(!['127.0.0.1','::1','::ffff:127.0.0.1'].includes(addr??'')||config.NODE_ENV==='production')throw Object.assign(Error('Secret setup is available only on this computer'),{statusCode:403});};
   registerPaper(app,db,crew);
+  registerScan(app,db);
+  registerTrades(app,db,crew);
+  registerExits(app,db,owner);
   /** Report execution prerequisites and return 503 when required services are unavailable. */
   app.get('/api/ready',async(_req,reply)=>{try{const status=await runtimeHealth(db);return reply.code(status.ok?200:503).send(status);}catch{return reply.code(503).send({ok:false,checks:[{id:'database',ok:false}]});}});
   /** Report API process liveness for the container health check. */
@@ -190,6 +197,7 @@ export async function createServer(db:Database){
   registerPaidVerification(app,db,owner);
   registerIntegrations(app,db,owner,local);
   registerHosting(app,local);
+  registerWalletCheck(app);
   /** Return a rate-limited API error for unknown paths. */
   app.get('/api/*',async(_req,reply)=>reply.code(404).send({error:'Not found'}));
   if(existsSync(resolve('dist/web'))){await app.register(staticFiles,{root:resolve('dist/web')});app.setNotFoundHandler((req,reply)=>req.url.startsWith('/api/')?reply.code(404).send({error:'Not found'}):reply.sendFile(req.url.split('?')[0]==='/'?'index.html':'app.html'));}

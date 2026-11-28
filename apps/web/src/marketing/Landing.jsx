@@ -72,6 +72,11 @@ function Hero() {
               ? <ActionLink href="/demo" variant="light">Watch the 1-minute demo</ActionLink>
               : <ActionLink href="/#how-it-works" variant="light">See how it works</ActionLink>}
           </div>
+          <form className="lp-scan-pill" action="/scan" method="get">
+            <label htmlFor="hero-scan-market">Scan a coin</label>
+            <select id="hero-scan-market" name="m" defaultValue="BTC" aria-label="Coin to scan">{['BTC','ETH','SOL','HYPE'].map(coin=><option key={coin}>{coin}</option>)}</select>
+            <button type="submit" aria-label="Open free AI scanner">Scan <span aria-hidden="true">↗</span></button>
+          </form>
           <TokenCa className="lp-hero__ca" hideEmpty />
         </div>
       </div>
@@ -363,7 +368,7 @@ function Pricing() {
           <Kicker tone="white">Pricing</Kicker>
           <h2 id="lp-pricing-title" className="lp-h2">AI that fits your pace.</h2>
           <div className="lp-pricing__note">
-            <p>“1 USDC buys 1,000 Tokens for AI scans and reviews. No monthly plan. Each filled order also pays a 0.03% HyperHive fee (0.02% for eligible $HIVE holders), plus Hyperliquid’s own fees.”</p>
+            <p>“1 USDC buys 1,000 Tokens for AI scans and reviews. No monthly plan. Eligible $HIVE holders get free Tokens weekly. Each filled order also pays a 0.03% HyperHive fee (0.02% for eligible $HIVE holders), plus Hyperliquid’s own fees.”</p>
             <p className="lp-pricing__by"><img src="/art/hyperhive-logo.svg" alt="" width="24" height="24" /><strong>Tokens &amp; Fees</strong><span aria-hidden="true" />Pay As You Go</p>
           </div>
         </div>

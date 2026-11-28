@@ -13,6 +13,8 @@ async function exchangeData(account:Crew['account']){
 export async function dashboard(db:Sql,owner:string,load=exchangeData):Promise<DashboardData>{
  const crews=(await db.query<Crew>('SELECT * FROM crews WHERE owner=$1 ORDER BY created_at',[owner])).rows;
  const bots:BotSummary[]=[],activity:FeedItem[]=[];
+ const exits=await db.query<{coin:string;created_at:number}>('SELECT coin,max(created_at) AS created_at FROM auto_exit_events WHERE owner=$1 GROUP BY coin ORDER BY created_at DESC LIMIT 30',[owner]);
+ activity.push(...exits.rows.map(e=>({id:`auto-exits-${e.coin}-${e.created_at}`,crewId:'',botName:'Your wallet',kind:'event' as const,title:`Auto exits added to ${e.coin}`,message:'Stop or take-profit orders were confirmed on Hyperliquid.',reason:'Open Auto exits to see current orders.',time:Number(e.created_at)})));
  // Bound concurrent venue calls, even for owners with many accounts.
  for(let offset=0;offset<crews.length;offset+=3){
   const batch=await Promise.all(crews.slice(offset,offset+3).map(async crew=>{

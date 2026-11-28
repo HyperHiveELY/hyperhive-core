@@ -1,5 +1,20 @@
 [
   {
+    "source": "apps/api/wallet-check.ts",
+    "method": "GET",
+    "url": "/api/wallet-check/:address"
+  },
+  {
+    "source": "apps/api/exits.ts",
+    "method": "GET",
+    "url": "/api/exits/plan"
+  },
+  {
+    "source": "apps/api/exits.ts",
+    "method": "POST",
+    "url": "/api/exits/placed"
+  },
+  {
     "source": "apps/api/integrations.ts",
     "method": "GET",
     "url": "/api/integrations"
@@ -28,6 +43,11 @@
     "source": "apps/api/payments.ts",
     "method": "GET",
     "url": "/api/payments/invoices/:id"
+  },
+  {
+    "source": "apps/api/tokens.ts",
+    "method": "POST",
+    "url": "/api/tokens/hive-drop"
   },
   {
     "source": "apps/api/tokens.ts",
@@ -83,5 +103,30 @@
     "source": "apps/api/server.ts",
     "method": "GET",
     "url": "/api/records"
+  },
+  {
+    "source": "apps/api/scan.ts",
+    "method": "POST",
+    "url": "/api/scan"
+  },
+  {
+    "source": "apps/api/scan.ts",
+    "method": "GET",
+    "url": "/api/scan/markets"
+  },
+  {
+    "source": "apps/api/trades.ts",
+    "method": "GET",
+    "url": "/api/crews/:id/trades/preview"
+  },
+  {
+    "source": "apps/api/trades.ts",
+    "method": "POST",
+    "url": "/api/crews/:id/trades"
+  },
+  {
+    "source": "apps/api/trades.ts",
+    "method": "GET",
+    "url": "/api/crews/:id/trades/:tradeId"
   }
 ]

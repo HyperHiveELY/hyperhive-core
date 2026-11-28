@@ -10,14 +10,14 @@ export const primaryAction = {label: 'Get started', href: '/dashboard'};
 const navLinks = [
   ['Demo', '/demo'],
   ['How it works', '/#how-it-works'],
-  ['Technology', '/#features'],
+  ['Scan', '/scan'],
   ['Docs', '/docs'],
   ['Whitepaper', '/whitepaper'],
   ['Roadmap', '/roadmap'],
 ];
 
 const footerColumns = [
-  ['Explore', [['1-minute demo', '/demo'], ['How it works', '/#how-it-works'], ['Technology', '/#features'], ['Process case study', '/case-study'], ['Pricing', '/#pricing']]],
+  ['Explore', [['AI scanner', '/scan'], ['Wallet check', '/check'], ['1-minute demo', '/demo'], ['How it works', '/#how-it-works'], ['Technology', '/#features'], ['Process case study', '/case-study'], ['Pricing', '/#pricing']]],
   ['HyperHive', [['Docs', '/docs'], ['Whitepaper', '/whitepaper'], ['Roadmap', '/roadmap'], ['FAQ', '/faq'], ['Workspace', '/dashboard']]],
   ['Resources', [['Risks & limits', '/risks'], ['Trading terms', '/terms'], ['Privacy', '/privacy']]],
 ];

@@ -3,9 +3,9 @@ import type {Hex} from 'viem';
 const enc=new TextEncoder();
 const b64=(b:Uint8Array)=>btoa(String.fromCharCode(...b));
 const unb64=(s:string)=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
-export interface WalletBackup {format:'hyperhive-wallet-v2';purpose:'owner'|'crew'|'treasury';address:Hex;salt:string;iv:string;ciphertext:string}
+export interface WalletBackup {format:'hyperhive-wallet-v2';purpose:'owner'|'crew'|'treasury'|'exits';address:Hex;salt:string;iv:string;ciphertext:string}
 async function derive(password:string,salt:Uint8Array){const base=await crypto.subtle.importKey('raw',enc.encode(password),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',hash:'SHA-256',salt:salt as BufferSource,iterations:600000},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);}
-export async function createEncryptedWallet(password:string,purpose:'owner'|'crew'|'treasury'){
+export async function createEncryptedWallet(password:string,purpose:'owner'|'crew'|'treasury'|'exits'){
  if(password.length<12||password.length>1024)throw Error('Use a password of 12–1024 characters');
  const secret=generatePrivateKey(),account=privateKeyToAccount(secret),salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
  const header={format:'hyperhive-wallet-v2' as const,purpose,address:account.address};

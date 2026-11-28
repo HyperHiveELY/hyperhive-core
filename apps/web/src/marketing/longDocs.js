@@ -115,6 +115,7 @@ export const docsPage = {
       {id: 'tokens', title: 'Tokens and AI usage', blocks: [
         ['p', '1 USDC buys 1,000 Tokens. Tokens are shared across your crews and charged at current model rates plus the service markup shown in your dashboard. There is no monthly plan.'],
         ['p', 'Tokens are bought with USDC on Elysium from your built-in wallet. You can also bridge from Robinhood Chain in the workspace, then confirm the purchase separately. Tokens are separate from your trading funds and from $HIVE.'],
+        ['p', 'Hold at least 100,000 $HIVE to claim 5,000 free Tokens each week in Workspace → Tokens. Connect the wallet holding $HIVE and click Claim. Your live balance is checked, and each wallet can claim once per week. Drops reset Monday at 00:00 UTC, with 500,000 Tokens available across all wallets each week. Holders also pay a 0.02% HyperHive fee instead of 0.03% on every fill. Current amounts and availability appear in Tokens.'],
         ['p', 'If a crew runs out of Tokens it stops looking for new trades. Exits never need the AI and keep running.'],
       ]},
       {id: 'fees', title: 'Fees', blocks: [
@@ -245,13 +246,14 @@ export const whitepaper = {
     ]},
     {id: 'economics', title: 'Economics and $HIVE', blocks: [
       ['p', 'Users prepay AI usage with Tokens (1 USDC buys 1,000 Tokens). Each filled order pays a builder fee of 0.03% of order size, or 0.02% for eligible $HIVE holders. There is no performance, deposit or withdrawal fee.'],
+      ['p', 'Wallets holding at least 100,000 $HIVE can claim 5,000 free AI Tokens once per UTC week through Workspace → Tokens. The weekly pool is 500,000 Tokens across all wallets and resets Monday at 00:00 UTC. Claims check the current on-chain balance; the workspace shows current amounts and availability.'],
       ['table', ['Fee share', 'Destination'], [
         ['80%', 'Worker operators, who run the crews (the studio at launch)'],
         ['10%', 'Treasury'],
         ['5%', 'Staked Auditors, as pay for checking'],
         ['5%', 'Buy and burn of $HIVE'],
       ]],
-      ['p', '$HIVE is used for access and work: a holding tier lowers the builder fee, and Auditors bond it to take part in checking. It is not a claim on revenue.'],
+      ['p', '$HIVE holders get a lower builder fee and weekly free AI Tokens. Auditor bonds are a later step for taking part in checking trade records. It is not a claim on revenue.'],
       ['ca'],
     ]},
     {id: 'limits', title: 'Limits and risks', blocks: [

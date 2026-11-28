@@ -22,7 +22,7 @@ export function SettingsPage(p:SetupProps){
 
  </section></div>{p.cfg?.localSetup&&<details className="panel setup-panel service-diagnostics"><summary>Service status <span>{p.setup.filter(s=>s[1]).length} / {p.setup.length} configured</span></summary>{p.setup.map(([label,ready,description])=><div className="readiness" title={String(description)} key={String(label)}><span className={ready?'check yes':'check'}>{ready?<Check size={16}/>:<span>○</span>}</span><div><b>{label}</b>{!ready&&<p>{description}</p>}</div><span className={ready?'positive':'muted'}>{ready?'Configured':'Needed'}</span></div>)}</details>}</>;
 }
-export function PlansPage(p:any){return <><TokensPage api={p.api} owner={p.owner} cfg={p.cfg} onConnect={p.onConnect??p.onCreate}/>{p.owner&&<details className="panel setup-panel"><summary>$HIVE trading benefits</summary><TokenBenefits api={p.api} crews={p.crews} onNavigate={p.onNavigate}/></details>}</>;}
+export function PlansPage(p:any){return <><TokensPage api={p.api} owner={p.owner} cfg={p.cfg} onConnect={p.onConnect??p.onCreate}/>{p.owner&&<details className="panel setup-panel"><summary>$HIVE weekly Tokens and lower fees</summary><TokenBenefits api={p.api} crews={p.crews} onNavigate={p.onNavigate}/></details>}</>;}
 export function IntegrationsPage({cfg,api,onNavigate,owner}:{owner:string;cfg:any;api:Api;onNavigate:(v:string)=>void}){
  const [folder,setFolder]=useState(cfg?.localProjectFolder??''),[notice,setNotice]=useState(''),[testing,setTesting]=useState(false);
  async function copy(value:string){try{await navigator.clipboard.writeText(value);setNotice('Copied.');}catch{setNotice('Clipboard access unavailable.');}}

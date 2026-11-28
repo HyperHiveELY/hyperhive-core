@@ -1,6 +1,7 @@
 import { Pool, type PoolClient } from 'pg';
 import { PGlite } from '@electric-sql/pglite';
 import { mkdir } from 'node:fs/promises';
+import {randomUUID} from 'node:crypto';
 export interface Sql {query<T=Record<string,unknown>>(sql:string,args?:unknown[]):Promise<{rows:T[]}>}
 export class Database implements Sql {
   private pool?:Pool; private embedded?:PGlite; private queue=Promise.resolve();
@@ -39,8 +40,13 @@ export class Database implements Sql {
   async close(){await this.pool?.end();await this.embedded?.close();}
 }
 const schema=`
+CREATE TABLE IF NOT EXISTS scan_daily_spend(day text PRIMARY KEY,committed_usd numeric NOT NULL DEFAULT 0 CHECK(committed_usd>=0),blocked boolean NOT NULL DEFAULT false);
+CREATE TABLE IF NOT EXISTS scan_usage(id text PRIMARY KEY,day text NOT NULL REFERENCES scan_daily_spend(day),model text NOT NULL,reserved_usd numeric NOT NULL CHECK(reserved_usd>=0),actual_usd numeric,status text NOT NULL DEFAULT 'reserved',created_at double precision NOT NULL,finished_at double precision);
 CREATE TABLE IF NOT EXISTS ai_billing_exemptions(owner text PRIMARY KEY,enabled boolean NOT NULL DEFAULT false,updated_at double precision NOT NULL);
 CREATE TABLE IF NOT EXISTS token_accounts(owner text PRIMARY KEY,available bigint NOT NULL DEFAULT 0 CHECK(available>=0),reserved bigint NOT NULL DEFAULT 0 CHECK(reserved>=0));
+CREATE TABLE IF NOT EXISTS hive_drop_weeks(week text PRIMARY KEY);
+CREATE TABLE IF NOT EXISTS hive_drop_claims(owner text NOT NULL,week text NOT NULL REFERENCES hive_drop_weeks(week),units bigint NOT NULL CHECK(units>0),created_at double precision NOT NULL,PRIMARY KEY(owner,week));
+CREATE INDEX IF NOT EXISTS hive_drop_claims_week ON hive_drop_claims(week);
 CREATE TABLE IF NOT EXISTS token_invoices(id text PRIMARY KEY,owner text NOT NULL,amount text NOT NULL,pay_to text NOT NULL,units bigint NOT NULL CHECK(units>0),nonce double precision NOT NULL,status text NOT NULL DEFAULT 'OPEN',tx text UNIQUE,created_at double precision NOT NULL,expires_at double precision NOT NULL);
 ALTER TABLE token_invoices ADD COLUMN IF NOT EXISTS network text NOT NULL DEFAULT 'hypercore';
 CREATE INDEX IF NOT EXISTS token_invoices_owner ON token_invoices(owner,created_at);
@@ -56,11 +62,14 @@ CREATE INDEX IF NOT EXISTS paper_events_crew ON paper_events(crew_id,created_at)
 CREATE TABLE IF NOT EXISTS identities(crew_id text PRIMARY KEY REFERENCES crews(id),agent text NOT NULL,signer text NOT NULL,quote jsonb NOT NULL,generation integer NOT NULL,measurement text NOT NULL,updated_at double precision NOT NULL);
 CREATE TABLE IF NOT EXISTS auth_nonces(nonce text PRIMARY KEY,owner text NOT NULL,expires_at double precision NOT NULL);
 CREATE TABLE IF NOT EXISTS sessions(token text PRIMARY KEY,owner text NOT NULL,expires_at double precision NOT NULL);
+CREATE TABLE IF NOT EXISTS auto_exit_events(owner text NOT NULL,oid bigint NOT NULL,coin text NOT NULL,created_at double precision NOT NULL,PRIMARY KEY(owner,oid));
+CREATE INDEX IF NOT EXISTS auto_exit_events_owner_time ON auto_exit_events(owner,created_at);
 CREATE TABLE IF NOT EXISTS controls(nonce text PRIMARY KEY,crew_id text NOT NULL,action text NOT NULL,signature text NOT NULL,created_at double precision NOT NULL,handled boolean NOT NULL DEFAULT false);
 ALTER TABLE controls ADD COLUMN IF NOT EXISTS policy_hash text NOT NULL DEFAULT '';
 ALTER TABLE controls ADD COLUMN IF NOT EXISTS issued_at double precision NOT NULL DEFAULT 0;
 CREATE TABLE IF NOT EXISTS cards(id text PRIMARY KEY,crew_id text NOT NULL REFERENCES crews(id),body jsonb NOT NULL,lens text NOT NULL,evidence jsonb NOT NULL,verdict jsonb NOT NULL,status text NOT NULL,reason text,created_at double precision NOT NULL,updated_at double precision NOT NULL);
 ALTER TABLE cards ADD COLUMN IF NOT EXISTS attestation jsonb;
+CREATE TABLE IF NOT EXISTS owner_trade_nonces(nonce text PRIMARY KEY,crew_id text NOT NULL REFERENCES crews(id),card_id text NOT NULL UNIQUE,created_at double precision NOT NULL);
 CREATE TABLE IF NOT EXISTS record_summaries(crew_id text PRIMARY KEY REFERENCES crews(id),body jsonb NOT NULL,updated_at double precision NOT NULL);
 CREATE TABLE IF NOT EXISTS slips(digest text PRIMARY KEY,crew_id text NOT NULL REFERENCES crews(id),seq integer NOT NULL,previous text NOT NULL,body jsonb NOT NULL,signature text NOT NULL,signer text NOT NULL,cloid text UNIQUE NOT NULL,ack jsonb,created_at double precision NOT NULL,UNIQUE(crew_id,seq));
 CREATE TABLE IF NOT EXISTS positions(crew_id text NOT NULL,market text NOT NULL,body jsonb NOT NULL,PRIMARY KEY(crew_id,market));
@@ -90,6 +99,31 @@ CREATE INDEX IF NOT EXISTS slips_crew ON slips(crew_id,created_at);
 CREATE INDEX IF NOT EXISTS fills_crew_time ON fills(crew_id,created_at);
 CREATE INDEX IF NOT EXISTS budgets_day ON budgets(crew_id,day);
 `;
+/** Atomically reserve public scan spending across processes without touching crew balances. */
+export async function reserveScanCall(db:Database,model:string,ceiling:number,cap:number){
+ if(!Number.isFinite(ceiling)||ceiling<0||!Number.isFinite(cap)||cap<=0)throw Error('Scan budget unavailable');
+ const day=new Date().toISOString().slice(0,10),id=randomUUID();
+ return db.transaction(async tx=>{
+  await tx.query('INSERT INTO scan_daily_spend(day) VALUES($1) ON CONFLICT(day) DO NOTHING',[day]);
+  const held=await tx.query('UPDATE scan_daily_spend SET committed_usd=committed_usd+$2 WHERE day=$1 AND NOT blocked AND committed_usd<$3 AND committed_usd+$2<=$3 RETURNING day',[day,ceiling,cap]);
+  if(!held.rows.length)throw Error('Scan budget unavailable');
+  await tx.query('INSERT INTO scan_usage(id,day,model,reserved_usd,created_at) VALUES($1,$2,$3,$4,$5)',[id,day,model,ceiling,Date.now()]);
+  return id;
+ });
+}
+/** Keep conservative reservations after failure or restart; record usage and stop on overruns. */
+export async function settleScanCall(db:Database,id:string,cost:number|null,status:string){
+ if(cost!==null&&(!Number.isFinite(cost)||cost<0))throw Error('Invalid scan cost');
+ const overrun=await db.transaction(async tx=>{
+  const result=await tx.query<{day:string;reserved_usd:string}>('UPDATE scan_usage SET actual_usd=$2,status=$3,finished_at=$4 WHERE id=$1 AND finished_at IS NULL RETURNING day,reserved_usd',[id,cost,status,Date.now()]);
+  const row=result.rows[0];if(!row)return false;
+  if(cost!==null&&cost>Number(row.reserved_usd)){
+   await tx.query('UPDATE scan_daily_spend SET blocked=true,committed_usd=committed_usd+$2 WHERE day=$1',[row.day,cost-Number(row.reserved_usd)]);return true;
+  }
+  return false;
+ });
+ if(overrun)throw Error('Scan spending ceiling exceeded');
+}
 /** Append a bounded operator event message, optionally scoped to a single crew. */
 export async function event(db:Sql,crew:string|null,kind:string,message:string){await db.query('INSERT INTO events(crew_id,kind,message,created_at) VALUES($1,$2,$3,$4)',[crew,kind,message.slice(0,400),Date.now()]);}
 /** Upsert the service's last-seen timestamp and its current readiness details. */

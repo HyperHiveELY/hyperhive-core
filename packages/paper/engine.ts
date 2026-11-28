@@ -4,6 +4,7 @@ import {analyzePaper} from './review.js';
 import {candidateChecks,STRATEGIES,PAPER_REVIEW_VERSION,type Lens,type PaperSnapshot} from './strategies.js';
 import {aiCreditAccess,meteringReady} from '../core/tokens.js';
 import {mutatePaper,readPaper,markPaper,openPaper,paperEvent} from './account.js';
+import {executeOwnerPaperTrade} from './owner-trades.js';
 export class PaperEngine {
  private scans=new Map<string,Promise<void>>();
  /** Bind the paper worker to its database and injected market-data source. */
@@ -15,6 +16,7 @@ export class PaperEngine {
   if(a.strategyVersion!==PAPER_REVIEW_VERSION)await mutatePaper(this.db,crew.id,async (state,tx)=>{state.strategyVersion=PAPER_REVIEW_VERSION;state.nextScan={};state.revision++;await paperEvent(tx,crew.id,'strategy_update',{message:'Paper strategy checks updated; balances and history retained',version:PAPER_REVIEW_VERSION});});
   const quotes=await Promise.all(a.positions.map(p=>this.quote(p.market)));
   await mutatePaper(this.db,crew.id,async (a,tx)=>{for(const fill of markPaper(a,quotes))await paperEvent(tx,crew.id,'exit',fill);});
+  await executeOwnerPaperTrade(this.db,crew,this.quote);
   a=await readPaper(this.db,crew.id);if(!a?.running||this.scans.has(crew.id))return;
   const job=this.scan(crew).catch(async e=>{await mutatePaper(this.db,crew.id,async (a,tx)=>{a.error=(e as Error).message.slice(0,250);await paperEvent(tx,crew.id,'error',{message:a.error});});}).finally(()=>this.scans.delete(crew.id));this.scans.set(crew.id,job);
  }
