@@ -14,8 +14,8 @@ afterEach(()=>Object.assign(config,prior));
 it('binds enclave identity to the signed policy, waits for enrollment and confirms the archived root',async()=>{
  const db=await new Database('memory').init(),c=await crew(),signer=new Signer(db);
  const tcb={mrtd:'00',rtmr0:'01',rtmr1:'02',rtmr2:'03',rtmr3:'04'},measurement=hash({...tcb,composeHash:'fixture'});
- Object.assign(config,{SIGNER_MODE:'phala',DATABASE_URL:'memory',MEASUREMENT_HASH:measurement,ROOT_CONTRACT:wallet.address,LIVE_TRADING_ENABLED:'true'});
- h.details.mockResolvedValue({tcb_info:tcb,compose_hash:'fixture'});
+ Object.assign(config,{SIGNER_MODE:'phala',DATABASE_URL:'memory',MEASUREMENT_HASH:measurement,ROOT_CONTRACT:wallet.address,LIVE_TRADING_ENABLED:'true',KMS_KEY_PROVIDER:'{"name":"kms","id":"fixture"}'});
+ h.details.mockResolvedValue({tcb_info:tcb,compose_hash:'fixture',key_provider_info:'{"name":"kms","id":"fixture"}'});
  const key=hexToBytes(generatePrivateKey());h.key.mockResolvedValue({key});h.quote.mockResolvedValue({quote:'fixture',event_log:[]});
  let member='0x'+'00'.repeat(20);
  h.read.mockImplementation(async({functionName})=>({approved:true,registry:wallet.address,posterMeasurement:measurement,crewAccount:member,lastHour:0n,lastRoot:ZERO})[functionName as 'approved']);
@@ -33,4 +33,12 @@ it('binds enclave identity to the signed policy, waits for enrollment and confir
   expect(h.write.mock.calls[1][0]).toMatchObject({functionName:'postSlipRoot',args:[1n,ZERO,0,ZERO]});
   expect((await db.query<any>('SELECT status FROM roots')).rows[0].status).toBe('ANCHORED');
  }finally{await db.close();}
+});
+
+it('refuses to derive keys when dstack reports a different key service',async()=>{
+ const db=await new Database('memory').init(),signer=new Signer(db);
+ const tcb={mrtd:'00',rtmr0:'01',rtmr1:'02',rtmr2:'03',rtmr3:'04'},measurement=hash({...tcb,composeHash:'fixture'});
+ Object.assign(config,{SIGNER_MODE:'phala',DATABASE_URL:'memory',MEASUREMENT_HASH:measurement,ROOT_CONTRACT:wallet.address,KMS_KEY_PROVIDER:'{"name":"kms","id":"approved"}'});
+ h.details.mockResolvedValue({tcb_info:tcb,compose_hash:'fixture',key_provider_info:'{"name":"kms","id":"legacy"}'});h.key.mockClear();
+ try{await expect(signer.init()).rejects.toThrow('key provider');expect(h.key).not.toHaveBeenCalled();}finally{await db.close();}
 });

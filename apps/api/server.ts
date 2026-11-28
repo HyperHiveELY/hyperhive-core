@@ -23,6 +23,7 @@ import { config } from '../../packages/core/config.js';
 import { Address,Signature,Policy,verifyPolicy,controlMessage,hash,subscriptionKey,type Crew } from '../../packages/core/domain.js';
 import { markets,info,accountState } from '../../packages/core/venue.js';
 import { ppqKey,savePpq,saveModels,modelSettings } from '../../packages/core/secrets.js';
+import { cachedRecord } from './records.js';
 import { verifyRecord } from '../worker/auditor.js';
 import {catalog,validateModels} from '../../packages/ai/models.js';
 import {verifyAttestation,type Identity} from '../../packages/core/attestation.js';
@@ -39,7 +40,9 @@ export async function createServer(db:Database){
   assertProductionConfig(config);
   const csp=config.NODE_ENV==='production'?await productionCsp():null;
   const isLocal=localMode();
-  const app=Fastify({logger:config.NODE_ENV==='test'?false:{level:'info',redact:['req.headers.authorization','req.headers.cookie','res.headers.set-cookie','key','signature','token','authorization','req.headers.payment-signature']},bodyLimit:32768,trustProxy:false});
+  const app=Fastify({logger:config.NODE_ENV==='test'?false:{level:'info',redact:['req.headers.authorization','req.headers.cookie','res.headers.set-cookie','key','signature','token','authorization','req.headers.payment-signature']},bodyLimit:32768,trustProxy:(_address:string,hop:number)=>hop<config.TRUSTED_PROXY_HOPS});
+  // Behind a reverse proxy, TRUSTED_PROXY_HOPS makes req.ip the real client address so each visitor gets their own
+  // request bucket instead of every user sharing the proxy's.
   // A landing page can load >120 static assets. Assets must not consume API
   // quota or a first visit can prevent its own dashboard bundle from loading.
   await app.register(cookie);await app.register(rateLimit,{max:120,timeWindow:'1 minute',allowList:req=>!req.url.startsWith('/api/')||['/api/health','/api/ready'].includes(req.url.split('?')[0])});
@@ -120,7 +123,8 @@ export async function createServer(db:Database){
   });
   /** Queue a fresh owner-signed control and serialize admission against mode changes. */
   app.post<{Params:{id:string}}>('/api/crews/:id/control',async(req)=>{const c=await crew(req,req.params.id);const body=z.strictObject({action:z.enum(['pause','resume','close']),nonce:z.string().uuid(),signature:Signature,issuedAt:z.number().int().positive()}).parse(req.body);
-    if(Math.abs(Date.now()-body.issuedAt)>300000||!await verifyMessage({address:c.owner,message:controlMessage(c.id,body.action,body.nonce,hash(c.policy),body.issuedAt),signature:body.signature as Hex}))throw Error('Control signature invalid or expired');
+    // Allow a little clock drift but no future-dated controls; the signer orders controls by when they arrive here.
+    if(Date.now()-body.issuedAt>300000||body.issuedAt-Date.now()>30000||!await verifyMessage({address:c.owner,message:controlMessage(c.id,body.action,body.nonce,hash(c.policy),body.issuedAt),signature:body.signature as Hex}))throw Error('Control signature invalid or expired');
     if(body.action==='resume'){
       if((await db.query('SELECT crew_id FROM paper_accounts WHERE crew_id=$1',[c.id])).rows.length)throw Error('This crew is reserved for paper testing. Create a separate crew for mainnet trading.');
       const [state,agents]=await Promise.all([accountState(c.account),info.extraAgents({user:c.account})]);
@@ -162,7 +166,7 @@ export async function createServer(db:Database){
       await tx.query('UPDATE crews SET policy=$2,signature=$3,paused=true WHERE id=$1',[old.id,JSON.stringify(policy),signature]);
     });return {ok:true};});
   /** Return public reconciliation status and observed metrics for one crew. */
-  app.get<{Params:{id:string}}>('/api/records/:id',async(req)=>verifyRecord(db,req.params.id));
+  app.get<{Params:{id:string}}>('/api/records/:id',async(req)=>cachedRecord(db,z.string().uuid().parse(req.params.id)));
   /** Export signed public intents, published identity and recent archived roots. */
   app.get<{Params:{id:string}}>('/api/records/:id/slips',async(req)=>({slips:(await db.query('SELECT * FROM slips WHERE crew_id=$1 ORDER BY seq',[req.params.id])).rows,identity:(await db.query('SELECT * FROM identities WHERE crew_id=$1',[req.params.id])).rows[0]??null,roots:(await db.query('SELECT * FROM roots ORDER BY hour DESC LIMIT 168')).rows}));
   /** List public fill classifications for a single crew in time order. */
@@ -173,7 +177,7 @@ export async function createServer(db:Database){
     return {hour,slips:(await db.query('SELECT * FROM slips WHERE created_at >= $1 AND created_at < $2 ORDER BY digest',[hour*3600000,(hour+1)*3600000])).rows,root:(await db.query('SELECT * FROM roots WHERE hour=$1',[hour])).rows[0]??null};
   });
   /** List recent public crew records and their reconciliation status. */
-  app.get('/api/records',async()=>({records:await Promise.all((await db.query<{id:string}>('SELECT id FROM crews ORDER BY created_at LIMIT 100')).rows.map(c=>verifyRecord(db,c.id)))}));
+  app.get('/api/records',async()=>({records:await Promise.all((await db.query<{id:string}>('SELECT id FROM crews ORDER BY created_at LIMIT 100')).rows.map(c=>cachedRecord(db,c.id)))}));
   /** Page through public signed crew policies using a bounded offset. */
   app.get<{Querystring:{offset?:string}}>('/api/crew-registry',async(req)=>{
     const offset=z.coerce.number().int().min(0).max(1000000).parse(req.query.offset??0);

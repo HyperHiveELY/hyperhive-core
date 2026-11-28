@@ -30,7 +30,7 @@ it.skipIf(process.env.HYPERHIVE_TEST_ANVIL!=='1')('verifies seven fresh deployme
   const rpc=createPublicClient({chain:contractChain,transport:http(url),pollingInterval:50});
   const wallet=createWalletClient({chain:contractChain,transport:http(url)});
   const [deployer,guardian,treasury,workers]=await wallet.getAddresses();
-  const input={deployer,governanceProposer:deployer,guardian,treasury,workers,tokenRecipient:treasury,usdc:ELYSIUM_USDC,hhivSupply:'1000000',minimumAuditorStake:'1000'};
+  const input={deployer,governanceProposer:deployer,guardian,treasury,workers,tokenRecipient:treasury,usdc:ELYSIUM_USDC,hiveSupply:'1000000',minimumAuditorStake:'1000'};
   const plan=await buildDeployment(input,0),receipts:{tx:Hex}[]=[];
   for(const step of plan.transactions){
    const tx=await wallet.sendTransaction({account:deployer,data:step.data,nonce:step.nonce,gas:15000000n});
@@ -48,8 +48,8 @@ it.skipIf(process.env.HYPERHIVE_TEST_ANVIL!=='1')('verifies seven fresh deployme
   }
   expect(await verifyDeployment({...core,receipts:coreReceipts})).toMatchObject({phase:'core',deploymentVerified:true,auditorWired:false});
   // Install a real ERC-20 runtime and balances on this isolated node only.
-  const hhiv=JSON.parse(await readFile('contracts/out/HHIV.json','utf8'));
-  const sourceCode=await rpc.getCode({address:plan.addresses.HHIV});
+  const hive=JSON.parse(await readFile('contracts/out/HIVE.json','utf8'));
+  const sourceCode=await rpc.getCode({address:plan.addresses.HIVE});
   const devCall=async(method:string,params:unknown[])=>{
    const response=await fetch(url,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method,params})});
    expect((await response.json()).error).toBeUndefined();
@@ -58,7 +58,7 @@ it.skipIf(process.env.HYPERHIVE_TEST_ANVIL!=='1')('verifies seven fresh deployme
   const {keccak256,encodeAbiParameters,toHex}=await import('viem');
   const slot=keccak256(encodeAbiParameters([{type:'address'},{type:'uint256'}],[treasury,0n]));
   await devCall('anvil_setStorageAt',[ELYSIUM_USDC,slot,toHex(10000000n,{size:32})]);
-  expect(await rpc.readContract({address:ELYSIUM_USDC,abi:hhiv.abi,functionName:'balanceOf',args:[treasury]})).toBe(10000000n);
+  expect(await rpc.readContract({address:ELYSIUM_USDC,abi:hive.abi,functionName:'balanceOf',args:[treasury]})).toBe(10000000n);
   const db=await new Database('memory').init();
   try{
    const owner=treasury.toLowerCase(),nonce=await rpc.getTransactionCount({address:treasury});

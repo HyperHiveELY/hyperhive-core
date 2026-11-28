@@ -5,7 +5,7 @@ import {subscriptionKey} from '../packages/core/domain.js';
 import {tokenBenefit,supplementalExpiry,builderFeeFor} from '../packages/core/entitlements.js';
 const state=vi.hoisted(()=>({balance:10000n*10n**18n,fail:false}));
 vi.mock('../packages/core/integration-settings.js',()=>({integrationSettings:async()=>({token:'0x'+'11'.repeat(20),tokenThreshold:'10000'})}));
-vi.mock('viem',async original=>({...await original<typeof import('viem')>(),createPublicClient:()=>({getChainId:async()=>99901,readContract:async({functionName}:any)=>{if(state.fail)throw Error('RPC unavailable');return functionName==='balanceOf'?state.balance:functionName==='decimals'?18:'HHIV';}})}));
+vi.mock('viem',async original=>({...await original<typeof import('viem')>(),createPublicClient:()=>({getChainId:async()=>99901,readContract:async({functionName}:any)=>{if(state.fail)throw Error('RPC unavailable');return functionName==='balanceOf'?state.balance:functionName==='decimals'?18:'HIVE';}})}));
 let db:Database,c:Awaited<ReturnType<typeof crew>>;
 beforeAll(async()=>{db=await new Database('memory').init();c=await crew();await db.query('INSERT INTO crews(id,owner,account,policy,signature,created_at) VALUES($1,$2,$3,$4,$5,$6)',[c.id,c.owner,c.account,JSON.stringify(c.policy),c.signature,c.created_at]);});afterAll(async()=>db.close());
 it('grants a discount only at the exact balance threshold',async()=>{expect((await tokenBenefit(c.owner,true)).eligible).toBe(true);expect(await builderFeeFor(c.owner)).toBe(20);state.balance-=1n;expect((await tokenBenefit(c.owner,true)).eligible).toBe(false);expect(await builderFeeFor(c.owner)).toBe(30);});

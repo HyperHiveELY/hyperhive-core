@@ -16,6 +16,7 @@ import {ChatCompletionsProvider} from '../packages/ai/chat.js';
 import {think} from '../packages/ai/crew.js';
 import {tokenBalance} from '../packages/core/tokens.js';
 import {verifyChain} from '../packages/core/proof.js';
+import {generatePrivateKey,privateKeyToAccount} from 'viem/accounts';
 vi.mock('@phala/dstack-sdk',()=>({DstackClient:class{}}));
 const baseline={...config};
 afterEach(()=>{Object.assign(config,baseline);vi.restoreAllMocks();});
@@ -30,6 +31,7 @@ async function setup(){
  vi.spyOn(venue,'snapshot').mockImplementation(async()=>({...market,timestamp:Date.now()}));
  vi.spyOn(venue,'markets').mockResolvedValue([{name:'BTC'}] as any);
  vi.spyOn(venue,'allFills').mockImplementation(async()=>fills);
+ vi.spyOn(venue.info,'userFunding').mockResolvedValue([]);
  vi.spyOn(venue.info,'meta').mockResolvedValue({universe:[{name:'BTC'}]} as any);
  vi.spyOn(venue.info,'extraAgents').mockResolvedValue([{address:wallet.address,validUntil:Date.now()+86400000}] as any);
  vi.spyOn(venue.info,'userFees').mockResolvedValue({userCrossRate:'0.00045'} as any);
@@ -137,4 +139,50 @@ it('leaves an independently reopened position alone when signed management state
   await expect(t.makeSigner().exits(t.c)).rejects.toThrow('continuity');
   expect(t.exchange.order).toHaveBeenCalledOnce();expect(t.exchange.modify).not.toHaveBeenCalled();expect(t.exchange.cancel).not.toHaveBeenCalled();
  }finally{await t.db.close();}
+});
+
+it('counts funding paid this week against the weekly risk budget',async()=>{
+ const t=await setup();try{
+  vi.mocked(venue.info.userFunding).mockResolvedValue([{time:Date.now(),hash:'0x01',delta:{type:'funding',coin:'BTC',usdc:'-5',szi:'1',fundingRate:'0.01',nSamples:null}}] as any);
+  const card=await t.enter(t.makeSigner());
+  const row=(await t.db.query<any>('SELECT status,reason FROM cards WHERE id=$1',[card.id])).rows[0];
+  expect(row).toMatchObject({status:'REJECTED',reason:'Weekly risk budget exhausted'});expect(t.exchange.order).not.toHaveBeenCalled();
+ }finally{await t.db.close();}
+});
+it('re-places the stop and take-profit at once when a partial fill cancels them',async()=>{
+ const t=await setup();try{
+  const original=t.exchange.order.getMockImplementation()!;
+  t.exchange.order.mockImplementationOnce(async args=>{const r=await original(args);t.open().splice(0);return r;});
+  await t.enter(t.makeSigner());
+  expect(t.exchange.order).toHaveBeenCalledTimes(2);
+  expect(t.exchange.order.mock.calls[1][0]).toMatchObject({grouping:'positionTpsl'});
+  expect(t.open()).toHaveLength(2);
+  expect((await t.db.query("SELECT digest FROM slips WHERE body->>'kind' IN ('SL','TP')")).rows.length).toBeGreaterThanOrEqual(2);
+ }finally{await t.db.close();}
+});
+it('orders controls by arrival, so a fast-clock Resume cannot undo a later Pause',async()=>{
+ const t=await setup();try{
+  const s=t.makeSigner(),now=Date.now();
+  const insert=async(action:'resume'|'pause',issuedAt:number,createdAt:number)=>{const nonce=crypto.randomUUID();await t.db.query('INSERT INTO controls(nonce,crew_id,action,signature,created_at,policy_hash,issued_at) VALUES($1,$2,$3,$4,$5,$6,$7)',[nonce,t.c.id,action,await wallet.signMessage({message:controlMessage(t.c.id,action,nonce,hash(t.c.policy),issuedAt)}),createdAt,hash(t.c.policy),issuedAt]);};
+  await insert('resume',now+240000,now);await insert('pause',now+1000,now+1000);
+  expect(await s.controls(t.c)).toBe(true);
+  expect(await (s as any).db.transaction((tx:any)=>(s as any).admission(tx,{...t.c,paused:false}))).toBe(false);
+ }finally{await t.db.close();}
+});
+it('executes only cards signed by the configured card signer',async()=>{
+ const t=await setup();try{
+  const key=generatePrivateKey();Object.assign(config,{CARD_SIGNING_KEY:key,CARD_SIGNER_ADDRESS:privateKeyToAccount(key).address});
+  const signed=await t.enter(t.makeSigner());
+  expect((await t.db.query<any>('SELECT status,attestation FROM cards WHERE id=$1',[signed.id])).rows[0]).toMatchObject({status:'FILLED',attestation:{v:1}});
+ }finally{await t.db.close();}
+ const u=await setup();try{
+  const key=generatePrivateKey();Object.assign(config,{CARD_SIGNING_KEY:key,CARD_SIGNER_ADDRESS:privateKeyToAccount(key).address});
+  const card=await u.ai();
+  // An attacker with database access flips a rejected idea into a different trade and keeps the old signature.
+  const body={...card.body,card:{...card.body.card,side:'short',invalidationPx:61000}},created=card.created_at,id=hash({crew:u.c.id,body,now:created});
+  await u.db.query('UPDATE cards SET id=$2,body=$3 WHERE id=$1',[card.id,id,JSON.stringify(body)]);
+  await u.control('resume');const s=u.makeSigner();(s as any).entryTimes.set(id,0);await s.enter(u.c);
+  expect((await u.db.query<any>('SELECT status,reason FROM cards WHERE id=$1',[id])).rows[0]).toMatchObject({status:'REJECTED',reason:'Card is not signed by the configured card signer'});
+  expect(u.exchange.order).not.toHaveBeenCalled();
+ }finally{await u.db.close();}
 });

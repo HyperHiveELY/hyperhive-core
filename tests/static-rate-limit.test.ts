@@ -19,3 +19,12 @@ it('does not let landing-page asset traffic exhaust the API quota or health prob
   expect((await app.inject({url:'/api/health'})).statusCode).toBe(200);
  }finally{await app.close();await db.close();}
 });
+it('gives each real client its own request bucket behind a trusted proxy',async()=>{
+ const prior=config.TRUSTED_PROXY_HOPS;config.TRUSTED_PROXY_HOPS=1;
+ const db=await new Database('memory').init(),app=await createServer(db);
+ try{
+  for(let i=0;i<130;i++)await app.inject({url:'/api/not-found',headers:{'x-forwarded-for':'203.0.113.7'}});
+  expect((await app.inject({url:'/api/config',headers:{'x-forwarded-for':'203.0.113.7'}})).statusCode).toBe(429);
+  expect((await app.inject({url:'/api/config',headers:{'x-forwarded-for':'198.51.100.9'}})).statusCode).toBe(200);
+ }finally{config.TRUSTED_PROXY_HOPS=prior;await app.close();await db.close();}
+});

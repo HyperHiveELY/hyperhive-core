@@ -23,3 +23,15 @@ it('reconciles signed fills and venue events, matures unmatched fills and archiv
   const {rows}=await db.query<any>('SELECT count,root FROM roots ORDER BY hour');expect(rows).toEqual([{count:1,root:slip.digest},{count:0,root:ZERO}]);
  }finally{await db.close();}
 });
+it('waits a few minutes past the hour before closing it, so a late-arriving slip is still included',async()=>{
+ const db=await new Database('memory').init();
+ try{
+  const hourStart=Math.floor(Date.now()/3600000)*3600000;
+  vi.useFakeTimers({toFake:['Date']});vi.setSystemTime(hourStart+60000);
+  await archiveHour(db);
+  expect((await db.query<{hour:string}>('SELECT hour::text FROM roots WHERE hour=$1',[hourStart/3600000-1])).rows).toHaveLength(0);
+  vi.setSystemTime(hourStart+6*60000);
+  await archiveHour(db);
+  expect((await db.query<{hour:string}>('SELECT hour::text FROM roots WHERE hour=$1',[hourStart/3600000-1])).rows).toHaveLength(1);
+ }finally{vi.useRealTimers();await db.close();}
+});

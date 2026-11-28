@@ -363,7 +363,7 @@ function Pricing() {
           <Kicker tone="white">Pricing</Kicker>
           <h2 id="lp-pricing-title" className="lp-h2">AI that fits your pace.</h2>
           <div className="lp-pricing__note">
-            <p>“1 USDC buys 1,000 Tokens for AI scans and reviews. No monthly plan. Each filled order also pays a 0.03% HyperHive fee (0.02% for eligible $HHIV holders), plus Hyperliquid’s own fees.”</p>
+            <p>“1 USDC buys 1,000 Tokens for AI scans and reviews. No monthly plan. Each filled order also pays a 0.03% HyperHive fee (0.02% for eligible $HIVE holders), plus Hyperliquid’s own fees.”</p>
             <p className="lp-pricing__by"><img src="/art/hyperhive-logo.svg" alt="" width="24" height="24" /><strong>Tokens &amp; Fees</strong><span aria-hidden="true" />Pay As You Go</p>
           </div>
         </div>

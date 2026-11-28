@@ -43,15 +43,15 @@ export async function verifyDeployment(saved:any){
  }
  equal(await read('MeasurementRegistry','guardian'),i.guardian,'Guardian');
  equal(await read('SlipRoot','registry'),a.MeasurementRegistry,'Root measurement registry');
- if ('phase' in i || !('HHIV' in a)) {
+ if ('phase' in i || !('HIVE' in a)) {
   return {phase:'core',chainId:CONTRACT_CHAIN_ID,checkedAt:new Date().toISOString(),contracts:confirmed,
    auditorWired:false,deploymentVerified:true,launchReady:false};
  }
  equal(await read('BuyBurn','owner'),a.Governance,'BuyBurn owner');
- equal(await read('HHIV','totalSupply'),parseUnits(i.hhivSupply,18),'HHIV supply');
- for(const [fn,value] of [['token',a.HHIV],['roots',a.SlipRoot],['rewardToken',i.usdc],['minimum',parseUnits(i.minimumAuditorStake,18)]])equal(await read('AuditorStake',String(fn)),value,'Auditor '+fn);
+ equal(await read('HIVE','totalSupply'),parseUnits(i.hiveSupply,18),'HIVE supply');
+ for(const [fn,value] of [['token',a.HIVE],['roots',a.SlipRoot],['rewardToken',i.usdc],['minimum',parseUnits(i.minimumAuditorStake,18)]])equal(await read('AuditorStake',String(fn)),value,'Auditor '+fn);
  for(const [fn,value] of [['token',i.usdc],['workers',i.workers],['treasury',i.treasury],['auditors',a.AuditorStake],['burnVault',a.BuyBurn]])equal(await read('FeeSplitter',fn),value,'Fee splitter '+fn);
- equal(await read('BuyBurn','usdc'),i.usdc,'Buy/burn USDC');equal(await read('BuyBurn','hhiv'),a.HHIV,'Buy/burn HHIV');
+ equal(await read('BuyBurn','usdc'),i.usdc,'Buy/burn USDC');equal(await read('BuyBurn','hive'),a.HIVE,'Buy/burn HIVE');
  const auditor=await read('SlipRoot','auditor');
  if(auditor!=='0x'+'0'.repeat(40))equal(auditor,a.AuditorStake,'Root auditor');
  return {chainId:CONTRACT_CHAIN_ID,checkedAt:new Date().toISOString(),contracts:confirmed,auditorWired:auditor.toLowerCase()===a.AuditorStake.toLowerCase(),deploymentVerified:true,launchReady:false};

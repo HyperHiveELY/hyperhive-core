@@ -12,7 +12,8 @@ import { bytesToHex, verifyMessage, createPublicClient,createWalletClient,http,p
 
 import { Database, event, heartbeat } from '../../packages/core/db.js';
 import { config } from '../../packages/core/config.js';
-import { info, transport, snapshot, allFills, accountState, markets } from '../../packages/core/venue.js';
+import { info, transport, snapshot, allFills, fundingPaid, accountState, markets } from '../../packages/core/venue.js';
+import {verifyCard,type CardAttestation} from '../../packages/core/card-signing.js';
 import { Card, Policy, hash, ZERO, verifyPolicy, weekStart, controlMessage, type Crew, type PositionState, type Snapshot } from '../../packages/core/domain.js';
 import { sizeTrade, nextExit } from '../../packages/core/risk.js';
 import { signSlip, verifySlip, verifyChain, ackMessage,merkleRoot,type SignedSlip } from '../../packages/core/proof.js';
@@ -58,6 +59,10 @@ export class Signer {
     this.composeHash=details.compose_hash;
     this.measurement=hash({mrtd:details.tcb_info.mrtd,rtmr0:details.tcb_info.rtmr0,rtmr1:details.tcb_info.rtmr1,rtmr2:details.tcb_info.rtmr2,rtmr3:details.tcb_info.rtmr3,composeHash:details.compose_hash});
     if(this.measurement!==config.MEASUREMENT_HASH)throw Error('dstack measurement does not match the approved deployment');
+    // Keys come from whichever key service released them. Refuse to derive any key unless that service is the
+    // one the operator pinned, so an app still bound to a retired or compromised key service never signs.
+    if(!config.KMS_KEY_PROVIDER)throw Error('Set KMS_KEY_PROVIDER to the approved key service before starting the signer');
+    if((details.key_provider_info??'').trim()!==config.KMS_KEY_PROVIDER.trim())throw Error('dstack key provider does not match the approved key service');
     this.slipKey=privateKeyToAccount(bytesToHex((await this.dstack.getKey('hyperhive/slip/v1')).key));
   }
   private async key(crew:Crew){
@@ -210,7 +215,9 @@ export class Signer {
   }
   /** Verify signed owner commands, process pending closes and reconcile paused state. */
   async controls(crew:Crew){
-    const controls=await this.db.query<{nonce:string;action:'pause'|'resume'|'close';signature:Hex;handled:boolean;issued_at:number}>('SELECT * FROM controls WHERE crew_id=$1 AND policy_hash=$2 ORDER BY issued_at,nonce',[crew.id,hash(crew.policy)]);
+    // Order by when the API accepted each control, never by the client-supplied clock, so a fast device can't make
+    // an older Resume sort after a newer Pause.
+    const controls=await this.db.query<{nonce:string;action:'pause'|'resume'|'close';signature:Hex;handled:boolean;issued_at:number}>('SELECT * FROM controls WHERE crew_id=$1 AND policy_hash=$2 ORDER BY created_at,nonce',[crew.id,hash(crew.policy)]);
     let paused=true;
     for(const c of controls.rows){if(!await verifyMessage({address:crew.policy.owner,message:controlMessage(crew.id,c.action,c.nonce,hash(crew.policy),c.issued_at),signature:c.signature}))throw Error('Invalid owner control signature');
       paused=c.action!=='resume';
@@ -268,16 +275,9 @@ export class Signer {
         if(!size){await this.cancelBrackets(crew,m);await this.db.query('DELETE FROM positions WHERE crew_id=$1 AND market=$2',[crew.id,p.market]);continue;}
         p.risk*=size/p.size;p.size=size;await this.persist(crew,p);
       }
-      const orders=await info.frontendOpenOrders({user:crew.account});
-      const sl=orders.find(o=>o.coin===p.market&&o.reduceOnly&&o.orderType.toLowerCase().includes('stop'));
-      const tp=orders.find(o=>o.coin===p.market&&o.reduceOnly&&o.orderType.toLowerCase().includes('take profit'));
-      if(!sl||!tp){
-        const missing:Order[]=[];
-        if(!sl)missing.push(this.trigger(m,p.size,p.side==='short',p.stop,'sl'));
-        if(!tp)missing.push(this.trigger(m,p.size,p.side==='short',p.tp,'tp'));
-        const r=await this.send(crew,'BRACKET',missing,'positionTpsl');
-        if(r.response.response.data.statuses.some(s=>typeof s==='object'&&'error' in s)){await this.closePosition(crew,p,'Protective bracket rejected');continue;}
-      }else if(next.stop){
+      const {sl,restored}=await this.protect(crew,p,m);
+      if(restored===false)continue;
+      if(restored===null&&next.stop&&sl){
         const order=this.trigger(m,p.size,p.side==='short',next.stop,'sl'),slip=await this.journal(crew,'TRAIL',{...order,market:m.market,oid:sl.oid});
         const r=await orderResult(async()=>await (await this.client(crew)).modify({oid:sl.oid,order:{...order,c:slip.cloid}}),1);await this.acknowledge(slip,r);
         const status=r.response.data.statuses[0];
@@ -289,6 +289,21 @@ export class Signer {
     // An unknown live position blocks entry and is surfaced for recovery, never silently adopted.
     for(const a of account.assetPositions)if(Number(a.position.szi)!==0&&!positions.some(p=>p.market===a.position.coin))await event(this.db,crew.id,'recovery',`${a.position.coin}: position lacks signed management state; new entries are blocked`);
     if(unresolved)throw Error('Position continuity requires reconciliation before another entry');
+  }
+  /** Make sure the position has both a resting stop-loss and take-profit; re-place whichever is missing at once.
+   *  restored: null when both were already resting, true when replaced, false when the venue refused and the
+   *  position was closed instead. */
+  private async protect(crew:Crew,p:PositionState,m:Snapshot){
+    const orders=await info.frontendOpenOrders({user:crew.account});
+    const sl=orders.find(o=>o.coin===p.market&&o.reduceOnly&&o.orderType.toLowerCase().includes('stop'));
+    const tp=orders.find(o=>o.coin===p.market&&o.reduceOnly&&o.orderType.toLowerCase().includes('take profit'));
+    if(sl&&tp)return {sl,restored:null};
+    const missing:Order[]=[];
+    if(!sl)missing.push(this.trigger(m,p.size,p.side==='short',p.stop,'sl'));
+    if(!tp)missing.push(this.trigger(m,p.size,p.side==='short',p.tp,'tp'));
+    const r=await this.send(crew,'BRACKET',missing,'positionTpsl');
+    if(r.response.response.data.statuses.some(s=>typeof s==='object'&&'error' in s)){await this.closePosition(crew,p,'Protective bracket rejected');return {sl,restored:false};}
+    return {sl,restored:true};
   }
   private async registered(crew:Crew){
     if(this.local)return true;
@@ -315,7 +330,7 @@ export class Signer {
     const current=(await tx.query<Crew>('SELECT * FROM crews WHERE id=$1 FOR UPDATE',[crew.id])).rows[0];
     if(!current||current.paused||current.broken_since||hash(current.policy)!==hash(crew.policy)||crew.policy.expiresAt<=Date.now())return false;
     if((await tx.query('SELECT crew_id FROM paper_accounts WHERE crew_id=$1',[crew.id])).rows.length)return false;
-    const command=(await tx.query<{action:'resume'|'pause'|'close';nonce:string;issued_at:number;signature:Hex}>('SELECT action,nonce,issued_at,signature FROM controls WHERE crew_id=$1 AND policy_hash=$2 ORDER BY issued_at DESC,nonce DESC LIMIT 1',[crew.id,hash(crew.policy)])).rows[0];
+    const command=(await tx.query<{action:'resume'|'pause'|'close';nonce:string;issued_at:number;signature:Hex}>('SELECT action,nonce,issued_at,signature FROM controls WHERE crew_id=$1 AND policy_hash=$2 ORDER BY created_at DESC,nonce DESC LIMIT 1',[crew.id,hash(crew.policy)])).rows[0];
     return command?.action==='resume'&&verifyMessage({address:crew.owner,message:controlMessage(crew.id,'resume',command.nonce,hash(crew.policy),command.issued_at),signature:command.signature});
   }
   /** Check the signed policy and venue limits before journaling and admitting a candidate trade. */
@@ -336,13 +351,18 @@ export class Signer {
     if(account.assetPositions.filter(a=>+a.position.szi!==0).some(a=>!positions.some(p=>p.market===a.position.coin)))throw Error('Unmanaged position blocks new entries');
     if((await this.db.query("SELECT id FROM cards WHERE crew_id=$1 AND status='SENDING' LIMIT 1",[crew.id])).rows.length)return;
     const uncertain=await this.db.query('SELECT digest FROM slips WHERE crew_id=$1 AND ack IS NULL LIMIT 1',[crew.id]);if(uncertain.rows.length)throw Error('Unacknowledged order requires reconciliation');
-    const rows=await this.db.query<{id:Hex;body:{card:Card;policyHash:Hex};verdict:{verdict:string};created_at:number}>('SELECT * FROM cards WHERE crew_id=$1 AND status=$2 ORDER BY created_at LIMIT 1',[crew.id,'READY']);
+    const rows=await this.db.query<{id:Hex;body:{card:Card;policyHash:Hex};verdict:{verdict:string};created_at:number;attestation:CardAttestation|null}>('SELECT * FROM cards WHERE crew_id=$1 AND status=$2 ORDER BY created_at LIMIT 1',[crew.id,'READY']);
     const row=rows.rows[0];if(!row)return;
     if(Date.now()-row.created_at>900000){await this.db.query("UPDATE cards SET status='EXPIRED' WHERE id=$1",[row.id]);return;}
     if(!this.entryTimes.has(row.id))this.entryTimes.set(row.id,Date.now()+randomInt(90001));
     if(Date.now()<this.entryTimes.get(row.id)!)return;
     const card=Card.parse(row.body.card);if(row.body.policyHash!==hash(crew.policy))throw Error('Card policy changed');
     if(row.id!==hash({crew:crew.id,body:row.body,now:row.created_at})||row.verdict.verdict!=='PASS')throw Error('Trade card integrity failed');
+    // A database row alone is not authority to trade: the hosted signer only executes cards the worker signed.
+    if(config.CARD_SIGNER_ADDRESS||!this.local){
+      const signed=config.CARD_SIGNER_ADDRESS&&await verifyCard(config.CARD_SIGNER_ADDRESS as Hex,row.attestation,{id:row.id,crewId:crew.id,body:row.body,verdict:row.verdict,createdAt:row.created_at});
+      if(!signed){await this.db.query("UPDATE cards SET status='REJECTED',reason='Card is not signed by the configured card signer' WHERE id=$1",[row.id]);await event(this.db,crew.id,'card_rejected','Unsigned or altered trade card refused');return;}
+    }
     const duplicates=(await this.db.query<{n:string}>("SELECT count(*)::text n FROM slips WHERE crew_id=$1 AND body->>'kind'='ENTRY' AND body->'order'->>'market'=$2 AND (body->'order'->>'b')::boolean=$3 AND created_at>$4",[crew.id,card.market,card.side==='long',Date.now()-86400000])).rows[0];
     if(Number(duplicates.n)>=2){await this.db.query("UPDATE cards SET status='REJECTED',reason='Daily entry limit for this market and side' WHERE id=$1",[row.id]);return;}
     if(!(await markets()).some(m=>m.name===card.market))throw Error('Market is outside the current entry universe');
@@ -351,7 +371,8 @@ export class Signer {
     const sizingStartedAt=Date.now();const m=await snapshot(card.market),fees=await info.userFees({user:crew.account}),fills=await allFills(crew.account,weekStart());
     // Size against the worst accepted entry price, including the IOC slippage envelope.
     const riskMarket={...m,mark:m.mark*(card.side==='long'?1.005:.995)};
-    const realizedLoss=fills.reduce((s,f)=>s+Math.max(0,-Number(f.closedPnl))+Number(f.fee),0);
+    // Funding paid this week is a realised cost like fees and closed losses, so it uses up the same budget.
+    const realizedLoss=fills.reduce((s,f)=>s+Math.max(0,-Number(f.closedPnl))+Number(f.fee),0)+await fundingPaid(crew.account,weekStart());
     const others=await this.db.query<{body:{state:PositionState}}>('SELECT body FROM positions WHERE market=$1',[card.market]);
     let sizing;
     try{sizing=sizeTrade({policy:crew.policy,card,market:riskMarket,freeMargin:Number(account.withdrawable),realizedLoss,openRisk:positions.reduce((s,p)=>s+Math.max(0,(p.side==='long'?p.entry-p.stop:p.stop-p.entry)*p.size)+.002*p.size*p.entry,0),positions:positions.length,herdNotional:others.rows.reduce((s,p)=>s+p.body.state.size*m.mark,0),takerFee:Number(fees.userCrossRate),builderFee:config.BUILDER_ADDRESS?.0003:0});}
@@ -380,8 +401,11 @@ export class Signer {
     }
     const position:PositionState={market:m.market,side:card.side,entry:+actual.entryPx!,size:Math.abs(+actual.szi),stop:sizing.stop,tp:sizing.tp,extreme:m.mark,openedAt:Date.now(),horizonH:card.horizonH,entryDigest:result.slips[0].digest,lastModify:0,fundingStart:Math.max(0,-Number(actual.cumFunding.sinceOpen)),fundingPaid:0,risk:sizing.risk};
     await this.persist(crew,position);await this.db.query("UPDATE cards SET status='FILLED',updated_at=$2 WHERE id=$1",[row.id,Date.now()]);
-    if(result.response.response.data.statuses.slice(1).some(s=>typeof s==='object'&&'error' in s))await this.closePosition(crew,position,'Bracket rejected on entry');
-    else await event(this.db,crew.id,'entry',`${card.side.toUpperCase()} ${m.market} • ${position.size} at ${position.entry}`);
+    if(result.response.response.data.statuses.slice(1).some(s=>typeof s==='object'&&'error' in s)){await this.closePosition(crew,position,'Bracket rejected on entry');return;}
+    // A partial IOC fill can cancel the grouped take-profit and stop with the unfilled remainder. Re-place them now
+    // instead of waiting for the next loop, so the position is never left unprotected if the signer stops.
+    if((await this.protect(crew,position,m)).restored===false)return;
+    await event(this.db,crew.id,'entry',`${card.side.toUpperCase()} ${m.market} • ${position.size} at ${position.entry}`);
   }
   /** Run recovery, controls and position management per crew, then publish signer liveness. */
   async tick(){

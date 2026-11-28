@@ -69,7 +69,7 @@ export const docsPage = {
           ['Slip', 'A signed record of one order, tied to its card, policy and the code that placed it.'],
           ['Weekly risk budget', 'The most the crew may put at risk in a week. The only sizing input you control.'],
           ['Tokens', 'Prepaid credit for AI usage. 1 USDC buys 1,000 Tokens.'],
-          ['$HHIV', 'The HyperHive token, used for a fee tier and Auditor bonds.'],
+          ['$HIVE', 'The HyperHive token, used for a fee tier and Auditor bonds.'],
         ]],
       ]},
     ]},
@@ -114,13 +114,13 @@ export const docsPage = {
     {name: 'Money', sections: [
       {id: 'tokens', title: 'Tokens and AI usage', blocks: [
         ['p', '1 USDC buys 1,000 Tokens. Tokens are shared across your crews and charged at current model rates plus the service markup shown in your dashboard. There is no monthly plan.'],
-        ['p', 'Tokens are bought with USDC on Elysium from your built-in wallet. You can also bridge from Robinhood Chain in the workspace, then confirm the purchase separately. Tokens are separate from your trading funds and from $HHIV.'],
+        ['p', 'Tokens are bought with USDC on Elysium from your built-in wallet. You can also bridge from Robinhood Chain in the workspace, then confirm the purchase separately. Tokens are separate from your trading funds and from $HIVE.'],
         ['p', 'If a crew runs out of Tokens it stops looking for new trades. Exits never need the AI and keep running.'],
       ]},
       {id: 'fees', title: 'Fees', blocks: [
         ['table', ['Fee', 'Amount', 'When'], [
           ['AI usage', 'Tokens, at model rates plus markup', 'As your crews use AI'],
-          ['Builder fee', '0.03% of order size, or 0.02% with an eligible $HHIV tier', 'Charged by Hyperliquid on each fill, within a 0.05% cap you approve once'],
+          ['Builder fee', '0.03% of order size, or 0.02% with an eligible $HIVE tier', 'Charged by Hyperliquid on each fill, within a 0.05% cap you approve once'],
           ['Hyperliquid fees and funding', 'Set by Hyperliquid', 'On each fill and funding interval'],
         ]],
         ['p', 'HyperHive charges no performance, deposit or withdrawal fee. Each record shows fee drag next to profit and loss.'],
@@ -138,7 +138,7 @@ export const docsPage = {
       {id: 'record-states', title: 'Record states', blocks: [['defs', recordStates]]},
       {id: 'auditors', title: 'Hourly roots and Auditors', blocks: [
         ['p', 'Every hour the signer posts a root committing to the slips it issued. Auditors then match that hour’s public fills to slips and vote on the result with a commit, then a reveal. The agreed match root is written on-chain.'],
-        ['p', 'Auditors stake $HHIV. Missing a vote or voting with the minority costs 10% of that round’s stake, which is burned. Three strikes remove an Auditor. At launch the studio runs every Auditor.'],
+        ['p', 'Auditors stake $HIVE. Missing a vote or voting with the minority costs 10% of that round’s stake, which is burned. Three strikes remove an Auditor. At launch the studio runs every Auditor.'],
       ]},
       {id: 'verify', title: 'Check a record yourself', blocks: [
         ['steps', [
@@ -233,25 +233,25 @@ export const whitepaper = {
     {id: 'contracts', title: 'Contracts and governance', blocks: [
       ['p', 'The contracts deploy to Kinetiq Elysium, chain ID 99901.'],
       ['table', ['Contract', 'Purpose'], [
-        ['HHIV', 'The ERC-20 token'],
+        ['HIVE', 'The $HIVE ERC-20 token'],
         ['MeasurementRegistry', 'Approved signer code measurements and the posters bound to them'],
         ['SlipRoot', 'Crew account bindings and hourly slip and match roots'],
         ['AuditorStake', 'Stakes, commit–reveal rounds, strikes and rewards'],
         ['FeeSplitter', 'Fixed split of incoming fees'],
-        ['BuyBurn', 'Buys $HHIV with its share of fees and burns it'],
+        ['BuyBurn', 'Buys $HIVE with its share of fees and burns it'],
         ['Governance', 'A two-day timelock that owns the registry, roots and buy-and-burn'],
       ]],
       ['p', 'Changes to approved measurements, posters and routes pass through the 48-hour timelock. A separate emergency role can retire a measurement or halt Auditor rounds; only governance can resume them. User withdrawals and reward claims stay callable throughout.'],
     ]},
-    {id: 'economics', title: 'Economics and $HHIV', blocks: [
-      ['p', 'Users prepay AI usage with Tokens (1 USDC buys 1,000 Tokens). Each filled order pays a builder fee of 0.03% of order size, or 0.02% for eligible $HHIV holders. There is no performance, deposit or withdrawal fee.'],
+    {id: 'economics', title: 'Economics and $HIVE', blocks: [
+      ['p', 'Users prepay AI usage with Tokens (1 USDC buys 1,000 Tokens). Each filled order pays a builder fee of 0.03% of order size, or 0.02% for eligible $HIVE holders. There is no performance, deposit or withdrawal fee.'],
       ['table', ['Fee share', 'Destination'], [
         ['80%', 'Worker operators, who run the crews (the studio at launch)'],
         ['10%', 'Treasury'],
         ['5%', 'Staked Auditors, as pay for checking'],
-        ['5%', 'Buy and burn of $HHIV'],
+        ['5%', 'Buy and burn of $HIVE'],
       ]],
-      ['p', '$HHIV is used for access and work: a holding tier lowers the builder fee, and Auditors bond it to take part in checking. It is not a claim on revenue.'],
+      ['p', '$HIVE is used for access and work: a holding tier lowers the builder fee, and Auditors bond it to take part in checking. It is not a claim on revenue.'],
       ['ca'],
     ]},
     {id: 'limits', title: 'Limits and risks', blocks: [

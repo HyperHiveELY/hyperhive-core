@@ -34,6 +34,17 @@ async function loadSnapshot(market:string):Promise<Snapshot>{
 }
 /** Read public margin and position state for the specified HyperCore account. */
 export async function accountState(user:`0x${string}`){return info.clearinghouseState({user});}
+/** Total funding the account paid since startTime (receipts are not netted), paging through the venue's 500-row limit. */
+export async function fundingPaid(user:`0x${string}`,startTime:number){
+  let paid=0,cursor=startTime;const seen=new Set<string>();
+  for(let page=0;page<20;page++){
+    const rows=await info.userFunding({user,startTime:cursor});
+    for(const r of rows){const key=r.hash+':'+r.delta.coin+':'+r.time;if(seen.has(key))continue;seen.add(key);paid+=Math.max(0,-Number(r.delta.usdc));}
+    if(rows.length<500)return paid;
+    const last=Math.max(...rows.map(r=>r.time));if(last<=cursor)throw Error('Funding pagination cannot advance');cursor=last;
+  }
+  throw Error('Funding history exceeds bounded catch-up');
+}
 /** Page through venue fills, deduplicate the inclusive cursor and reject incomplete history. */
 export async function allFills(user:`0x${string}`,startTime:number,endTime?:number){
   const out:Awaited<ReturnType<typeof info.userFillsByTime>>=[];let cursor=startTime;

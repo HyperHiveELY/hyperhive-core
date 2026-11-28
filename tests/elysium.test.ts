@@ -30,7 +30,7 @@ it('compares runtime code with compiler-defined immutable offsets only',()=>{
  expect(runtimeMatches('0x60aabb600100',artifact)).toBe(false);
 });
 it('rejects the former-chain USDC address in deployment inputs',()=>{
- const addr=wallet.address,input={deployer:addr,governanceProposer:addr,guardian:addr,treasury:addr,workers:addr,tokenRecipient:addr,usdc:ELYSIUM_USDC,hhivSupply:'100000000',minimumAuditorStake:'10000'};
+ const addr=wallet.address,input={deployer:addr,governanceProposer:addr,guardian:addr,treasury:addr,workers:addr,tokenRecipient:addr,usdc:ELYSIUM_USDC,hiveSupply:'100000000',minimumAuditorStake:'10000'};
  expect(DeploymentInput.safeParse(input).success).toBe(true);
  expect(DeploymentInput.safeParse({...input,usdc:'0xb88339CB7199b77E23DB6E890353E22632Ba630f'}).success).toBe(false);
 });

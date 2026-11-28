@@ -80,7 +80,7 @@ export default function App(){
   else if(modal==='start')await control('resume');
   else if(modal==='renew')await renew();
   else if(modal==='approve')await approve();
-  
+
   else if(modal==='close')await control('close');
   else if(modal==='key'){await api('/setup/ai',{key});setKey('');setNotice('AI service key saved privately. Choose your models in Settings.');}
   else if(modal==='restore'){const w=await restoreAccount(backup!,password);if(w.address.toLowerCase()!==detail.crew.account)throw Error('This backup belongs to another crew');setCrewWallet(w);setPassword('');setNotice('Crew account unlocked in this tab.');}

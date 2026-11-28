@@ -13,9 +13,9 @@ contract Governance is TimelockController {
     constructor(address[] memory proposers,address[] memory executors) TimelockController(48 hours,proposers,executors,address(0)) {}
 }
 
-contract HHIV is ERC20 {
-    constructor(address recipient,uint256 supply) ERC20("HyperHive","HHIV") {require(recipient!=address(0)&&supply>0);_mint(recipient,supply);}
-    /// @notice Permanently reduce the caller’s HHIV balance and total supply.
+contract HIVE is ERC20 {
+    constructor(address recipient,uint256 supply) ERC20("HyperHive","HIVE") {require(recipient!=address(0)&&supply>0);_mint(recipient,supply);}
+    /// @notice Permanently reduce the caller’s HIVE balance and total supply.
     function burn(uint256 amount) external {_burn(msg.sender,amount);}
 }
 contract MeasurementRegistry is Ownable2Step {
@@ -73,9 +73,11 @@ contract SlipRoot is Ownable2Step {
     event AuditorSet(address indexed auditor);
     /// @notice Wire the one-time match-root finalization authority.
     function setAuditor(address a) external onlyOwner {require(auditor==address(0)&&a!=address(0));auditor=a;emit AuditorSet(a);}
-    /// @notice Append a completed hour to the root chain.
+    /// @notice Append the next completed hour to the root chain.
+    /// @dev After the first post, hours must be consecutive. An hour without slips is posted with an
+    /// empty root and count zero, so a poster cannot silently drop an hour from the chain.
     function postSlipRoot(uint64 hour,bytes32 root,uint32 count,bytes32 previous) external {
-        require(registry.approved(msg.sender)&&hour>lastHour&&hour<block.timestamp/1 hours&&previous==lastRoot);
+        require(registry.approved(msg.sender)&&hour>lastHour&&(lastHour==0||hour==lastHour+1)&&hour<block.timestamp/1 hours&&previous==lastRoot);
         require(slips[hour].postedAt==0);slips[hour]=Root(root,previous,count,uint64(block.timestamp),msg.sender);lastRoot=root;lastHour=hour;
         emit SlipRootPosted(hour,root,count,previous,msg.sender);
     }
@@ -98,6 +100,9 @@ contract AuditorStake is ReentrancyGuard {
     mapping(address=>uint256) public eligibleSince;
     uint256 public constant OPEN_FROM = 10 minutes;
     uint256 public constant OPEN_UNTIL = 20 minutes;
+    /// @notice Each agreed round pays out at most this fraction (1/n) of the unallocated reward balance,
+    /// so rewards stream over roughly a week of hourly rounds instead of draining in one.
+    uint256 public constant REWARD_ROUNDS = 168;
     address[] public operators;
     struct Round {uint64 hour;uint64 commitEnd;uint64 revealEnd;uint256 total;bool finalized;}
     mapping(uint64=>Round) public rounds;
@@ -121,7 +126,7 @@ contract AuditorStake is ReentrancyGuard {
     function haltRounds() external {MeasurementRegistry r=roots.registry();require(msg.sender==r.guardian()||msg.sender==r.owner());halted=true;emit RoundsHalted(true);}
     /// @notice Resume round creation and slashing by governance.
     function resumeRounds() external {require(msg.sender==roots.registry().owner());halted=false;emit RoundsHalted(false);}
-    /// @notice Deposit HHIV as an auditor bond and list newly eligible operators.
+    /// @notice Deposit HIVE as an auditor bond and list newly eligible operators.
     function stake(uint256 amount) external nonReentrant {require(amount>0);Auditor storage a=auditors[msg.sender];require(a.strikes<3);token.safeTransferFrom(msg.sender,address(this),amount);if(a.stake<minimum && a.stake+amount>=minimum)eligibleSince[msg.sender]=block.timestamp;a.stake+=amount;if(!a.listed){require(a.stake>=minimum);_listOperator(msg.sender);a.listed=true;}emit Staked(msg.sender,amount);}
     // Reuse inactive slots only after every snapshotted round has settled.
     // Balances and earned rewards remain withdrawable after delisting.
@@ -148,12 +153,15 @@ contract AuditorStake is ReentrancyGuard {
     function reveal(uint64 hour,bytes32 root,uint32 broken,uint32 venue,bytes32 salt) external {Round storage r=rounds[hour];require(block.timestamp>=r.commitEnd&&block.timestamp<r.revealEnd&&votes[hour][msg.sender]==bytes32(0)&&root!=bytes32(0));require(commitments[hour][msg.sender]==keccak256(abi.encode(root,broken,venue,salt,msg.sender,hour,block.chainid)));bytes32 vote=keccak256(abi.encode(root,broken,venue));results[vote]=Result(root,broken,venue);votes[hour][msg.sender]=vote;tally[hour][vote]+=weight[hour][msg.sender];voters[hour][vote]++;}
     /// @notice Find the winning tuple or finalize after the no-consensus grace period.
     function finalizeHour(uint64 hour) external {Round storage r=rounds[hour];for(uint256 i;i<operators.length;i++){bytes32 v=votes[hour][operators[i]];if(tally[hour][v]>r.total/2&&voters[hour][v]>=2){Result memory result=results[v];finalize(hour,result.root,result.broken,result.venue);return;}}finalize(hour,bytes32(0),0,0);}
-    /// @notice Settle slashes and reward liabilities for one completed round.
+    /// @notice Settle slashes and reward liabilities for one completed round. Absent and minority voters
+    /// are slashed only when the round reached consensus.
     function finalize(uint64 hour,bytes32 root,uint32 broken,uint32 venue) public nonReentrant {Round storage r=rounds[hour];require(r.revealEnd!=0&&block.timestamp>=r.revealEnd&&!r.finalized);bytes32 winner=keccak256(abi.encode(root,broken,venue));bool consensus=tally[hour][winner]>r.total/2&&voters[hour][winner]>=2;
         // No-consensus finalization only after a grace period; cannot pre-empt a valid vote tuple.
         if(!consensus){require(block.timestamp>=r.revealEnd+1 hours);for(uint256 i;i<operators.length;i++){bytes32 v=votes[hour][operators[i]];require(v==bytes32(0)||tally[hour][v]<=r.total/2||voters[hour][v]<2);}}
-        r.finalized=true;uint256 available=consensus?rewardToken.balanceOf(address(this))-rewardLiability:0;
-        for(uint256 i;i<operators.length;i++){address p=operators[i];if(weight[hour][p]==0)continue;pendingRounds[p]--;bool absent=votes[hour][p]==bytes32(0);if(!halted&&(absent||(consensus&&votes[hour][p]!=winner))){Auditor storage a=auditors[p];uint256 slash=weight[hour][p]/10;if(slash>a.stake)slash=a.stake;a.stake-=slash;if(a.strikes<3)a.strikes++;token.safeTransfer(address(0xdead),slash);emit Slashed(p,slash);}
+        r.finalized=true;uint256 available=consensus?(rewardToken.balanceOf(address(this))-rewardLiability)/REWARD_ROUNDS:0;
+        for(uint256 i;i<operators.length;i++){address p=operators[i];if(weight[hour][p]==0)continue;pendingRounds[p]--;
+            // Without consensus nobody is slashed: an unreachable chain or archive must not cost honest auditors stake.
+            if(!halted&&consensus&&votes[hour][p]!=winner){Auditor storage a=auditors[p];uint256 slash=weight[hour][p]/10;if(slash>a.stake)slash=a.stake;a.stake-=slash;if(a.strikes<3)a.strikes++;token.safeTransfer(address(0xdead),slash);emit Slashed(p,slash);}
             if(consensus&&votes[hour][p]==winner){uint256 reward=available*weight[hour][p]/tally[hour][winner];earned[p]+=reward;rewardLiability+=reward;}}
         if(consensus)roots.setMatchRoot(hour,root,broken,venue);emit Finalized(hour,root,consensus);
     }
@@ -182,17 +190,21 @@ contract FeeSplitter is ReentrancyGuard {
 contract BuyBurn is Ownable2Step,ReentrancyGuard {
     using SafeERC20 for IERC20;
     IERC20 public immutable usdc;
-    IERC20 public immutable hhiv;
+    IERC20 public immutable hive;
     mapping(address=>bool) public routers;
     event Burned(uint256 spent,uint256 tokens,bytes32 routeHash);
-    constructor(address admin,IERC20 usdc_,IERC20 hhiv_) Ownable(admin){usdc=usdc_;hhiv=hhiv_;}
+    constructor(address admin,IERC20 usdc_,IERC20 hive_) Ownable(admin){usdc=usdc_;hive=hive_;}
     event RouterSet(address indexed router,bool enabled);
     /// @notice Set governance approval for a deployed routing contract.
     function setRouter(address router,bool enabled) external onlyOwner {require(router.code.length>0);routers[router]=enabled;emit RouterSet(router,enabled);}
-    /// @notice Trade the authorized amount and send received HHIV to the burn address.
-    // The balance delta is intentional: HHIV is the immutable fixed-supply ERC20.
+    /// @notice Trade the authorized amount and send received HIVE to the burn address.
+    /// @dev The owner is the 48-hour timelock, whose matured operations anyone may execute. The minimum
+    /// output is fixed when governance schedules the call, so the call also carries a deadline: governance
+    /// sets it shortly after the operation matures, and a late execution reverts instead of trading at a
+    /// stale price. Schedule a fresh operation with a current minimum if the window passes.
+    // The balance delta is intentional: HIVE is the immutable fixed-supply ERC20.
     // Both the caller and router are governance-controlled. The sole swap entry
     // is nonReentrant; an allowance is scoped to one call and reset before payout.
     // slither-disable-next-line reentrancy-balance
-    function execute(address router,uint256 amount,uint256 minimumOut,bytes calldata data) external onlyOwner nonReentrant {require(routers[router]&&amount>0&&minimumOut>0);uint256 before_=hhiv.balanceOf(address(this));usdc.forceApprove(router,amount);(bool ok,)=router.call(data);require(ok);usdc.forceApprove(router,0);uint256 received=hhiv.balanceOf(address(this))-before_;require(received>=minimumOut);hhiv.safeTransfer(address(0xdead),received);emit Burned(amount,received,keccak256(data));}
+    function execute(address router,uint256 amount,uint256 minimumOut,uint256 deadline,bytes calldata data) external onlyOwner nonReentrant {require(routers[router]&&amount>0&&minimumOut>0&&block.timestamp<=deadline);uint256 before_=hive.balanceOf(address(this));usdc.forceApprove(router,amount);(bool ok,)=router.call(data);require(ok);usdc.forceApprove(router,0);uint256 received=hive.balanceOf(address(this))-before_;require(received>=minimumOut);hive.safeTransfer(address(0xdead),received);emit Burned(amount,received,keccak256(data));}
 }

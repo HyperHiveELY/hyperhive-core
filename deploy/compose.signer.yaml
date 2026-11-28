@@ -14,6 +14,11 @@ services:
       ROOT_CONTRACT: ${ROOT_CONTRACT:?Set SlipRoot contract}
       ELYSIUM_RPC: ${ELYSIUM_RPC:?Set production Elysium RPC}
       MEASUREMENT_HASH: ${MEASUREMENT_HASH:?Set independently verified measurement}
+      # The key service the signer must be bound to (dstack key_provider_info). Use the on-chain KMS or a
+      # post-rotation KMS; the signer refuses to derive keys from any other.
+      KMS_KEY_PROVIDER: ${KMS_KEY_PROVIDER:?Set the approved key service}
+      # Address of the worker's card key. The signer executes only cards this key signed.
+      CARD_SIGNER_ADDRESS: ${CARD_SIGNER_ADDRESS:?Set the worker card signer address}
       LIVE_TRADING_ENABLED: ${LIVE_TRADING_ENABLED:-false}
       DSTACK_SOCKET: /var/run/dstack.sock
     volumes:

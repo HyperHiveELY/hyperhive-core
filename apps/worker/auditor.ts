@@ -38,9 +38,12 @@ export async function auditCrew(db:Database,crew:Crew){
     if(state==='UNMATCHED'){await db.query('UPDATE crews SET broken_since=least(coalesce(broken_since,$2),$2) WHERE id=$1',[crew.id,fill.time]);}
   }
 }
+export const ARCHIVE_GRACE_MS=5*60000;
 /** Backfill up to 168 completed hourly Merkle roots without overwriting existing records. */
 export async function archiveHour(db:Database){
-  const lastHour=Math.floor(Date.now()/3600000)-1;
+  // Wait a few minutes past the hour before closing it: a slip stamped just before the boundary may still be on its
+  // way into the database, and a root posted without it would make that hour impossible to audit.
+  const lastHour=Math.floor((Date.now()-ARCHIVE_GRACE_MS)/3600000)-1;
   const existing=(await db.query<{hour:string|null}>('SELECT max(hour)::text AS hour FROM roots')).rows[0]?.hour;
   const earliest=(await db.query<{at:number|null}>('SELECT min(created_at) AS at FROM slips')).rows[0]?.at;
   const first=existing?Number(existing)+1:earliest?Math.floor(earliest/3600000):lastHour;
@@ -58,4 +61,11 @@ export async function verifyRecord(db:Database,id:string){
   const intact=await verifyChain(slips);
   const local=slips.some(s=>s.body.order.signerMode==='local');
   return {metrics:await recordMetrics(db,id),crewId:id,account:crew.account,createdAt:crew.created_at,status:crew.broken_since?'BROKEN':!slips.length?'AWAITING_TRADES':!intact?'INVALID':fills.some(f=>f.status==='PENDING')?'RECONCILING':local?'LOCAL_SIGNED':'SIGNED',brokenSince:crew.broken_since,slips:slips.length,matched:fills.filter(f=>f.status==='MATCHED').length,unmatched:fills.filter(f=>f.status==='UNMATCHED').length,pending:fills.filter(f=>f.status==='PENDING').length,venue:fills.filter(f=>f.status==='VENUE').length,pnl:fills.reduce((sum,f)=>sum+Number(f.body.closedPnl)-Number(f.body.fee),0),fees:fills.reduce((sum,f)=>sum+Number(f.body.fee),0),root:merkleRoot(slips.map(s=>s.digest)),verification:local?'Locally signed records and fill matches. No hardware attestation or on-chain anchoring.':'Signatures and fill matches; hardware attestation and chain anchoring are separate checks'};
+}
+/** Store a freshly computed public summary for the API to serve, so public record requests don't each re-check
+ *  every signature. Called after each audit. */
+export async function storeRecord(db:Database,id:string){
+  const body=await verifyRecord(db,id);
+  await db.query('INSERT INTO record_summaries(crew_id,body,updated_at) VALUES($1,$2,$3) ON CONFLICT(crew_id) DO UPDATE SET body=excluded.body,updated_at=excluded.updated_at',[id,JSON.stringify(body),Date.now()]);
+  return body;
 }

@@ -7,8 +7,8 @@ import {config} from './config.js';
 import {tokenAbi,rootsAbi} from './contract-abis.js';
 const nonzero=Address.refine(s=>!/^0x0{40}$/.test(s),'Use a nonzero address');
 const Amount=z.string().regex(/^\d+(\.\d{1,18})?$/).refine(s=>parseUnits(s,18)>0n);
-export const DeploymentInput=z.strictObject({deployer:nonzero,governanceProposer:nonzero,guardian:nonzero,treasury:nonzero,workers:nonzero,tokenRecipient:nonzero,usdc:nonzero.refine(v=>v===ELYSIUM_USDC,'Use canonical USDC on Elysium'),hhivSupply:Amount,minimumAuditorStake:Amount}).refine(i=>parseUnits(i.minimumAuditorStake,18)*2n<=parseUnits(i.hhivSupply,18),'Supply must cover at least two minimum auditor bonds');
-export const deploymentNames=['Governance','HHIV','MeasurementRegistry','SlipRoot','AuditorStake','BuyBurn','FeeSplitter'] as const;
+export const DeploymentInput=z.strictObject({deployer:nonzero,governanceProposer:nonzero,guardian:nonzero,treasury:nonzero,workers:nonzero,tokenRecipient:nonzero,usdc:nonzero.refine(v=>v===ELYSIUM_USDC,'Use canonical USDC on Elysium'),hiveSupply:Amount,minimumAuditorStake:Amount}).refine(i=>parseUnits(i.minimumAuditorStake,18)*2n<=parseUnits(i.hiveSupply,18),'Supply must cover at least two minimum auditor bonds');
+export const deploymentNames=['Governance','HIVE','MeasurementRegistry','SlipRoot','AuditorStake','BuyBurn','FeeSplitter'] as const;
 export const CoreDeploymentInput = z.strictObject({
  phase: z.literal('core'), deployer: nonzero, governanceProposer: nonzero, guardian: nonzero,
  usdc: z.literal(ELYSIUM_USDC),
@@ -45,7 +45,7 @@ export async function buildDeployment(input:unknown,nonce:number){
  if(!Number.isSafeInteger(nonce)||nonce<0)throw Error('Invalid deployment nonce');
  const values=DeploymentInput.parse(input),names=deploymentNames;
  const addresses=Object.fromEntries(names.map((name,i)=>[name,getContractAddress({from:values.deployer,nonce:BigInt(nonce+i)})])) as Record<typeof names[number],Hex>;
- const args:Record<typeof names[number],unknown[]>={Governance:[[values.governanceProposer],['0x0000000000000000000000000000000000000000']],HHIV:[values.tokenRecipient,parseUnits(values.hhivSupply,18)],MeasurementRegistry:[addresses.Governance,values.guardian],SlipRoot:[addresses.Governance,addresses.MeasurementRegistry],AuditorStake:[addresses.HHIV,addresses.SlipRoot,parseUnits(values.minimumAuditorStake,18),values.usdc],BuyBurn:[addresses.Governance,values.usdc,addresses.HHIV],FeeSplitter:[values.usdc,values.workers,values.treasury,addresses.AuditorStake,addresses.BuyBurn]};
+ const args:Record<typeof names[number],unknown[]>={Governance:[[values.governanceProposer],['0x0000000000000000000000000000000000000000']],HIVE:[values.tokenRecipient,parseUnits(values.hiveSupply,18)],MeasurementRegistry:[addresses.Governance,values.guardian],SlipRoot:[addresses.Governance,addresses.MeasurementRegistry],AuditorStake:[addresses.HIVE,addresses.SlipRoot,parseUnits(values.minimumAuditorStake,18),values.usdc],BuyBurn:[addresses.Governance,values.usdc,addresses.HIVE],FeeSplitter:[values.usdc,values.workers,values.treasury,addresses.AuditorStake,addresses.BuyBurn]};
  const transactions=await Promise.all(names.map((name,index)=>encodeStep(name,args[name],addresses[name],values.deployer,nonce+index)));
  const governance={target:addresses.SlipRoot,value:'0',data:encodeFunctionData({abi:rootsAbi,functionName:'setAuditor',args:[addresses.AuditorStake]}),predecessor:toHex(0,{size:32}),salt:hash({purpose:'HyperHive/setAuditor',addresses}),delay:172800};
  return {version:1,chainId:CONTRACT_CHAIN_ID,createdAt:Date.now(),input:values,addresses,transactions,governance};

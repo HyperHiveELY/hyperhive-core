@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.39;
-import {Governance, HHIV, MeasurementRegistry, SlipRoot, AuditorStake, FeeSplitter} from "../src/HyperHive.sol";
+import {Governance, HIVE, MeasurementRegistry, SlipRoot, AuditorStake, FeeSplitter} from "../src/HyperHive.sol";
 import {Clock} from "./Accounting.t.sol";
 
 contract RegistryLifecycleTest {
@@ -32,8 +32,8 @@ contract RegistryLifecycleTest {
     }
 
     function testHaltedExitsAndPermissionlessDistribution() public {
-        HHIV payment=new HHIV(address(this),1000);
-        HHIV bond=new HHIV(address(this),1000);
+        HIVE payment=new HIVE(address(this),1000);
+        HIVE bond=new HIVE(address(this),1000);
         MeasurementRegistry registry=new MeasurementRegistry(address(this),address(this));
         SlipRoot roots=new SlipRoot(address(this),registry);
         AuditorStake pool=new AuditorStake(bond,roots,100,payment);

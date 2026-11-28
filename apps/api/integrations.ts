@@ -26,7 +26,7 @@ export async function validateContracts(s:IntegrationSettings){
  const check=(a:string,b:string|undefined,name:string)=>{if(b&&a.toLowerCase()!==b.toLowerCase())throw Error(name+' contract relationship does not match');};
  if(s.token){await rpc.readContract({address:s.token as Hex,abi:tokenAbi,functionName:'totalSupply'});}
  if(s.usdc&&await rpc.readContract({address:s.usdc as Hex,abi:tokenAbi,functionName:'decimals'})!==6)throw Error('Payment token must use 6 decimals');
- if(s.auditor){check(await rpc.readContract({address:s.auditor as Hex,abi:auditorAbi,functionName:'token'}),s.token,'HHIV');check(await rpc.readContract({address:s.auditor as Hex,abi:auditorAbi,functionName:'roots'}),s.roots,'Auditor roots');check(await rpc.readContract({address:s.auditor as Hex,abi:auditorAbi,functionName:'rewardToken'}),s.usdc,'Auditor rewards');}
+ if(s.auditor){check(await rpc.readContract({address:s.auditor as Hex,abi:auditorAbi,functionName:'token'}),s.token,'HIVE');check(await rpc.readContract({address:s.auditor as Hex,abi:auditorAbi,functionName:'roots'}),s.roots,'Auditor roots');check(await rpc.readContract({address:s.auditor as Hex,abi:auditorAbi,functionName:'rewardToken'}),s.usdc,'Auditor rewards');}
  if(s.roots)check(await rpc.readContract({address:s.roots as Hex,abi:rootsAbi,functionName:'registry'}),s.registry,'Root registry');
  if(s.billing){const abi=parseAbi(['function token() view returns(address)','function auditors() view returns(address)']);check(await rpc.readContract({address:s.billing as Hex,abi,functionName:'token'}),s.usdc,'Billing token');check(await rpc.readContract({address:s.billing as Hex,abi,functionName:'auditors'}),s.auditor,'Billing auditor');}
 }
@@ -55,7 +55,7 @@ export function registerIntegrations(app:FastifyInstance,db:Database,owner:(req:
  /** Return the current owner's on-chain eligibility and assigned crew. */
  app.get('/api/benefits',async req=>{const who=await owner(req);return {...await tokenBenefit(who,true),crewId:await benefitCrew(db,who)};});
  /** Assign the token benefit to an eligible crew owned by the caller. */
- app.post('/api/benefits/claim',async req=>{const who=await owner(req),{crewId}=z.strictObject({crewId:z.string().uuid()}).parse(req.body),crew=(await db.query<Crew>('SELECT * FROM crews WHERE id=$1 AND owner=$2',[crewId,who])).rows[0];if(!crew||crew.policy.plan!=='crew')throw Error('Choose an owned Crew plan');if(!(await tokenBenefit(who,true)).eligible)throw Error('HHIV balance is below the qualifying threshold');await db.query('INSERT INTO benefit_assignments VALUES($1,$2,$3) ON CONFLICT(owner) DO UPDATE SET crew_id=excluded.crew_id,updated_at=excluded.updated_at',[who,crewId,Date.now()]);return {crewId};});
+ app.post('/api/benefits/claim',async req=>{const who=await owner(req),{crewId}=z.strictObject({crewId:z.string().uuid()}).parse(req.body),crew=(await db.query<Crew>('SELECT * FROM crews WHERE id=$1 AND owner=$2',[crewId,who])).rows[0];if(!crew||crew.policy.plan!=='crew')throw Error('Choose an owned Crew plan');if(!(await tokenBenefit(who,true)).eligible)throw Error('HIVE balance is below the qualifying threshold');await db.query('INSERT INTO benefit_assignments VALUES($1,$2,$3) ON CONFLICT(owner) DO UPDATE SET crew_id=excluded.crew_id,updated_at=excluded.updated_at',[who,crewId,Date.now()]);return {crewId};});
  /** Return the current owner's eligibility and terms acceptance state. */
  app.get('/api/access',async req=>accessStatus(db,await owner(req)));
  /** Return the deployment's published terms and version. */

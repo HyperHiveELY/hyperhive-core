@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.39;
 
-import {HHIV,MeasurementRegistry,SlipRoot,AuditorStake,BuyBurn,FeeSplitter} from "../src/HyperHive.sol";
+import {HIVE,MeasurementRegistry,SlipRoot,AuditorStake,BuyBurn,FeeSplitter} from "../src/HyperHive.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 interface Clock {function warp(uint256 timestamp) external;}
 
 contract OperatorFixture {
     AuditorStake immutable stake;
-    constructor(HHIV token, AuditorStake pool) {stake=pool;token.approve(address(pool),type(uint256).max);}
+    constructor(HIVE token, AuditorStake pool) {stake=pool;token.approve(address(pool),type(uint256).max);}
     function deposit(uint256 amount) external {stake.stake(amount);}
     function request(uint256 amount) external {stake.requestUnstake(amount);}
     function withdraw() external {stake.withdrawUnstaked();}
@@ -26,8 +26,8 @@ contract RouterFixture {
 
 contract AccountingHandler {
     Clock private constant clock=Clock(address(uint160(uint256(keccak256("hevm cheat code")))));
-    HHIV public immutable bond;
-    HHIV public immutable usd;
+    HIVE public immutable bond;
+    HIVE public immutable usd;
     AuditorStake public immutable pool;
     BuyBurn public immutable burner;
     FeeSplitter public immutable splitter;
@@ -39,8 +39,8 @@ contract AccountingHandler {
     uint256 public constant SUPPLY=1e24;
 
     constructor(){
-        bond=new HHIV(address(this),SUPPLY);
-        usd=new HHIV(address(this),SUPPLY);
+        bond=new HIVE(address(this),SUPPLY);
+        usd=new HIVE(address(this),SUPPLY);
         MeasurementRegistry registry=new MeasurementRegistry(address(this),address(this));
         roots=new SlipRoot(address(this),registry);
         pool=new AuditorStake(bond,roots,100,usd);
@@ -82,7 +82,7 @@ contract AccountingHandler {
         uint256 budget=usd.balanceOf(address(burner));
         if(budget!=0){
             uint256 amount=1+uint256(seed)%budget;
-            burner.execute(address(router),amount,amount,abi.encodeCall(router.trade,(amount)));
+            burner.execute(address(router),amount,amount,block.timestamp,abi.encodeCall(router.trade,(amount)));
         }
     }
 
@@ -90,7 +90,9 @@ contract AccountingHandler {
         uint64 hour=uint64(block.timestamp / 1 hours+1);
         clock.warp((uint256(hour)+1)*1 hours+10 minutes);
         bytes32 root=keccak256(abi.encode(hour));
-        roots.postSlipRoot(hour,root,0,roots.lastRoot());
+        // Hours are consecutive: post every hour since the last one, empty except the audited hour.
+        uint64 last=roots.lastHour();
+        for(uint64 h=last==0?hour:last+1;h<=hour;h++)roots.postSlipRoot(h,h==hour?root:bytes32(0),0,roots.lastRoot());
         uint256 eligible;
         for(uint256 i;i<3;i++){
             address op=address(operators[i]);

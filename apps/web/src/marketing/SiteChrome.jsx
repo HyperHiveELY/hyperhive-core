@@ -67,7 +67,7 @@ export function SiteHeader() {
     <header className="site-header">
         <div className="site-header__inner">
           <div className="site-header__start">
-            <TokenCa className="site-header__ca" label="$HHIV CA" />
+            <TokenCa className="site-header__ca" label="$HIVE CA" />
             <nav className="site-header__nav" aria-label="Main">{links.slice(0, half)}</nav>
           </div>
           <Logo />

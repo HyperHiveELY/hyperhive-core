@@ -60,6 +60,8 @@ CREATE TABLE IF NOT EXISTS controls(nonce text PRIMARY KEY,crew_id text NOT NULL
 ALTER TABLE controls ADD COLUMN IF NOT EXISTS policy_hash text NOT NULL DEFAULT '';
 ALTER TABLE controls ADD COLUMN IF NOT EXISTS issued_at double precision NOT NULL DEFAULT 0;
 CREATE TABLE IF NOT EXISTS cards(id text PRIMARY KEY,crew_id text NOT NULL REFERENCES crews(id),body jsonb NOT NULL,lens text NOT NULL,evidence jsonb NOT NULL,verdict jsonb NOT NULL,status text NOT NULL,reason text,created_at double precision NOT NULL,updated_at double precision NOT NULL);
+ALTER TABLE cards ADD COLUMN IF NOT EXISTS attestation jsonb;
+CREATE TABLE IF NOT EXISTS record_summaries(crew_id text PRIMARY KEY REFERENCES crews(id),body jsonb NOT NULL,updated_at double precision NOT NULL);
 CREATE TABLE IF NOT EXISTS slips(digest text PRIMARY KEY,crew_id text NOT NULL REFERENCES crews(id),seq integer NOT NULL,previous text NOT NULL,body jsonb NOT NULL,signature text NOT NULL,signer text NOT NULL,cloid text UNIQUE NOT NULL,ack jsonb,created_at double precision NOT NULL,UNIQUE(crew_id,seq));
 CREATE TABLE IF NOT EXISTS positions(crew_id text NOT NULL,market text NOT NULL,body jsonb NOT NULL,PRIMARY KEY(crew_id,market));
 CREATE TABLE IF NOT EXISTS fills(crew_id text NOT NULL,tid text NOT NULL,body jsonb NOT NULL,status text NOT NULL,digest text,created_at double precision NOT NULL,PRIMARY KEY(crew_id,tid));

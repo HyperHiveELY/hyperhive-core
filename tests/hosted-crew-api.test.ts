@@ -4,7 +4,7 @@ import {Database} from '../packages/core/db.js';
 import {config} from '../packages/core/config.js';
 import {createServer} from '../apps/api/server.js';
 import {crew,wallet} from './fixtures.js';
-import {hash,ZERO,policyMessage} from '../packages/core/domain.js';
+import {hash,ZERO,policyMessage,controlMessage} from '../packages/core/domain.js';
 import {ELYSIUM_USDC} from '../packages/core/chain.js';
 const h=vi.hoisted(()=>({rpc:vi.fn(),quote:vi.fn(),role:vi.fn(),ledger:vi.fn(),save:vi.fn()}));
 vi.mock('viem',async original=>({...await original<typeof import('viem')>(),createPublicClient:()=>({getChainId:async()=>99901,getBlockNumber:async()=>5n,readContract:h.rpc})}));
@@ -28,6 +28,10 @@ it('creates an owned crew, serves verifiable public records and fails closed on 
   expect((await get(path+'/attestation')).json()).toMatchObject({registry:wallet.address,signer:wallet.address});
   approved=false;expect((await get(path+'/attestation')).json().error).toMatch(/not registered/);
   expect((await get(path)).json()).toMatchObject({crew:{id:c.id},readiness:{ready:false}});
+  // A control dated in the future is refused: the signer orders controls by arrival, and a fast clock must not jump the queue.
+  {const nonce=crypto.randomUUID(),issuedAt=Date.now()+120000;const signature=await wallet.signMessage({message:controlMessage(c.id,'pause',nonce,hash(c.policy),issuedAt)});
+   const future=await app.inject({method:'POST',url:'/api/'+path+'/control',headers,payload:{action:'pause',nonce,issuedAt,signature}});
+   expect(future.json().error).toMatch(/invalid or expired/);}
   expect((await get('dashboard')).statusCode).toBe(200);
   expect((await get('crew-registry')).json().crews[0].id).toBe(c.id);
   expect((await get('archive/hours/1')).json()).toEqual({hour:1,slips:[],root:null});

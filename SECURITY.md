@@ -52,9 +52,20 @@ During an incident, pause new admissions and retain the signer’s protective ex
 
 No open audit finding has been accepted on behalf of the owner. Local signing, historical frontend assets and third-party notices have the scope documented in README and third-party/NOTICES.md. The deployment is immutable. Regenerate all seven deployment transactions after contract changes and recheck runtime hashes. Keep previous unsigned plans and published evidence labeled by build. Mainnet activation requires verified deployments and signer attestation, funded acceptance, operational contacts and owner approval.
 
+### Key service and trade-card authority
+
+The hosted signer derives its record-signing key and every crew trading key from the dstack key service. It refuses to start unless that service matches `KMS_KEY_PROVIDER`, so a deployment still bound to a retired or compromised key service never signs. Phala's November incident exposed keys derived through its legacy cloud key service for apps deployed before 6 November 2026, 05:02 UTC. An app in that window must move to the on-chain or post-rotation key service, publish a new measurement and poster, retire the old measurement, start a new policy generation for every crew and revoke the old agents on Hyperliquid.
+
+The worker signs every reviewed trade card with `CARD_SIGNING_KEY`. The hosted signer executes a card only when it carries a valid signature from `CARD_SIGNER_ADDRESS`, so a database write alone cannot place a trade. The worker is not hardware-attested: this protects against database tampering, not against a compromised worker host.
+
+### Accepted low-severity items
+
+- `@phala/dcap-qvl` depends on `elliptic`, which has an open advisory with no fixed release. The library loads it only on its browser code path; on Node, where HyperHive verifies quotes, it uses the built-in crypto module.
+- The public crew registry returns each crew's signed policy, which names the owner wallet, crew account and caps. Independent Auditors need the signed policy to verify crew ownership without trusting the operator. Removing it requires a different ownership proof.
+
 ### Static analysis disposition
 
-Slither flags a balance-before/balance-after pattern at the governed buy-and-burn swap. The received-token delta enforces the minimum output. The immutable output token is the deployed HHIV ERC20, the swap entry is non-reentrant, and the router has a single-call allowance. The narrowly scoped detector annotation documents this reviewed pattern. The accounting invariant independently checks allowances, balances, rewards and supply after successful handler calls.
+Slither flags a balance-before/balance-after pattern at the governed buy-and-burn swap. The received-token delta enforces the minimum output. The immutable output token is the deployed HIVE ERC20, the swap entry is non-reentrant, and the router has a single-call allowance. The narrowly scoped detector annotation documents this reviewed pattern. The accounting invariant independently checks allowances, balances, rewards and supply after successful handler calls.
 
 ### Alert delivery and acknowledgement
 

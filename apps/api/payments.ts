@@ -36,12 +36,14 @@ function verificationInvoice(payload:PaymentPayload,requirements:any){return {ow
 export function registerPaidVerification(app:FastifyInstance,db:Database,owner:(req:FastifyRequest)=>Promise<Hex>){
  /** Issue an x402 challenge or settle a signed authorization for a public record. */
  app.get<{Params:{id:string}}>('/api/verify/:id',async(req,reply)=>{
-  const id=z.string().uuid().parse(req.params.id),record=await verifyRecord(db,id),{server,settings}=await paymentServer(),requirements=await requirementsFor('10000',settings.x402PayTo!);
+  // Check the crew exists cheaply; the full signature re-check only runs once a payment has been verified.
+  const id=z.string().uuid().parse(req.params.id);if(!(await db.query('SELECT id FROM crews WHERE id=$1',[id])).rows.length)throw Object.assign(Error('Record not found'),{statusCode:404});
+  const {server,settings}=await paymentServer(),requirements=await requirementsFor('10000',settings.x402PayTo!);
   const encoded=req.headers['payment-signature'];if(typeof encoded!=='string'){const required=await server.createPaymentRequiredResponse([requirements],{url:new URL(req.url,config.PUBLIC_ORIGIN).toString(),description:'HyperHive record verification',mimeType:'application/json'});return reply.code(402).header('PAYMENT-REQUIRED',encodePaymentRequiredHeader(required)).send(required);}
   const payload=decodePaymentSignatureHeader(encoded);validatePayment(payload,requirements);const key=hash(payload);
   await db.query('INSERT INTO verification_payments(payment_hash,crew_id,payment_payload,created_at) VALUES($1,$2,$3,$4) ON CONFLICT(payment_hash) DO NOTHING',[key,id,JSON.stringify(payload),Date.now()]);
   const saved=(await db.query<any>('SELECT * FROM verification_payments WHERE payment_hash=$1',[key])).rows[0];if(saved.crew_id!==id)throw Error('Payment belongs to another verification');
-  const result=()=>({...record,checkedAt:Date.now(),network:'hyperliquid-mainnet',paymentNetwork:'base-mainnet',paymentTx:saved.tx});
+  const result=async()=>({...await verifyRecord(db,id),checkedAt:Date.now(),network:'hyperliquid-mainnet',paymentNetwork:'base-mainnet',paymentTx:saved.tx});
   if(saved.status==='PAID')return result();
   if(saved.tx){await confirmInvoiceReceipt(verificationInvoice(payload,requirements),saved.tx);await db.query("UPDATE verification_payments SET status='PAID' WHERE payment_hash=$1",[key]);return result();}
   const lease=await db.query("UPDATE verification_payments SET status='SETTLING' WHERE payment_hash=$1 AND status IN ('OPEN','RETRY') RETURNING payment_hash",[key]);if(!lease.rows.length)throw Error('Verification settlement is pending. Recover it with its Base transaction hash.');

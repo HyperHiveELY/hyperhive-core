@@ -9,7 +9,7 @@ import { snapshot,markets } from '../../packages/core/venue.js';
 import {aiCreditAccess,meteringReady,recoverTokenReservations} from '../../packages/core/tokens.js';
 import { think } from '../../packages/ai/crew.js';
 import { claimScan } from '../../packages/ai/schedule.js';
-import { auditCrew, archiveHour } from './auditor.js';
+import { auditCrew, archiveHour, storeRecord } from './auditor.js';
 assertProductionConfig(config);
 const isLocal=localMode();
 const db=await new Database().init();const release=await db.lock('hyperhive/worker');if(!release)throw Error('Worker already running');
@@ -25,7 +25,7 @@ try{while(!stop){
   const crews=(await db.query<Crew>('SELECT * FROM crews ORDER BY created_at')).rows;
   crewCount=crews.length;
   for(const crew of crews){
-    try{await auditCrew(db,crew);}catch(e){await event(db,crew.id,'audit_error',(e as Error).message);}
+    try{await auditCrew(db,crew);await storeRecord(db,crew.id);}catch(e){await event(db,crew.id,'audit_error',(e as Error).message);}
     try{await collectRecordMetrics(db,crew);}catch(e){await event(db,crew.id,'metrics_error',(e as Error).message);}
     if(!(await accessStatus(db,crew.owner)).eligible||crew.paused||!await verifyPolicy(crew.policy,crew.signature))continue;
     if(!await meteringReady(db)||!await aiCreditAccess(db,crew.owner))continue;
