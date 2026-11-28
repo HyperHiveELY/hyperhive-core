@@ -59,6 +59,7 @@ CREATE TABLE IF NOT EXISTS crews(id text PRIMARY KEY,owner text NOT NULL,account
 CREATE TABLE IF NOT EXISTS paper_accounts(crew_id text PRIMARY KEY REFERENCES crews(id),body jsonb NOT NULL);
 CREATE TABLE IF NOT EXISTS paper_events(id bigserial PRIMARY KEY,crew_id text NOT NULL REFERENCES crews(id),kind text NOT NULL,body jsonb NOT NULL,created_at double precision NOT NULL);
 CREATE INDEX IF NOT EXISTS paper_events_crew ON paper_events(crew_id,created_at);
+CREATE TABLE IF NOT EXISTS crew_models(crew_id text PRIMARY KEY REFERENCES crews(id),scout text NOT NULL,skeptic text NOT NULL,revision integer NOT NULL DEFAULT 1,updated_at double precision NOT NULL);
 CREATE TABLE IF NOT EXISTS identities(crew_id text PRIMARY KEY REFERENCES crews(id),agent text NOT NULL,signer text NOT NULL,quote jsonb NOT NULL,generation integer NOT NULL,measurement text NOT NULL,updated_at double precision NOT NULL);
 CREATE TABLE IF NOT EXISTS auth_nonces(nonce text PRIMARY KEY,owner text NOT NULL,expires_at double precision NOT NULL);
 CREATE TABLE IF NOT EXISTS sessions(token text PRIMARY KEY,owner text NOT NULL,expires_at double precision NOT NULL);

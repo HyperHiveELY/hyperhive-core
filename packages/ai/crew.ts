@@ -1,3 +1,4 @@
+import {crewModels,validateCrewModels} from './crew-models.js';
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import { Decision, hash, type Crew, type Snapshot } from '../core/domain.js';
@@ -21,10 +22,12 @@ export async function reserve(db:Database,crew:Crew,max:number,billing?:{model:s
 }
 /** Construct metered inference access for the crew's configured models and spending limits. */
 export async function inference(db:Database,crew:Crew){
+  const selection=await crewModels(db,crew.id);
+  await validateCrewModels(selection);
   return meteredInference({
     reserve:async(model,ceiling)=>reserve(db,crew,ceiling,{model,markupBps:(await integrationSettings()).aiMarkupBps}),
     settle:async(id,cost,status)=>settleTokens(db,id,status==='catalog'?cost:null,status,status==='unmetered'?'AI returned incomplete usage. Review model metering before resuming.':undefined),
-  });
+  },45000,selection);
 }
 /** Evaluate a candidate with the scout and skeptic under the crew's signed policy. */
 export async function analyze(db:Database,crew:Crew,market:Snapshot|Snapshot[],lens:string){

@@ -14,9 +14,9 @@ export interface InferenceMeter {
  settle(id:string,cost:number|null,status:MeterStatus):Promise<void>;
 }
 /** Share model validation, bounded requests and usage accounting across billing sources. */
-export async function meteredInference(meter:InferenceMeter,timeoutMs=45000){
+export async function meteredInference(meter:InferenceMeter,timeoutMs=45000,selection?:{scout:string;skeptic:string}){
  const key=await ppqKey();if(!key)throw Error('HyperHive AI is not configured');
- const {scout,skeptic}=await modelSettings();
+ const {scout,skeptic}=selection??await modelSettings();
  if(!scout||!skeptic||scout===skeptic)throw Error('Configure separate Scout and Skeptic model families');
  const {a,b}=await validateModels(scout,skeptic);
  const call=async(model:string,system:string,user:unknown,schema:z.ZodType)=>{

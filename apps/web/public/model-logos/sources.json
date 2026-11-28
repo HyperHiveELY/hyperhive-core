@@ -1,0 +1,11 @@
+{
+  "retrieved": "2026-11-27",
+  "purpose": "Identify the model providers offered by HyperHive. Trademarks belong to their respective owners; no endorsement implied.",
+  "assets": {
+    "openai.svg": "https://cdn.openai.com/brand/openai-logos.zip \u2014 OpenAI-logos/SVGs/OAI_OpenAI-Blossom_White.svg",
+    "claude.svg": "https://claude.com/icon.svg",
+    "gemini.png": "https://www.gstatic.com/lamda/images/gemini_sparkle_4g_512_lt_f94943af3be039176192d.png",
+    "deepseek.ico": "https://www.deepseek.com/favicon.ico",
+    "mistral.svg": "https://mistral.ai/brand/ (official inline pixel-cat symbol, viewBox 0 0 21 15)"
+  }
+}

@@ -1,3 +1,4 @@
+import {crewModels} from '../../packages/ai/crew-models.js';
 import {approvedPoster} from '../../packages/core/crew-registry.js';
 import type {Hex} from 'viem';
 import {serviceHealthy} from '../../packages/core/runtime-health.js';
@@ -9,7 +10,7 @@ import {type Crew,verifyPolicy,hash} from '../../packages/core/domain.js';
 import {accountState,info} from '../../packages/core/venue.js';
 import {verifyLocalIdentity,type LocalIdentity} from '../../packages/core/local-identity.js';
 import {pinnedLocalSigner} from '../signer/local-keys.js';
-import {ppqKey,modelSettings} from '../../packages/core/secrets.js';
+import {ppqKey} from '../../packages/core/secrets.js';
 import {aiCreditAccess,aiTestingExempt,meteringReady} from '../../packages/core/tokens.js';
 /** Evaluate signed policy, signer, funding, agent, journal and metering prerequisites for entry. */
 export async function executionReadiness(db:Database,crew:Crew,state:Awaited<ReturnType<typeof accountState>>,agents:Awaited<ReturnType<typeof info.extraAgents>>){
@@ -24,7 +25,7 @@ export async function executionReadiness(db:Database,crew:Crew,state:Awaited<Ret
    await approvedPoster(config.ELYSIUM_RPC,config.ROOT_CONTRACT as Hex,identity.signer,config.MEASUREMENT_HASH as Hex);
   }identityValid=true;}catch{}}
  const healthy=(role:string)=>services.rows.some(s=>s.role===role&&serviceHealthy(s));
- const accountValue=Number(state.marginSummary.accountValue),models=await modelSettings();
+ const accountValue=Number(state.marginSummary.accountValue),models=await crewModels(db,crew.id);
  const checks=[
   {id:'access',label:'Trading eligibility acknowledged',ok:(await accessStatus(db,crew.owner)).eligible},
   {id:'policy',label:'Signed policy is valid',ok:await verifyPolicy(crew.policy,crew.signature)},

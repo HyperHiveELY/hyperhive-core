@@ -1,3 +1,4 @@
+import {registerCrewModels} from './crew-models.js';
 import {CONTRACT_CHAIN_ID} from '../../packages/core/chain.js';
 import {assertProductionConfig} from '../../packages/core/production.js';
 import {runtimeHealth} from '../../packages/core/runtime-health.js';
@@ -55,7 +56,7 @@ export async function createServer(db:Database){
     reply.header('X-Content-Type-Options','nosniff').header('Referrer-Policy','no-referrer').header('X-Frame-Options','DENY');
     if(csp)reply.header('Content-Security-Policy',csp).header('Strict-Transport-Security','max-age=31536000').header('Permissions-Policy','camera=(), microphone=(), geolocation=()');
     if(req.url.startsWith('/api/'))reply.header('Cache-Control','no-store');
-    if(!['GET','HEAD','OPTIONS'].includes(req.method)&&req.headers.origin!==config.PUBLIC_ORIGIN)throw Error('Request origin does not match this deployment');
+    if(!['GET','HEAD','OPTIONS'].includes(req.method)&&req.headers.origin!==config.PUBLIC_ORIGIN&&!config.EXTRA_ORIGINS.includes(req.headers.origin??''))throw Error('Request origin does not match this deployment');
   });
   const owner=async(req:FastifyRequest)=>{
     const token=req.cookies.hh_session;if(!token)throw Object.assign(Error('Connect your wallet'),{statusCode:401});
@@ -67,6 +68,7 @@ export async function createServer(db:Database){
   registerScan(app,db);
   registerTrades(app,db,crew);
   registerExits(app,db,owner);
+  registerCrewModels(app,db,owner);
   /** Report execution prerequisites and return 503 when required services are unavailable. */
   app.get('/api/ready',async(_req,reply)=>{try{const status=await runtimeHealth(db);return reply.code(status.ok?200:503).send(status);}catch{return reply.code(503).send({ok:false,checks:[{id:'database',ok:false}]});}});
   /** Report API process liveness for the container health check. */
