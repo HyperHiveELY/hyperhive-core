@@ -2,6 +2,7 @@ import React,{useCallback,useEffect,useLayoutEffect,useRef,useState} from 'react
 import '@fontsource-variable/geist';
 import '../dashboard/brand-fonts.css';
 import './demo.css';
+import '../dashboard/workspace-light.css';
 import {BrandMark,ArrowRight,ArrowLeft,Check,Pause,Play,Wallet,X,LockKeyhole,RefreshCw,ShieldCheck} from '../ui/ProductIcons.js';
 import {DemoChart,type ChartLine,type ChartPin} from './DemoChart.js';
 import {markWalkthroughSeen} from '../flags.js';

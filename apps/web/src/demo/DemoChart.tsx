@@ -1,5 +1,6 @@
 import React,{useEffect,useLayoutEffect,useRef,useState} from 'react';
 import {series,LAST,PRICE_LO,PRICE_HI,usd} from './story.js';
+import {onThemeChange} from '../theme.js';
 
 export type ChartLine={id:string;price:number;kind:'entry'|'stop'|'target';label:string;visible:boolean};
 export type ChartPin={id:string;index:number;price:number;label:string;tone:'buy'|'win'|'loss';visible:boolean;minor?:boolean};
@@ -15,6 +16,8 @@ const ease=(t:number)=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
  * display's frame rate. React only re-renders when the size changes or a story event happens.
  */
 export function DemoChart({head,dur,reduced,lines,pins,scanning,marks,onPassed,children}:Props){
+ const [light,setLight]=useState(()=>document.documentElement.dataset.theme==='light');
+ useEffect(()=>onThemeChange(()=>setLight(document.documentElement.dataset.theme==='light')),[]);
  const box=useRef<HTMLDivElement>(null),line=useRef<SVGPathElement>(null),area=useRef<SVGPathElement>(null),dot=useRef<HTMLDivElement>(null),readout=useRef<HTMLSpanElement>(null);
  const [size,setSize]=useState({w:0,h:0});
  const current=useRef(head),passed=useRef(-1),sizeRef=useRef(size),passedCb=useRef(onPassed);
@@ -57,7 +60,7 @@ export function DemoChart({head,dur,reduced,lines,pins,scanning,marks,onPassed,c
  const ticks=[98000,100000,102000,104000,106000];
  return <div className="dm-chart" ref={box}>
   <svg className="dm-chart-svg" width={size.w} height={size.h} viewBox={`0 0 ${size.w||1} ${size.h||1}`} aria-hidden="true">
-   <defs><linearGradient id="dm-area" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor="#6fe3b8" stopOpacity=".22"/><stop offset="100%" stopColor="#6fe3b8" stopOpacity="0"/></linearGradient></defs>
+   <defs><linearGradient id="dm-area" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor={light?'#0b684e':'#6fe3b8'} stopOpacity=".22"/><stop offset="100%" stopColor={light?'#0b684e':'#6fe3b8'} stopOpacity="0"/></linearGradient></defs>
    {size.w>0&&ticks.map(t=><g key={t}><line x1={LEFT} x2={size.w*PLOT} y1={y(t)} y2={y(t)} className="dm-grid"/><text x={LEFT} y={y(t)-6} className="dm-tick">{usd(t,0)}</text></g>)}
    <path ref={area} fill="url(#dm-area)"/>
    <path ref={line} className="dm-price-line"/>

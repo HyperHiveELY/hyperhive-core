@@ -3,7 +3,9 @@ import {Icon} from './LandingIcons';
 import '../dashboard/brand-fonts.css';
 import {useFlags} from '../flags';
 import {TokenCa} from '../TokenCa';
+import {ThemeToggle} from '../ThemeToggle';
 import './site-chrome.css';
+import './site-dark.css';
 
 export const primaryAction = {label: 'Get started', href: '/dashboard'};
 
@@ -73,9 +75,10 @@ export function SiteHeader() {
           <Logo />
           <div className="site-header__end">
             <nav className="site-header__nav" aria-label="More">{links.slice(half)}</nav>
-            <ActionLink href={primaryAction.href} className="site-btn--small">{primaryAction.label}</ActionLink>
+            <span className="site-header__actions"><ThemeToggle /><ActionLink href={primaryAction.href} className="site-btn--small">{primaryAction.label}</ActionLink></span>
           </div>
           <TokenCa className="site-header__mobile-ca" label="CA" />
+          <ThemeToggle className="site-header__mobile-theme" />
           <button
             type="button"
             className="site-header__toggle"

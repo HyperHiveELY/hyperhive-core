@@ -66,10 +66,10 @@ it.each([['long',61000],['short',59000]])('rejects a wrong-side %s exit at %s ev
  vi.spyOn(ChatCompletionsProvider.prototype,'infer').mockResolvedValueOnce(result({card:{...card,side,invalidationPx:stop}})).mockResolvedValueOnce(result({verdict:'PASS',reasons:['Price may move.']}));
  expect(await scanMarket(db,{...fixture,timestamp:Date.now()})).toMatchObject({side:null,skeptic:{verdict:'KILL'}});
 });
-it.each([['long',59900,-1],['short',60100,1]])('widens a too-close %s exit at %s to the 1.2 ATR sizing floor',async(side,stop,sign)=>{
+it.each([['long',59900,-1],['short',60100,1]])('widens a too-close %s exit at %s to the 2 ATR public floor',async(side,stop,sign)=>{
  vi.spyOn(ChatCompletionsProvider.prototype,'infer').mockResolvedValueOnce(result({card:{...card,side,invalidationPx:stop}})).mockResolvedValueOnce(result({verdict:'PASS',reasons:['Price may move.']}));
  const read=await scanMarket(db,{...fixture,timestamp:Date.now()});
- expect(read).toMatchObject({side,skeptic:{verdict:'PASS'}});expect(read.invalidationPx).toBeCloseTo(fixture.mark+sign*1.2*fixture.atr);
+ expect(read).toMatchObject({side,skeptic:{verdict:'PASS'}});expect(read.invalidationPx).toBeCloseTo(fixture.mark+sign*2*fixture.atr);
 });
 it('returns a valid short with the same distance and horizon fields',async()=>{
  vi.spyOn(ChatCompletionsProvider.prototype,'infer').mockResolvedValueOnce(result({card:{...card,side:'short',invalidationPx:61000}})).mockResolvedValueOnce(result({verdict:'PASS',reasons:['The exit price is valid.']}));

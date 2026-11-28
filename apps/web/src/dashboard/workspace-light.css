@@ -1,0 +1,1602 @@
+/* Workspace and walkthrough light colours. Dark styles remain the source of truth.
+ * Decorative dividers use #d9dedc; control boundaries use #7c8b83 (3:1 on white).
+ * Body/status inks meet 4.5:1 on their white and tinted surfaces.
+ * Legacy sheets are scoped to the retired shell so they cannot restyle the current app. */
+html[data-theme=light] {
+  --wl-canvas: #f6f8f7;
+  --wl-surface: #fff;
+  --wl-raised: #edf3f0;
+  --wl-border: #d9dedc;
+  --wl-control: #7c8b83;
+  --wl-text: #102d24;
+  --wl-muted: #59645f;
+  --wl-green: #0b684e;
+  --wl-green-hover: #07523f;
+  --wl-green-soft: #e3f7ef;
+  --wl-red: #b42332;
+  --wl-red-soft: #fff0f1;
+  --wl-amber: #805300;
+  --wl-amber-soft: #fff6e1;
+  --wl-blue: #285f91;
+  --wl-blue-soft: #eaf2fa;
+  --wl-violet: #7042a1;
+  --wl-violet-soft: #f3edf9;
+  --wl-hover: #eaf1ed;
+  color-scheme: light;
+  color: #111;
+  background: var(--wl-canvas);
+  --canvas: var(--wl-canvas);
+  --surface: var(--wl-surface);
+  --raised: var(--wl-raised);
+  --border: var(--wl-border);
+  --text: var(--wl-text);
+  --ink: var(--wl-text);
+  --muted: var(--wl-muted);
+  --green: var(--wl-green);
+  --red: var(--wl-red);
+  --amber: var(--wl-amber);
+  --line: var(--wl-border);
+  --panel: var(--wl-surface);
+  --soft: var(--wl-green-soft);
+  --lime: var(--wl-green);
+  --brand-deep: #096c55;
+  --brand-mint: #97fce3;
+  --accent-soft: var(--wl-green-soft);
+  --accent-line: var(--wl-green);
+}
+
+/* style.css */
+html[data-theme=light] :where(.shell:not(.site-workspace)) button { background: var(--wl-surface); border-color: var(--wl-control); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) button:hover { background: var(--wl-hover); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) a { color: inherit; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) aside { background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .mark { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .beta { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .avatar { background: var(--wl-surface); border-color: var(--wl-border); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .nav-label { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .nav { background: transparent; color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .nav.active { background: var(--wl-green-soft); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .nav i { background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .side-bottom p { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .side-bottom small { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .network { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .dot { background: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .network-tag { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .breadcrumbs { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .breadcrumbs span { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .wallet-button { background: var(--wl-surface); border-color: var(--wl-control); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .eyebrow { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .primary { color: #fff; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .primary:hover { background: var(--wl-green-hover); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .secondary { background: var(--wl-surface); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .metric { background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .metric>div { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .metric small { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .market-title small { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .coin { background: var(--wl-surface); color: var(--wl-muted); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) select { background: var(--wl-surface); border-color: var(--wl-control); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .positive { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .negative { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .chart-range { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .chart-range b { background: var(--wl-surface); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .chart-times { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .chart-footer { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .badge { border-color: var(--wl-border); background: var(--wl-raised); color: var(--wl-muted) !important; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .orbit { border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .hive-core { background: var(--wl-surface); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .orbit-node { border-color: var(--wl-border); color: var(--wl-muted); background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .crew-line b { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) th { color: var(--wl-muted); background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) td { border-bottom-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) tbody tr:hover { background: var(--wl-hover); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .mini-coin { background: var(--wl-surface); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) footer { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .danger { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) code { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .activity small { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .activity-icon { background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .empty>span { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .provider-logo span { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .check { border-color: var(--wl-control); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .check.yes { background: var(--wl-surface); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .toast { background: var(--wl-surface); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .toast.error { background: var(--wl-red-soft); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .toast button { background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .modal-backdrop { background: rgb(3 33 28 / .42); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .modal { background: var(--wl-surface); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .modal-close { background: none; color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) label { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) input { background: var(--wl-surface); border-color: var(--wl-control); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) input::placeholder { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .market-chips button.chosen { background: var(--wl-green-soft); border-color: var(--wl-control); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .modal input[type=file]::file-selector-button { background: var(--wl-surface); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .wallet-address { border-color: var(--wl-border); }
+
+/* dashboard/dashboard.css */
+html[data-theme=light] :where(.shell:not(.site-workspace)) body { background: var(--wl-surface); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) button:not(:disabled):hover { border-color: var(--wl-control); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .sidebar { background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .brand { background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .brand:hover { background: none !important; color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .nav { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .nav.active { background: var(--wl-green-soft); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .nav:hover { background: var(--wl-hover); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .nav i { background: var(--wl-surface); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .connection-indicator { border-top-color: var(--wl-border); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .dot { background: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .dot.offline { background: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) header { border-bottom-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .breadcrumbs { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .breadcrumbs b { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .header-network,
+html[data-theme=light] :where(.shell:not(.site-workspace)) .wallet-button { border-color: var(--wl-control); background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .header-network small { color: var(--wl-muted); border-left-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .hyperliquid-mark { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .wallet-button span { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .page-heading p { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) p { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .panel { background: var(--wl-surface); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .panel-heading>span { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .metric { background: var(--wl-surface); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .metric>div:first-child { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .metric small { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-metric>span { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-track { background: var(--wl-raised); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-track>span { background: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .segmented button { color: var(--wl-muted); background: var(--wl-surface); border-color: var(--wl-control); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .segmented button.selected,
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-filters button.selected { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .plot-axis { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .plot-dates { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .chart-tooltip { background: var(--wl-surface); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .chart-tooltip small { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .portfolio-caption { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .chart-grid-lines { background: repeating-linear-gradient(to bottom,transparent,transparent 44px,var(--wl-surface) 45px,transparent 46px); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .empty-chart-icon { background: var(--wl-surface); border-color: var(--wl-border); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-panel .panel-heading { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-row { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-row svg { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-row b { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-budget { border-top-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-budget>div:not(.risk-track) { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-budget b { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-budget em,
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-card-stats em { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-budget small { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-settings { background: none; color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-settings:hover { background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-filters button { background: var(--wl-surface); border-color: var(--wl-control); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .view-toggle button { background: var(--wl-surface); border-color: var(--wl-control); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .view-toggle button[aria-pressed=true] { border-color: var(--wl-control); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-card { background: var(--wl-surface); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-card:hover { border-color: var(--wl-control); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-title-button { background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-title-button:hover { background: none !important; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-emblem { background: color-mix(in srgb,var(--bot-color) 12%,var(--wl-surface)); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-title-button small { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-status { background: var(--wl-surface); border-color: var(--wl-border); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-status i { background: currentColor; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .status-trading { color: var(--wl-muted); border-color: var(--wl-border); background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .status-watching { color: var(--wl-muted); border-color: var(--wl-border); background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .status-needs-setup,
+html[data-theme=light] :where(.shell:not(.site-workspace)) .status-needs-attention,
+html[data-theme=light] :where(.shell:not(.site-workspace)) .status-unavailable { color: var(--wl-muted); border-color: var(--wl-border); background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-performance { background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-performance:hover { background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-performance small { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .spark-empty { color: var(--wl-muted); border-bottom-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-card-stats>div+div { border-left-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-card-stats span { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-card-footer { border-top-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-card-footer p { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-card-footer button { background: var(--wl-raised); border-color: var(--wl-control); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-onboarding { background: var(--wl-surface); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .onboarding-mark { background: var(--wl-surface); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .starter-card { background: var(--wl-surface); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .starter-card:hover { background: var(--wl-hover); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .preset-label { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .starter-card>span { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .starter-card>p { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .starter-card>b { border-top-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .onboarding-footer { border-top-color: var(--wl-border); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .live-label { color: var(--wl-muted) !important; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .decision { border-left-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .decision-dot { background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .decision-dot.dot-muted { background: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .decision time { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .decision>p { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-chip { background: var(--wl-raised); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .decision summary { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .decision summary:after { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .decision details p { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .feed-link { border-top-color: var(--wl-border) !important; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .text-link { background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .text-link:hover { background: none !important; color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .feed-empty>span { background: var(--wl-surface); border-color: var(--wl-border); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .feed-empty-step { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .feed-empty-step i { border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-search>svg { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .empty-filter,
+html[data-theme=light] :where(.shell:not(.site-workspace)) .loading-panel { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .empty-filter h3 { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .wallet-emblem { background: var(--wl-surface); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .section-heading span { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .wallet-account code { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .wallet-account>div:not(.panel-heading) { border-top-color: var(--wl-border); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .content>footer { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .modal { background: var(--wl-surface); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .modal .eyebrow { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .toast.error { border-color: var(--wl-border); background: var(--wl-red-soft); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .modal-close { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .positive { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .negative { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .setup-panel .check.yes { background: var(--wl-surface); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .setup-panel .check { border-color: var(--wl-control); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .readiness .muted { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .setup-panel .provider-logo span { color: var(--wl-muted); }
+@media (max-width:1000px) {
+html[data-theme=light] :where(.shell:not(.site-workspace)) .starter-card>b { border-top-color: var(--wl-border); }
+}
+@media (max-width:800px) {
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-budget { border-left-color: var(--wl-border); }
+}
+@media (max-width:600px) {
+html[data-theme=light] :where(.shell:not(.site-workspace)) .ai-panel .decision { border-left-color: var(--wl-border); }
+}
+html[data-theme=light] :where(.shell:not(.site-workspace)) .connection-warning { color: var(--wl-muted); background: var(--wl-amber-soft); border-color: var(--wl-border); }
+@media (min-width:801px) and (max-width:1000px) {
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-budget { border-left-color: var(--wl-border); }
+}
+html[data-theme=light] :where(.shell:not(.site-workspace)) .start-summary { background: var(--wl-raised); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .start-summary p { color: var(--wl-muted) !important; }
+
+/* dashboard/package-theme.css */
+html[data-theme=light] :where(.shell:not(.site-workspace)) body { background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) button { background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) button:not(:disabled):hover { background: var(--wl-hover); border-color: var(--wl-control); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) button.primary,
+html[data-theme=light] :where(.shell:not(.site-workspace)) .primary { background: var(--wl-green); color: #fff; border-color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .primary:hover { background: var(--wl-green-hover) !important; color: #fff !important; border-color: var(--wl-green) !important; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .secondary { background: var(--wl-surface); color: var(--wl-green); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .danger { color: var(--wl-red) !important; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .positive { color: var(--wl-green) !important; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .negative { color: var(--wl-red) !important; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) a:hover { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) h1,
+html[data-theme=light] :where(.shell:not(.site-workspace)) h2,
+html[data-theme=light] :where(.shell:not(.site-workspace)) h3 { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) p { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace))  { background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .sidebar { background: var(--wl-surface); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .sidebar .nav { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .sidebar .nav.active { background: var(--wl-green-soft); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .sidebar .nav:hover { background: var(--wl-hover); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .sidebar .nav i { background: none; color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .connection-indicator { border-color: var(--wl-border); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .dot { background: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .dot.offline { background: var(--wl-amber); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) main>header { background: var(--wl-surface); border-bottom-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .brand { color: var(--wl-green); background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .brand:hover { color: var(--wl-green) !important; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .breadcrumbs { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .breadcrumbs span { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .breadcrumbs b { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .header-docs { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .header-network { background: none; color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .header-network .hyperliquid-mark { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .wallet-button { background: var(--wl-green-soft); color: var(--wl-text); border-color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .wallet-button span { color: var(--wl-text); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .wallet-button:hover { background: var(--wl-green-soft) !important; color: var(--wl-text); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .page-heading p { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .eyebrow { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .eyebrow i { background: var(--wl-green-soft); box-shadow: 0 0 0 3px rgb(3 33 28 / 0.18); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .workspace-banner { border-color: var(--wl-border); background: var(--wl-surface); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .workspace-banner button { background: none; color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .stats { border-color: var(--wl-border); background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .metric { border-right-color: var(--wl-border); background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .metric>div:first-child { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .metric strong { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .metric small { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-metric>span { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-track { background: var(--wl-raised); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-track>span { background: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .panel { border-color: var(--wl-border); background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .panel-heading { border-bottom-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .panel-heading>span { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .segmented button,
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-filters button { background: var(--wl-surface); color: var(--wl-muted); border-color: var(--wl-control); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .segmented button.selected,
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-filters button.selected { background: var(--wl-green-soft); color: var(--wl-green); border-color: var(--wl-control); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .plot-axis,
+html[data-theme=light] :where(.shell:not(.site-workspace)) .plot-dates { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .chart-tooltip { background: var(--wl-surface); color: var(--wl-green); border-color: var(--wl-border); box-shadow: 0 5px 20px rgb(3 33 28 / 0.03); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .chart-tooltip small { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .portfolio-caption { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-row { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-row svg { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-row b { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-panel .panel-heading { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-budget { border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-budget b,
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-budget>div:not(.risk-track) { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-budget em,
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-card-stats em { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-budget small { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-settings { color: var(--wl-green); background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-settings:hover { background: none; color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .view-toggle button { background: var(--wl-surface); color: var(--wl-green); border-color: var(--wl-control); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .view-toggle button[aria-pressed=true] { color: var(--wl-green); border-color: var(--wl-control); background: var(--wl-green-soft); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-card { background: var(--wl-surface); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-card:hover { border-color: var(--wl-control); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-emblem { background: var(--wl-surface); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-title-button strong { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-title-button small { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-status { border-color: var(--wl-border); background: var(--wl-surface); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .status-trading { color: var(--wl-green); background: var(--wl-surface); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .status-watching { color: var(--wl-green); background: var(--wl-surface); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .status-needs-setup,
+html[data-theme=light] :where(.shell:not(.site-workspace)) .status-needs-attention,
+html[data-theme=light] :where(.shell:not(.site-workspace)) .status-unavailable { color: var(--wl-amber); background: var(--wl-surface); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-performance strong { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-performance small { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .spark-empty { border-color: var(--wl-border); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-card-stats span { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-card-stats b { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-card-stats>div+div { border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-card-footer { border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-card-footer p { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-card-footer button { border-color: var(--wl-control); background: var(--wl-raised); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-onboarding { border-color: var(--wl-border); background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .onboarding-intro h3 { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .onboarding-intro p { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .onboarding-mark { background: var(--wl-surface); border-color: var(--wl-border); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .onboarding-mark .hive-mark { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .starter-card { background: var(--wl-surface); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .starter-card:hover { background: var(--wl-hover); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .starter-card>strong { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .starter-card>span { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .starter-card>p { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .starter-card>b { border-color: var(--wl-border); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .preset-label { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .onboarding-footer { border-color: var(--wl-border); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .ai-panel { background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .live-label { color: var(--wl-muted) !important; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .decision { border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .decision-dot { background: var(--wl-green-soft); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .decision-dot.dot-muted { background: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .decision-title>b { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .decision time { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .decision>p { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-chip { background: var(--wl-raised); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .decision summary { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .decision summary:after { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .decision details p { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .feed-empty>span { background: none; color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .feed-empty h3 { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .feed-empty>p { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .feed-empty-step { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .feed-empty-step i { border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .feed-link { border-color: var(--wl-border) !important; color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .text-link { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .text-link:hover { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .content>footer { border-top-color: var(--wl-border); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .content>footer>div { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .package-welcome { border-color: var(--wl-border); background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .package-welcome-copy .eyebrow { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .package-welcome-copy h2 { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .package-welcome-copy p { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .package-welcome-copy small { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .package-welcome-art>div { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .package-getting-started { background: var(--wl-surface); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .package-getting-started>button { background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .step-number { border-color: var(--wl-border); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .step-number.done { background: var(--wl-surface); border-color: var(--wl-border); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .package-getting-started strong { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .package-getting-started p { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .package-getting-started svg { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .package-getting-started>a { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .package-roles { border-color: var(--wl-border); background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .package-roles a { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .package-role-tabs { border-bottom-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .package-role-tabs button { background: none; border-right-color: var(--wl-control); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .package-role-tabs button[aria-selected=true] { background: var(--wl-green-soft); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) #role-description small { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) #role-description h3 { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) #role-description>p { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) #role-description>span { border-top-color: var(--wl-border); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .account-actions code,
+html[data-theme=light] :where(.shell:not(.site-workspace)) .wallet-overview code { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .wallet-emblem { background: var(--wl-surface); color: var(--wl-green); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .wallet-overview p { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .wallet-account>strong { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .wallet-account code { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .wallet-account>div:not(.panel-heading) { border-color: var(--wl-border); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .section-heading span { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .wallet-address { background: var(--wl-surface); border-color: var(--wl-border); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .metric code { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .crew-toolbar select { background: var(--wl-surface); color: var(--wl-green); border-color: var(--wl-control); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .badge { background: var(--wl-raised); border-color: var(--wl-border); color: var(--wl-green) !important; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .activity-icon { color: var(--wl-green); background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .activity { border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .activity b { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .activity p { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .activity small { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .activity>.badge { background: var(--wl-raised); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .setup-panel .provider-logo { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .provider-logo span { color: var(--wl-muted) !important; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .readiness { border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .readiness b { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .readiness p { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .readiness .muted { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .check { background: var(--wl-surface); border-color: var(--wl-control); color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .check.yes,
+html[data-theme=light] :where(.shell:not(.site-workspace)) .setup-panel .check.yes { background: var(--wl-surface); color: var(--wl-green); border-color: var(--wl-control); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .empty>span { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .empty h3 { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .empty p { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .empty-filter { background: var(--wl-surface); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .empty-filter h3 { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) input,
+html[data-theme=light] :where(.shell:not(.site-workspace)) select { background: var(--wl-surface); color: var(--wl-green); border-color: var(--wl-control); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) input::placeholder { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) label { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-search>svg { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .modal-backdrop { background: rgb(3 33 28 / .42); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .modal { background: var(--wl-surface); border-color: var(--wl-border); box-shadow: 0 20px 80px rgb(3 33 28 / 0.05); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .modal h2 { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .modal h3 { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .modal p { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .modal .eyebrow { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .modal-close { color: var(--wl-green); background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .market-chips button { border-color: var(--wl-control); background: var(--wl-raised); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .market-chips button.chosen { background: var(--wl-green-soft); color: var(--wl-green); border-color: var(--wl-control); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .checkbox { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .checkbox input { accent-color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .start-summary { background: var(--wl-raised); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .start-summary p { color: var(--wl-green) !important; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .toast { background: var(--wl-green-soft); color: var(--wl-text); border-color: var(--wl-green); box-shadow: 0 10px 35px rgb(3 33 28 / 0.05); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .toast button { color: inherit; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .toast.error { background: var(--wl-red-soft); border-color: var(--wl-border); color: var(--wl-red); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .record-row { border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .record-row b { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .record-row p { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .record-icon { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) table { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) th { background: var(--wl-surface); border-color: var(--wl-border); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) td { border-color: var(--wl-border); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) tbody tr:hover { background: var(--wl-hover); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .external { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .connection-warning { background: var(--wl-amber-soft); color: var(--wl-amber); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .connection-warning button { color: var(--wl-amber); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .portfolio-empty strong { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .portfolio-empty p { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .empty-chart-icon { background: var(--wl-surface); border-color: var(--wl-border); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .chart-grid-lines { background: repeating-linear-gradient(to bottom,transparent,transparent 44px,var(--wl-surface) 45px,transparent 46px); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) hr { border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) code { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .feed-link:hover { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .wallet-overview button { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .full-feed .decision-title>b { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .full-feed .decision summary { color: var(--wl-green); }
+@media (max-width:1050px) {
+html[data-theme=light] :where(.shell:not(.site-workspace)) .package-getting-started>button { border-right-color: var(--wl-control); }
+}
+@media (max-width:1050px) {
+html[data-theme=light] :where(.shell:not(.site-workspace)) .metric:nth-child(-n+2) { border-bottom-color: var(--wl-border); }
+}
+@media (max-width:800px) {
+html[data-theme=light] :where(.shell:not(.site-workspace)) .sidebar { border-bottom-color: var(--wl-border); }
+}
+@media (max-width:800px) {
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-budget { border-top-color: var(--wl-border); }
+}
+html[data-theme=light] :where(.shell:not(.site-workspace)) .service-link { background: none; color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .service-link:hover { background: none; color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .overview-stats { background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .overview-stats .metric { background: none; border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .overview-stats .metric>div:first-child { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .overview-stats .metric small { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .overview-stats .risk-metric>span { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .chart-empty-label { color: var(--wl-muted); background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .portfolio-caption { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-panel .risk-row { border-bottom-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-row em { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-settings { border-top-color: var(--wl-border); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .section-count { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-filters .selected { background: var(--wl-green-soft); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .crew-empty-row { background: var(--wl-surface); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .crew-empty-row p { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .quiet-empty { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .ledger-tabs { border-bottom-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .ledger-tabs>button { background: none; color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .ledger-tabs>button[aria-selected=true] { border-color: var(--wl-green); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .ledger-tabs>button span { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .workspace-ledger th { color: var(--wl-muted); background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .inline-link { background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-card { border-color: var(--wl-border); border-top-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-emblem { background: var(--wl-surface); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .content>footer { border-top-color: var(--wl-border); }
+@media (max-width:1050px) {
+html[data-theme=light] :where(.shell:not(.site-workspace)) .overview-stats .metric:nth-child(2) { border-right-color: var(--wl-border); }
+}
+html[data-theme=light] :where(.shell:not(.site-workspace)) .modal label { color: var(--wl-muted); }
+
+/* dashboard/workspace.css */
+html[data-theme=light] :where(.shell:not(.site-workspace)) button { background: var(--wl-surface); border-color: var(--wl-control); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) button:hover:not(:disabled) { background: var(--wl-hover); border-color: var(--wl-control); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) button:focus-visible,
+html[data-theme=light] :where(.shell:not(.site-workspace)) a:focus-visible,
+html[data-theme=light] :where(.shell:not(.site-workspace)) input:focus-visible,
+html[data-theme=light] :where(.shell:not(.site-workspace)) select:focus-visible,
+html[data-theme=light] :where(.shell:not(.site-workspace)) summary:focus-visible { outline-color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) a { color: inherit; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) input,
+html[data-theme=light] :where(.shell:not(.site-workspace)) select { border-color: var(--wl-control); background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) label { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .primary { color: #fff; box-shadow: 0 1px 2px rgb(3 33 28 / 0.03); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .primary:hover:not(:disabled) { background: var(--wl-green-hover); border-color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .secondary { background: var(--wl-surface); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .positive { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .negative,
+html[data-theme=light] :where(.shell:not(.site-workspace)) .danger { color: var(--wl-red); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .dot { background: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .dot.offline { background: var(--wl-amber); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .sidebar { background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .sidebar-workspace { background: var(--wl-surface); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .workspace-avatar { background: var(--wl-surface); border-color: var(--wl-border); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .sidebar .nav { background: none; color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .sidebar .nav.active { background: var(--wl-green-soft); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .sidebar .nav:hover { background: var(--wl-hover); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .nav i { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .connection-indicator { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) >main>header { background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .breadcrumbs b { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .header-website { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .header-network { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .header-network .hyperliquid-mark { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .header-network small { border-left-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .wallet-button { background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .content>footer>span { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .heading-count { border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .service-link { background: none; color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .service-link:hover:not(:disabled) { background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .panel { background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .panel-heading { border-bottom-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .empty-symbol { border-color: var(--wl-border); background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .page-empty h3 { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .empty h3 { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .loading-line { background: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .connection-warning { background: var(--wl-amber-soft); border-color: var(--wl-border); color: var(--wl-amber); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .starter-card { border-color: var(--wl-border); background: var(--wl-surface); box-shadow: 0 3px 7px rgb(3 33 28 / 0.00); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .starter-card:hover:not(:disabled) { background: var(--wl-hover); border-color: var(--wl-control); box-shadow: 0 6px 22px rgb(3 33 28 / 0.02); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .starter-art { border-bottom-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .crew-glyph.large { background: var(--wl-raised); box-shadow: 0 5px 15px rgb(3 33 28 / 0.02); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .starter-bottom>span:first-child { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .circle-arrow { border-color: var(--wl-border); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .workspace-connections>button { background: none; color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .workspace-connections b { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .account-strip>div>span { color: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .account-strip>button { background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-filters button { background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-filters button.selected { background: var(--wl-green-soft); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-search input { background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .view-toggle button { background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .view-toggle button[aria-pressed=true] { background: var(--wl-green-soft); border-color: var(--wl-control); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-card { border-color: var(--wl-border); background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-card:hover { border-color: var(--wl-control); box-shadow: 0 4px 16px rgb(3 33 28 / 0.01); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-status { background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-status i { background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .status-trading,
+html[data-theme=light] :where(.shell:not(.site-workspace)) .status-watching { color: var(--wl-green); background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .status-trading i,
+html[data-theme=light] :where(.shell:not(.site-workspace)) .status-watching i { background: var(--wl-green-soft); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .status-needs-setup,
+html[data-theme=light] :where(.shell:not(.site-workspace)) .status-needs-attention { color: var(--wl-amber); background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .status-needs-setup i,
+html[data-theme=light] :where(.shell:not(.site-workspace)) .status-needs-attention i { background: var(--wl-amber-soft); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .status-unavailable { background: var(--wl-surface); color: var(--wl-red); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .status-unavailable i { background: var(--wl-red-soft); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-title-button { background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-title-button:hover:not(:disabled) { background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-markets>span { border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-performance { background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-performance:hover:not(:disabled) { background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-risk b { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-track { background: var(--wl-raised); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .risk-track>span { background: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-card-footer { border-top-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .activity-dot { background: var(--wl-muted); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-card-footer button { background: none; color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-card-footer button:hover:not(:disabled) { background: none; color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .ledger-tabs button { background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .ledger-tabs button[aria-selected=true] { border-bottom-color: var(--wl-green); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .ledger-tabs button span { background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) th { background: var(--wl-surface); border-bottom-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) td { border-bottom-color: var(--wl-border); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) tbody tr:hover { background: var(--wl-hover); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .inline-link { background: none; color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .inline-link:hover:not(:disabled) { background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .segmented button { background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .segmented button.selected { background: var(--wl-green-soft); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .chart-tooltip { background: var(--wl-surface); border-color: var(--wl-border); box-shadow: 0 4px 15px rgb(3 33 28 / 0.02); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .decision { border-bottom-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .decision-icon { border-color: var(--wl-border); background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .decision-icon.rejected { background: var(--wl-surface); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-chip { background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-chip:hover:not(:disabled) { background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .activity-icon { background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .badge { color: var(--wl-green); border-color: var(--wl-border); background: var(--wl-raised); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .wallet-overview { border-color: var(--wl-border); background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .wallet-emblem { background: var(--wl-surface); border-color: var(--wl-border); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .wallet-owner code { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .wallet-overview>button { background: var(--wl-surface); color: var(--wl-green); border-color: var(--wl-control); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .wallet-available { border-top-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .wallet-available b { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .stats { background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .account-actions code { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .crew-identity .crew-glyph { border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .back-link { background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .crew-overview-tabs button { background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .crew-overview-tabs button.selected { border-bottom-color: var(--wl-green); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .provider-logo { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .check { border-color: var(--wl-control); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .check.yes { background: var(--wl-surface); color: var(--wl-green); border-color: var(--wl-control); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .external { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .record-row b { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .record-icon { background: var(--wl-surface); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .modal-backdrop { background: rgb(3 33 28 / .42); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .modal { background: var(--wl-surface); border-color: var(--wl-border); box-shadow: 0 24px 90px rgb(3 33 28 / 0.07); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .modal-close { background: none; }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .modal input[type=file]::file-selector-button { background: var(--wl-surface); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .market-chips .chosen { background: var(--wl-green-soft); border-color: var(--wl-control); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .wallet-address { background: var(--wl-surface); border-color: var(--wl-border); color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .start-summary { background: var(--wl-raised); border-color: var(--wl-border); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .start-summary p { color: var(--wl-green); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .toast { background: var(--wl-surface); border-color: var(--wl-border); color: var(--wl-green); box-shadow: 0 6px 28px rgb(3 33 28 / 0.03); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .toast.error { background: var(--wl-red-soft); border-color: var(--wl-border); color: var(--wl-red); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .toast button { background: none; color: inherit; }
+@media (max-width:560px) {
+html[data-theme=light] :where(.shell:not(.site-workspace)) .sidebar { background: var(--wl-surface); }
+}
+@media (max-width:560px) {
+html[data-theme=light] :where(.shell:not(.site-workspace)) .starter-art { border-right-color: var(--wl-border); }
+}
+@media (max-width:560px) {
+html[data-theme=light] :where(.shell:not(.site-workspace)) .bot-search { border-color: var(--wl-control); background: var(--wl-surface); }
+}
+html[data-theme=light] :where(.shell:not(.site-workspace)) .status-running,
+html[data-theme=light] :where(.shell:not(.site-workspace)) .status-ready { color: var(--wl-green); background: var(--wl-surface); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .status-running i,
+html[data-theme=light] :where(.shell:not(.site-workspace)) .status-ready i { background: var(--wl-green-soft); }
+html[data-theme=light] :where(.shell:not(.site-workspace)) .design-review-banner { background: var(--wl-surface); color: var(--wl-amber); border-bottom-color: var(--wl-border); }
+
+/* dashboard/icon-review.css */
+html[data-theme=light] .icon-review header { border-bottom-color: var(--wl-border); }
+html[data-theme=light] .icon-review header b { color: var(--wl-muted); }
+html[data-theme=light] .icon-review p,
+html[data-theme=light] .icon-review footer { color: var(--wl-muted); }
+html[data-theme=light] .icon-review-sizes { border-bottom-color: var(--wl-border); }
+html[data-theme=light] .icon-review-sizes>div { color: var(--wl-green); }
+html[data-theme=light] .icon-review-sizes span { color: var(--wl-muted); }
+html[data-theme=light] .icon-review-grid { background: transparent; }
+html[data-theme=light] .icon-review-grid article { outline-color: var(--wl-green); background: var(--wl-surface); color: var(--wl-green); }
+html[data-theme=light] .icon-review-grid article span { color: var(--wl-muted); }
+
+/* dashboard/journeys.css */
+html[data-theme=light] .step-rail .complete>span,
+html[data-theme=light] .activation-rail .complete>span,
+html[data-theme=light] .journey-outline .complete .journey-number { background: var(--wl-green-soft); }
+html[data-theme=light] .market-presets>button { background: rgb(11 104 78 / .035); }
+html[data-theme=light] .market-presets>button[aria-pressed=true] { border-color: var(--wl-green); background: var(--wl-green-soft); }
+html[data-theme=light] .configuration-choice button[aria-pressed=true] { border-color: var(--wl-green); background: var(--wl-green-soft); }
+html[data-theme=light] .review-line>button { background: none; }
+html[data-theme=light] .backup-cue { background: rgb(11 104 78 / .035); }
+html[data-theme=light] .journey-outline { background: rgb(11 104 78 / .035); }
+html[data-theme=light] .journey-support>button { background: none; }
+html[data-theme=light] .journey-check-toggle { background: none; }
+html[data-theme=light] .settings-navigation details>div { box-shadow: 0 15px 45px rgb(3 33 28 / 0.13); }
+html[data-theme=light] .settings-navigation details button { background: none; }
+html[data-theme=light] .settings-navigation details button:hover,
+html[data-theme=light] .settings-navigation [aria-current=page] { background: var(--wl-green-soft); }
+html[data-theme=light] .settings-task-list>button { background: none; }
+html[data-theme=light] .settings-task-list>button[aria-pressed=true] { background: var(--wl-green-soft); }
+html[data-theme=light] .task-links>button { background: none; }
+html[data-theme=light] .deployment-paths>button[aria-pressed=true] { border-color: var(--wl-green); background: var(--wl-green-soft); }
+html[data-theme=light] .operator-flow .step-rail button { background: none; color: inherit; }
+html[data-theme=light] .funding-presets [aria-pressed=true],
+html[data-theme=light] .funding-paths [aria-pressed=true] { background: var(--wl-green-soft); }
+html[data-theme=light] .tokens-inline .token-checkout { background: none; }
+
+/* dashboard/theme.css */
+html[data-theme=light] body { background: var(--wl-surface); }
+html[data-theme=light] button { border-color: var(--wl-control); background: var(--wl-surface); }
+html[data-theme=light] button:hover:not(:disabled) { background: var(--wl-hover); border-color: var(--wl-control); }
+html[data-theme=light] .site-main .quiet-action,
+html[data-theme=light] .modal .quiet-action,
+html[data-theme=light] .site-main .crew-row-actions button,
+html[data-theme=light] .site-main .wallet-account>button,
+html[data-theme=light] .site-main .home-shortcuts button,
+html[data-theme=light] .site-main .panel-heading>button:not(.primary),
+html[data-theme=light] .site-main .cards-controls button,
+html[data-theme=light] .site-main .risk-table td>button { background: none; }
+html[data-theme=light] .site-main .quiet-action:hover:not(:disabled),
+html[data-theme=light] .modal .quiet-action:hover:not(:disabled),
+html[data-theme=light] .site-main .crew-row-actions button:hover:not(:disabled),
+html[data-theme=light] .site-main .wallet-account>button:hover,
+html[data-theme=light] .site-main .home-shortcuts button:hover,
+html[data-theme=light] .site-main .panel-heading>button:not(.primary):hover { background: var(--wl-green-hover); }
+html[data-theme=light] .site-main .activity-icon { background: none; }
+html[data-theme=light] a { color: inherit; }
+html[data-theme=light] input,
+html[data-theme=light] select,
+html[data-theme=light] textarea { border-color: var(--wl-control); background: var(--wl-surface); }
+html[data-theme=light] input:focus,
+html[data-theme=light] select:focus { border-color: var(--wl-green); }
+html[data-theme=light] input::placeholder { color: var(--wl-muted); }
+html[data-theme=light] label { color: var(--wl-text); }
+html[data-theme=light] code { color: var(--wl-muted); }
+html[data-theme=light] kbd { background: var(--wl-raised); border-color: var(--wl-border); color: var(--wl-text); }
+html[data-theme=light] th { color: var(--wl-muted); }
+html[data-theme=light] th,
+html[data-theme=light] td { border-bottom-color: var(--wl-border); }
+html[data-theme=light] .primary { color: #fff; background: var(--wl-green); border-color: var(--wl-green); }
+html[data-theme=light] .primary:hover:not(:disabled) { background: var(--wl-green-hover); border-color: var(--wl-green); }
+html[data-theme=light] .danger { color: var(--wl-red); background: var(--wl-red-soft); border-color: var(--wl-red); }
+html[data-theme=light] .danger:hover:not(:disabled) { background: var(--wl-red-soft); }
+html[data-theme=light] .inline-link,
+html[data-theme=light] .bot-chip,
+html[data-theme=light] .subtle-link { background: none; }
+html[data-theme=light] .inline-link:hover,
+html[data-theme=light] .bot-chip:hover { background: none !important; }
+html[data-theme=light] .eyebrow,
+html[data-theme=light] .overline { color: var(--wl-muted); }
+html[data-theme=light] .dot.offline { background: var(--wl-muted); }
+html[data-theme=light] .badge { background: none; }
+html[data-theme=light] .bot-status { background: none; color: var(--wl-text); }
+html[data-theme=light] .bot-status i { background: currentColor; }
+html[data-theme=light] .status-running,
+html[data-theme=light] .status-trading,
+html[data-theme=light] .status-watching,
+html[data-theme=light] .status-ready,
+html[data-theme=light] .status-connected,
+html[data-theme=light] .status-online { color: var(--wl-green); }
+html[data-theme=light] .status-paused,
+html[data-theme=light] .status-needs-setup,
+html[data-theme=light] .status-review-setup { color: var(--wl-amber); }
+html[data-theme=light] .status-unavailable,
+html[data-theme=light] .status-needs-attention { color: var(--wl-red); }
+html[data-theme=light] .sidebar { background: var(--wl-surface); border-right-color: var(--wl-border); }
+html[data-theme=light] .nav { color: var(--wl-text); background: none; }
+html[data-theme=light] .nav:hover:not(:disabled) { background: var(--wl-hover); color: var(--wl-text); }
+html[data-theme=light] .nav.active { background: var(--wl-green-soft); border-color: var(--wl-control); color: var(--wl-text); }
+html[data-theme=light] .nav small { color: var(--wl-muted); }
+html[data-theme=light] .connection-indicator { color: var(--wl-muted); }
+html[data-theme=light] .workspace-header { border-bottom-color: var(--wl-border); background: var(--wl-surface); }
+html[data-theme=light] .workspace-switch>button { background: var(--wl-surface); }
+html[data-theme=light] .global-search { background: var(--wl-surface); color: var(--wl-muted); }
+html[data-theme=light] .network-label { color: var(--wl-muted); }
+html[data-theme=light] .wallet-button { background: var(--wl-surface); }
+html[data-theme=light] .heading-count { border-color: var(--wl-border); color: var(--wl-muted); }
+html[data-theme=light] .panel-heading>span { color: var(--wl-muted); }
+html[data-theme=light] .panel { background: var(--wl-surface); }
+html[data-theme=light] .page-empty { color: var(--wl-muted); }
+html[data-theme=light] .page-empty h3 { color: var(--wl-text); }
+html[data-theme=light] .page-empty>svg { color: var(--wl-muted); }
+html[data-theme=light] .skeleton { background: linear-gradient(90deg,#e2e9e5,#e2e9e5,#e2e9e5); }
+html[data-theme=light] .portfolio-layout { border-bottom-color: var(--wl-border); }
+html[data-theme=light] .portfolio-top small { color: var(--wl-muted); }
+html[data-theme=light] .portfolio-figures span { color: var(--wl-muted); }
+html[data-theme=light] .segmented { background: none; }
+html[data-theme=light] .segmented button { background: none; color: var(--wl-muted); }
+html[data-theme=light] .segmented button.selected { background: var(--wl-green-soft); }
+html[data-theme=light] .plot-axis { color: var(--wl-muted); }
+html[data-theme=light] .plot-dates { color: var(--wl-muted); }
+html[data-theme=light] .chart-note { color: var(--wl-muted); }
+html[data-theme=light] .chart-tooltip { border-color: var(--wl-border); background: var(--wl-surface); }
+html[data-theme=light] .chart-tooltip small { color: var(--wl-muted); }
+html[data-theme=light] .spark-empty { color: var(--wl-muted); }
+html[data-theme=light] .portfolio-empty { color: var(--wl-muted); border-bottom-color: var(--wl-border); }
+html[data-theme=light] .allocation { border-left-color: var(--wl-border); }
+html[data-theme=light] .allocation-item>button { background: none; }
+html[data-theme=light] .allocation-item>span { color: var(--wl-muted); }
+html[data-theme=light] .allocation-bar { background: var(--wl-surface); }
+html[data-theme=light] .allocation-bar i { background: var(--wl-muted); }
+html[data-theme=light] .allocation-item small { color: var(--wl-muted); }
+html[data-theme=light] .bot-search { border-color: var(--wl-control); background: var(--wl-surface); color: var(--wl-muted); }
+html[data-theme=light] .bot-search input { background: transparent; }
+html[data-theme=light] .bot-filters button { background: none; }
+html[data-theme=light] .bot-filters button.selected { background: none; }
+html[data-theme=light] .bot-filters span { background: none; }
+html[data-theme=light] .view-toggle button { background: none; }
+html[data-theme=light] .view-toggle button[aria-pressed=true] { background: var(--wl-green-soft); }
+html[data-theme=light] .crew-row-labels { color: var(--wl-muted); }
+html[data-theme=light] .crew-row { border-top-color: var(--wl-border); }
+html[data-theme=light] .crew-row-identity { background: none; }
+html[data-theme=light] .crew-row-identity:hover { background: none !important; }
+html[data-theme=light] .crew-row-identity small { color: var(--wl-muted); }
+html[data-theme=light] .crew-glyph { color: var(--wl-green); }
+html[data-theme=light] .crew-glyph.violet { color: var(--wl-text); }
+html[data-theme=light] .crew-glyph.blue { color: var(--wl-muted); }
+html[data-theme=light] .crew-glyph.ochre { color: var(--wl-amber); }
+html[data-theme=light] .as-grid .crew-row { background: var(--wl-surface); }
+html[data-theme=light] .crew-split .crew-row { border-bottom-color: var(--wl-border); }
+html[data-theme=light] .crew-split .crew-row.inspected { border-color: var(--wl-green); background: var(--wl-green-soft); border-color: var(--wl-green); }
+html[data-theme=light] .crew-split .as-grid .crew-row .crew-row-actions button { border-color: var(--wl-control); background: var(--wl-surface); }
+html[data-theme=light] .inspector-metrics { border-bottom-color: var(--wl-border); }
+html[data-theme=light] .inspector-metrics span { color: var(--wl-muted); }
+html[data-theme=light] .workspace-ledger { border-top-color: var(--wl-border); }
+html[data-theme=light] .ledger-tabs,
+html[data-theme=light] .crew-overview-tabs { border-bottom-color: var(--wl-border); }
+html[data-theme=light] .ledger-tabs button,
+html[data-theme=light] .crew-overview-tabs button { background: none; color: var(--wl-muted); }
+html[data-theme=light] .ledger-tabs button[aria-selected=true],
+html[data-theme=light] .crew-overview-tabs button[aria-selected=true] { color: var(--wl-text); border-bottom-color: var(--wl-control); }
+html[data-theme=light] .ledger-tabs button span { background: var(--wl-surface); }
+html[data-theme=light] .ledger-freshness { color: var(--wl-muted); }
+html[data-theme=light] .decision { border-bottom-color: var(--wl-border); }
+html[data-theme=light] .decision-icon { color: var(--wl-green); }
+html[data-theme=light] .decision-icon.rejected { color: var(--wl-red); }
+html[data-theme=light] .decision-title time { color: var(--wl-muted); }
+html[data-theme=light] .bot-chip { color: var(--wl-muted); }
+html[data-theme=light] .decision summary { color: var(--wl-muted); }
+html[data-theme=light] .welcome-workspace { background: var(--wl-surface); }
+html[data-theme=light] .welcome-steps>span { color: var(--wl-muted); }
+html[data-theme=light] .welcome-steps b { border-color: var(--wl-border); }
+html[data-theme=light] .welcome-steps .current b,
+html[data-theme=light] .welcome-steps .complete b { color: var(--wl-green); }
+html[data-theme=light] .welcome-steps i { background: var(--wl-surface); }
+html[data-theme=light] .starter-rows>button { background: var(--wl-surface); border-color: var(--wl-control); }
+html[data-theme=light] .starter-rows small { color: var(--wl-muted); }
+html[data-theme=light] .workspace-connections>button { background: none; }
+html[data-theme=light] .subtle-link { color: var(--wl-muted); }
+html[data-theme=light] .wallet-overview { background: var(--wl-surface); }
+html[data-theme=light] .wallet-accounts { border-top-color: var(--wl-border); }
+html[data-theme=light] .wallet-account { border-bottom-color: var(--wl-border); }
+html[data-theme=light] .wallet-available span { color: var(--wl-muted); }
+html[data-theme=light] .back-link { background: none; color: var(--wl-muted); }
+html[data-theme=light] .stats { border-top-color: var(--wl-border); border-bottom-color: var(--wl-border); }
+html[data-theme=light] .metric { border-right-color: var(--wl-border); }
+html[data-theme=light] .metric>div { color: var(--wl-muted); }
+html[data-theme=light] .metric small { color: var(--wl-muted); }
+html[data-theme=light] .readiness { border-bottom-color: var(--wl-border); }
+html[data-theme=light] .check { color: var(--wl-muted); }
+html[data-theme=light] .check.yes { color: var(--wl-green); }
+html[data-theme=light] .policy-value { border-bottom-color: var(--wl-border); }
+html[data-theme=light] .policy-value span { color: var(--wl-muted); }
+html[data-theme=light] .policy-rules { border-top-color: var(--wl-border); background: none; }
+html[data-theme=light] .activity { border-bottom-color: var(--wl-border); }
+html[data-theme=light] .activity-icon { color: var(--wl-muted); }
+html[data-theme=light] .external { color: var(--wl-green); }
+html[data-theme=light] .toast { border-color: var(--wl-green); background: var(--wl-green-soft); box-shadow: 0 8px 25px rgb(3 33 28 / 0.18); }
+html[data-theme=light] .toast.error { background: var(--wl-red-soft); border-color: var(--wl-red); color: var(--wl-text); }
+html[data-theme=light] .toast>button { background: none; }
+html[data-theme=light] .connection-warning { background: var(--wl-amber-soft); border-color: var(--wl-amber); color: var(--wl-amber); }
+html[data-theme=light] .content>footer { border-top-color: var(--wl-border); color: var(--wl-muted); }
+html[data-theme=light] .modal-backdrop,
+html[data-theme=light] .command-backdrop { background: rgb(3 33 28 / .42); }
+html[data-theme=light] .modal { border-color: var(--wl-border); border-top-color: var(--wl-border); background: var(--wl-surface); box-shadow: 0 25px 90px rgb(3 33 28 / 0.18); }
+html[data-theme=light] .modal h2 { border-bottom-color: var(--wl-border); }
+html[data-theme=light] .modal .eyebrow { color: var(--wl-muted); }
+html[data-theme=light] .modal-close { background: none; }
+html[data-theme=light] .wallet-address { border-color: var(--wl-border); background: var(--wl-surface); }
+html[data-theme=light] .start-summary { background: var(--wl-raised); border-color: var(--wl-border); }
+html[data-theme=light] .market-chips button { background: var(--wl-raised); }
+html[data-theme=light] .market-chips .chosen { color: var(--wl-green); border-color: var(--wl-green); background: var(--wl-green-soft); }
+html[data-theme=light] .field-with-action button { background: none; }
+html[data-theme=light] .dropdown-menu { background: var(--wl-surface); border-color: var(--wl-border); box-shadow: 0 12px 30px rgb(3 33 28 / 0.18); }
+html[data-theme=light] .dropdown-menu>button { background: none; }
+html[data-theme=light] .command-dialog { border-color: var(--wl-border); background: var(--wl-surface); box-shadow: 0 30px 100px rgb(3 33 28 / 0.18); }
+html[data-theme=light] .command-input { border-bottom-color: var(--wl-control); }
+html[data-theme=light] .command-input input { background: transparent; }
+html[data-theme=light] .command-input>button { background: none; }
+html[data-theme=light] .command-results>button { background: none; }
+html[data-theme=light] .command-results>button.selected { background: var(--wl-green-soft); border-color: var(--wl-control); }
+html[data-theme=light] .command-group { color: var(--wl-muted); }
+html[data-theme=light] .command-results small { color: var(--wl-muted); }
+html[data-theme=light] .command-footer { border-top-color: var(--wl-border); color: var(--wl-muted); }
+html[data-theme=light] .design-review-banner { border-bottom-color: var(--wl-border); border-color: var(--wl-border); background: var(--wl-surface); }
+html[data-theme=light] .settings-tabs button { background: transparent; color: var(--wl-muted); }
+html[data-theme=light] .settings-tabs .selected { background: var(--wl-green-soft); border-color: var(--wl-control); color: var(--wl-text); }
+html[data-theme=light] .provider-logo span { color: var(--wl-muted); }
+html[data-theme=light] .trade-card { border-color: var(--wl-border); background: var(--wl-surface); }
+html[data-theme=light] .trade-card>header { border-bottom-color: var(--wl-border); }
+html[data-theme=light] .trade-card .card-meta { border-top-color: var(--wl-border); }
+html[data-theme=light] .card-meta span { color: var(--wl-muted); }
+html[data-theme=light] .record-directory { border-right-color: var(--wl-border); }
+html[data-theme=light] .record-directory>button { background: none; }
+html[data-theme=light] .record-directory>button.selected { background: var(--wl-green-soft); }
+html[data-theme=light] .record-directory small { color: var(--wl-muted); }
+html[data-theme=light] .record-directory>span { color: var(--wl-muted); }
+html[data-theme=light] .record-metrics span { color: var(--wl-muted); }
+html[data-theme=light] .key-value { border-bottom-color: var(--wl-border); }
+html[data-theme=light] .key-value>span:first-child { color: var(--wl-muted); }
+html[data-theme=light] .plan-card { border-color: var(--wl-border); background: var(--wl-surface); }
+html[data-theme=light] .plan-card.current { border-color: var(--wl-green); background: var(--wl-green-soft); box-shadow: inset 0 0 0 1px rgb(3 33 28 / 0.11); }
+html[data-theme=light] .plan-card ul { color: var(--wl-text); }
+html[data-theme=light] .integration-tools li { border-bottom-color: var(--wl-border); }
+html[data-theme=light] .integration-tools small { color: var(--wl-muted); }
+html[data-theme=light] .feature-unavailable { border-color: var(--wl-amber); background: var(--wl-amber-soft); color: var(--wl-amber); }
+html[data-theme=light] .network-stats { background: var(--wl-surface); }
+html[data-theme=light] .network-stats span { color: var(--wl-muted); }
+html[data-theme=light] .trading-summary { background: var(--wl-raised); border-color: var(--wl-border); }
+html[data-theme=light] .trading-summary>div { border-right-color: var(--wl-border); }
+html[data-theme=light] .trading-summary span { color: var(--wl-muted); }
+html[data-theme=light] .market-list,
+html[data-theme=light] .trading-chart,
+html[data-theme=light] .execution-panel { border-color: var(--wl-border); background: var(--wl-surface); }
+html[data-theme=light] .market-list>button { background: none; }
+html[data-theme=light] .market-list>button.selected { border-color: var(--wl-control); background: var(--wl-green-soft); }
+html[data-theme=light] .market-list button small { color: var(--wl-muted); }
+html[data-theme=light] .coin-mark { background: var(--wl-surface); color: var(--wl-text); }
+html[data-theme=light] .coin-mark.btc { background: var(--wl-amber-soft); color: var(--wl-text); }
+html[data-theme=light] .coin-mark.eth { background: var(--wl-surface); color: var(--wl-text); }
+html[data-theme=light] .coin-mark.sol { background: var(--wl-green-soft); color: var(--wl-text); }
+html[data-theme=light] .market-stats { color: var(--wl-muted); }
+html[data-theme=light] .market-stats b { color: var(--wl-text); }
+html[data-theme=light] .chart-tools { border-color: var(--wl-border); }
+html[data-theme=light] .chart-tools button { background: none; }
+html[data-theme=light] .chart-tools button.selected { background: var(--wl-green-soft); border-color: var(--wl-green); color: var(--wl-green); }
+html[data-theme=light] .chart-bottom span { color: var(--wl-muted); }
+html[data-theme=light] .trading-ledger { border-color: var(--wl-border); background: var(--wl-surface); }
+html[data-theme=light] .trading-ledger .ledger-tabs>button:last-child { border-color: var(--wl-control); }
+html[data-theme=light] .crew-split .crew-row .crew-row-actions button { background: none; }
+html[data-theme=light] .workspace-ledger .ledger-tabs,
+html[data-theme=light] .record-inspector .ledger-tabs,
+html[data-theme=light] .crew-overview-tabs { background: none; }
+html[data-theme=light] .workspace-ledger .ledger-tabs button,
+html[data-theme=light] .record-inspector .ledger-tabs button,
+html[data-theme=light] .crew-overview-tabs button { background: none; }
+html[data-theme=light] .workspace-ledger .ledger-tabs button[aria-selected=true],
+html[data-theme=light] .crew-overview-tabs button[aria-selected=true],
+html[data-theme=light] .record-inspector .ledger-tabs button[aria-selected=true] { background: none; }
+html[data-theme=light] .modal .danger.wide { background: var(--wl-red-soft); color: var(--wl-red); border-color: var(--wl-border); }
+html[data-theme=light] .sidebar-brand .crew-glyph { color: var(--wl-text); }
+html[data-theme=light] .card-context>div { border-left-color: var(--wl-border); }
+html[data-theme=light] .card-meta>div+div { border-left-color: var(--wl-border); }
+html[data-theme=light] .crew-detail-actions .crew-toolbar { background: var(--wl-surface); border-color: var(--wl-border); box-shadow: 0 15px 50px rgb(3 33 28 / 0.18); }
+html[data-theme=light] .plan-card.current>.badge { border-color: var(--wl-green); background: var(--wl-green-soft); }
+html[data-theme=light] .plan-cloud-pro { color: var(--wl-muted); }
+html[data-theme=light] .modal .modal-actions .danger { background: var(--wl-red-soft); color: var(--wl-red); border-color: var(--wl-border); }
+html[data-theme=light] .modal[data-kind=fund] .transaction-identity+.transaction-summary,
+html[data-theme=light] .modal[data-kind=withdraw] .transaction-identity+.transaction-summary { background: rgb(11 104 78 / .035); }
+html[data-theme=light] .round-directory button { background: none; }
+html[data-theme=light] .round-directory button.selected { background: var(--wl-green-soft); color: var(--wl-green); }
+html[data-theme=light] .status-key-saved { color: var(--wl-green); }
+html[data-theme=light] .trade-card.expanded { border-color: var(--wl-border); box-shadow: inset 0 0 0 1px rgb(3 33 28 / 0.05); }
+html[data-theme=light] .card-expand { background: none; }
+html[data-theme=light] .verdict-badge.verdict-pass { color: var(--wl-green); }
+html[data-theme=light] .verdict-badge.verdict-kill { color: var(--wl-red); }
+html[data-theme=light] .verdict-badge.verdict-stand_down { color: var(--wl-amber); }
+html[data-theme=light] .card-market-history { border-right-color: var(--wl-border); }
+html[data-theme=light] .reason-line p { color: var(--wl-text); }
+html[data-theme=light] .trade-card details>summary { background: none; }
+html[data-theme=light] .record-counts { background: var(--wl-raised); }
+html[data-theme=light] .status-local_signed,
+html[data-theme=light] .status-signed { color: var(--wl-green); }
+html[data-theme=light] .status-reconciling { color: var(--wl-muted); }
+html[data-theme=light] .allocation-stack i:nth-child(1) { background: var(--wl-green); }
+html[data-theme=light] .allocation-stack i:nth-child(2) { background: var(--wl-muted); }
+html[data-theme=light] .allocation-stack i:nth-child(3) { background: var(--wl-muted); }
+html[data-theme=light] .allocation-stack i:nth-child(4) { background: var(--wl-muted); }
+html[data-theme=light] .transaction-identity { background: rgb(11 104 78 / .035); }
+@media (max-width:1100px) {
+html[data-theme=light] .crew-inspector { border-top-color: var(--wl-border); }
+}
+@media (max-width:1100px) {
+html[data-theme=light] .metric:nth-child(3),
+html[data-theme=light] .metric:nth-child(4) { border-top-color: var(--wl-border); }
+}
+@media (max-width:1100px) {
+html[data-theme=light] .record-directory { border-bottom-color: var(--wl-border); }
+}
+@media (max-width:760px) {
+html[data-theme=light] .nav-scrim { background: rgb(3 33 28 / .42); }
+}
+@media (max-width:760px) {
+html[data-theme=light] .mobile-menu { background: none; }
+}
+@media (max-width:760px) {
+html[data-theme=light] .workspace-switch>button { background: none; }
+}
+@media (max-width:760px) {
+html[data-theme=light] .global-search { background: none; }
+}
+@media (max-width:760px) {
+html[data-theme=light] .allocation { border-top-color: var(--wl-border); }
+}
+html[data-theme=light] .chart-workspace:fullscreen { background: var(--wl-surface); }
+html[data-theme=light] .candle-readout { color: var(--wl-text); background: var(--wl-surface); }
+html[data-theme=light] .crew-actions-disclosure summary { color: var(--wl-text); }
+html[data-theme=light] .crew-action-list button { background: none; }
+html[data-theme=light] .json-evidence { color: var(--wl-text); }
+html[data-theme=light] .dialog-cancel { background: none; border-color: var(--wl-border); }
+html[data-theme=light] .warning { color: var(--wl-amber); }
+html[data-theme=light] .pipeline-roles button { background: none; }
+html[data-theme=light] .pipeline-roles button[aria-selected=true] { background: none; }
+html[data-theme=light] .pipeline-roles button>span { color: var(--wl-muted); }
+html[data-theme=light] .pipeline-inspector { border-top-color: var(--wl-border); background: none; }
+@media (min-width:1101px) {
+html[data-theme=light] .modal-backdrop:has(.wallet-details) { background: rgb(3 33 28 / .42); }
+}
+@media (min-width:1101px) {
+html[data-theme=light] .modal-backdrop:has([data-kind=key]) { background: rgb(3 33 28 / .42); }
+}
+@media (max-width:760px) {
+html[data-theme=light] .crew-split .crew-row .crew-row-actions button { background: var(--wl-surface); }
+}
+html[data-theme=light] .token-packages button.selected { background: var(--wl-green-soft); }
+html[data-theme=light] .token-wallet-dialog { background: var(--wl-surface); color: var(--wl-text); border-color: var(--wl-border); box-shadow: 0 28px 80px rgb(3 33 28 / 0.18); }
+html[data-theme=light] .token-wallet-dialog::backdrop { background: rgb(3 33 28 / .42); }
+html[data-theme=light] .token-wallet-dialog label { color: var(--wl-muted); }
+html[data-theme=light] .token-wallet-dialog p { color: var(--wl-muted); }
+html[data-theme=light] .token-wallet-dialog .negative { color: var(--wl-red); }
+html[data-theme=light] .site-header { border-bottom-color: var(--wl-border); background: var(--wl-surface); }
+html[data-theme=light] .site-navigation button { background: none; }
+html[data-theme=light] .site-navigation button:hover:not(:disabled) { background: var(--wl-hover); }
+html[data-theme=light] .site-utilities .icon-button { background: none; }
+html[data-theme=light] .site-footer { border-top-color: var(--wl-border); }
+html[data-theme=light] .destination-tabs { border-bottom-color: var(--wl-border); }
+html[data-theme=light] .destination-tabs button { background: none; }
+html[data-theme=light] .destination-tabs button[aria-current=page] { background: none; }
+html[data-theme=light] .home-summary { border-bottom-color: var(--wl-border); }
+html[data-theme=light] .home-performance { border-bottom-color: var(--wl-border); }
+html[data-theme=light] .home-shortcuts button { background: none; }
+html[data-theme=light] .profile-button { background: var(--wl-surface); border-color: var(--wl-control); }
+html[data-theme=light] .profile-popover { border-color: var(--wl-border); background: var(--wl-surface); box-shadow: 0 16px 45px rgb(3 33 28 / 0.18); }
+html[data-theme=light] .profile-identity { border-bottom-color: var(--wl-border); }
+html[data-theme=light] .profile-popover>button { background: none; }
+html[data-theme=light] .profile-popover>button:hover { background: var(--wl-hover); }
+html[data-theme=light] .wallet-option { border-color: var(--wl-control); background: var(--wl-surface); }
+html[data-theme=light] .wallet-option:hover { background: var(--wl-hover); border-color: var(--wl-control); }
+html[data-theme=light] .local-wallet-option { border-top-color: var(--wl-control); }
+html[data-theme=light] .local-wallet-option .text-button { background: none; }
+html[data-theme=light] .wallet-back { background: none; }
+@media (max-width:760px) {
+html[data-theme=light] .table-scroll { scrollbar-color: var(--wl-control) var(--wl-raised); }
+}
+@media (max-width:600px) {
+html[data-theme=light] .site-header { background: var(--wl-surface); }
+}
+@media (max-width:600px) {
+html[data-theme=light] .site-navigation { background: var(--wl-surface); border-top-color: var(--wl-border); box-shadow: 0 -6px 18px rgb(3 33 28 / 0.05); }
+}
+
+/* dashboard/brand.css */
+html[data-theme=light] .primary { color: #fff; background: var(--wl-green); border-color: var(--wl-green); }
+html[data-theme=light] .primary:hover:not(:disabled) { background: var(--wl-green-hover); border-color: var(--wl-green); }
+html[data-theme=light] .crew-roles { border-color: var(--wl-border); }
+html[data-theme=light] .crew-roles li { border-left-color: var(--wl-border); background: var(--wl-surface); }
+html[data-theme=light] .crew-roles small { color: var(--wl-muted); }
+html[data-theme=light] .crew-risk-note { border-color: var(--wl-amber); background: var(--wl-amber-soft); color: var(--wl-text); }
+html[data-theme=light] .crew-risk-note a { color: inherit; }
+@media (max-width:1100px) {
+html[data-theme=light] .crew-roles li { border-top-color: var(--wl-border); }
+}
+@media (max-width:1100px) {
+html[data-theme=light] .crew-roles li:nth-child(even) { border-left-color: var(--wl-border); }
+}
+@media (max-width:640px) {
+html[data-theme=light] .crew-roles li,
+html[data-theme=light] .crew-roles li:nth-child(even) { border-top-color: var(--wl-border); }
+}
+html[data-theme=light] .tour-invite { border-color: var(--wl-green); background: var(--wl-green-soft); }
+html[data-theme=light] .tour-invite:hover { border-color: var(--wl-green); }
+html[data-theme=light] .tour-invite-play { background: var(--wl-green); color: #fff; }
+
+/* dashboard/trading/trading.css */
+html[data-theme=light] .tu-root button { border-color: var(--wl-control); background: var(--wl-surface); }
+html[data-theme=light] .tu-root button:hover:not(:disabled) { background: var(--wl-hover); border-color: var(--wl-control); }
+html[data-theme=light] .tu-root button:focus-visible,
+html[data-theme=light] .tu-root a:focus-visible,
+html[data-theme=light] .tu-root input:focus-visible,
+html[data-theme=light] .tu-root select:focus-visible,
+html[data-theme=light] .tu-root summary:focus-visible { outline-color: var(--wl-green); }
+html[data-theme=light] .tu-root button.tu-primary { background: var(--wl-green); color: #fff; border-color: var(--wl-green); }
+html[data-theme=light] .tu-root button.tu-primary:hover { background: var(--wl-green-hover); }
+html[data-theme=light] .tu-up { color: var(--wl-green); }
+html[data-theme=light] .tu-down { color: var(--wl-red); }
+html[data-theme=light] .tu-reviewbar { background: var(--wl-raised); border-bottom-color: var(--wl-border); color: var(--wl-muted); }
+html[data-theme=light] .tu-reviewbar b { color: var(--wl-text); }
+html[data-theme=light] .tu-root .tu-scenarios button { background: transparent; color: var(--wl-muted); }
+html[data-theme=light] .tu-root .tu-scenarios button[aria-pressed=true] { background: var(--wl-green-soft); color: var(--wl-text); }
+html[data-theme=light] .tu-nav nav [aria-current] { color: var(--wl-text); }
+html[data-theme=light] .tu-nav .tu-profile { background: transparent; border-color: var(--wl-border); }
+html[data-theme=light] .tu-account em { color: var(--wl-muted); }
+html[data-theme=light] .tu-account i { color: var(--wl-muted); }
+html[data-theme=light] .tu-workspace { background: var(--wl-surface); }
+html[data-theme=light] .tu-markets { background: var(--wl-surface); }
+html[data-theme=light] .tu-panelhead h2 span { color: var(--wl-muted); }
+html[data-theme=light] .tu-root .tu-icon { background: transparent; color: var(--wl-muted); }
+html[data-theme=light] .tu-search { border-color: var(--wl-control); background: var(--wl-surface); color: var(--wl-muted); }
+html[data-theme=light] .tu-search input { background: transparent; color: var(--wl-text); }
+html[data-theme=light] .tu-search input::placeholder { color: var(--wl-muted); }
+html[data-theme=light] .tu-search kbd { color: var(--wl-muted); }
+html[data-theme=light] .tu-search button { background: none; }
+html[data-theme=light] .tu-root .tu-filters button { color: var(--wl-muted); background: transparent; }
+html[data-theme=light] .tu-root .tu-filters button[aria-pressed=true] { background: var(--wl-green-soft); color: var(--wl-text); }
+html[data-theme=light] .tu-marketlabels { color: var(--wl-muted); }
+html[data-theme=light] .tu-marketlabels select { background: none; color: var(--wl-muted); }
+html[data-theme=light] .tu-marketrows { scrollbar-color: var(--wl-control) var(--wl-raised); }
+html[data-theme=light] .tu-marketrow.is-selected { border-left-color: var(--wl-green); background: var(--wl-green-soft); }
+html[data-theme=light] .tu-root .tu-quote { background: none; }
+html[data-theme=light] .tu-symbol small { color: var(--wl-muted); }
+html[data-theme=light] .tu-root .tu-save { background: none; color: var(--wl-muted); }
+html[data-theme=light] .tu-root .tu-save.saved { color: var(--wl-green); }
+html[data-theme=light] .tu-marketfoot { color: var(--wl-muted); }
+html[data-theme=light] .tu-marketfoot label { color: var(--wl-muted); }
+html[data-theme=light] .tu-marketfoot input { accent-color: var(--wl-green); }
+html[data-theme=light] .tu-coin { background: var(--wl-green-soft); color: var(--wl-green); }
+html[data-theme=light] .tu-instrument h2 span { color: var(--wl-muted); border-color: var(--wl-border); }
+html[data-theme=light] .tu-marketmetrics span { color: var(--wl-muted); }
+html[data-theme=light] .tu-charthead { border-bottom-color: var(--wl-border); color: var(--wl-muted); }
+html[data-theme=light] .tu-charthead span:first-child { color: var(--wl-text); }
+html[data-theme=light] .tu-charthead i { color: var(--wl-muted); }
+html[data-theme=light] .tu-root .chart-workspace { background: var(--wl-surface); }
+html[data-theme=light] .tu-root .chart-tools { background: transparent; }
+html[data-theme=light] .tu-root .chart-tools button { color: var(--wl-muted); background: transparent; }
+html[data-theme=light] .tu-root .chart-tools button.selected { background: var(--wl-green-soft); color: var(--wl-text); }
+html[data-theme=light] .tu-root .chart-bottom { color: var(--wl-muted); }
+html[data-theme=light] .tu-root .chart-bottom button { background: transparent; color: var(--wl-muted); }
+html[data-theme=light] .tu-marketrelationship { border-color: var(--wl-border); background: var(--wl-surface); color: var(--wl-green); }
+html[data-theme=light] .tu-marketrelationship span { color: var(--wl-muted); }
+html[data-theme=light] .tu-marketrelationship.is-unmatched { background: var(--wl-surface); border-color: var(--wl-border); color: var(--wl-text); }
+html[data-theme=light] .tu-marketrelationship.is-unmatched span { color: var(--wl-muted); }
+html[data-theme=light] .tu-root .tu-ledgertabs button { background: none; color: var(--wl-muted); }
+html[data-theme=light] .tu-root .tu-ledgertabs button[aria-selected=true] { color: var(--wl-text); border-color: var(--wl-green); }
+html[data-theme=light] .tu-ledgertabs span { background: var(--wl-surface); color: var(--wl-text); }
+html[data-theme=light] .tu-root th { color: var(--wl-muted); background: transparent; border-bottom-color: var(--wl-border); }
+html[data-theme=light] .tu-root td { border-bottom-color: var(--wl-border); }
+html[data-theme=light] .tu-root td button { background: transparent; }
+html[data-theme=light] .tu-slash { color: var(--wl-muted); }
+html[data-theme=light] .tu-protected { color: var(--wl-green); }
+html[data-theme=light] .tu-ledgernote { color: var(--wl-muted); }
+html[data-theme=light] .tu-bots { background: var(--wl-surface); }
+html[data-theme=light] .tu-sample { color: var(--wl-muted); border-color: var(--wl-control); }
+html[data-theme=light] .tu-botselect { border-color: var(--wl-control); background: var(--wl-surface); color: var(--wl-text); }
+html[data-theme=light] .tu-botselect select { background: none; color: var(--wl-text); }
+html[data-theme=light] .tu-botstatus { color: var(--wl-muted); }
+html[data-theme=light] .tu-status { color: var(--wl-amber); }
+html[data-theme=light] .tu-status i { background: currentColor; }
+html[data-theme=light] .tu-status.running { color: var(--wl-green); }
+html[data-theme=light] .tu-botbalance>span { color: var(--wl-muted); }
+html[data-theme=light] .tu-policy { border-top-color: var(--wl-border); border-bottom-color: var(--wl-border); }
+html[data-theme=light] .tu-policy>div span { color: var(--wl-muted); }
+html[data-theme=light] .tu-root .tu-policy>button { background: none; color: var(--wl-text); }
+html[data-theme=light] .tu-decision>div span { color: var(--wl-muted); }
+html[data-theme=light] .tu-decision p { color: var(--wl-muted); }
+html[data-theme=light] .tu-root .tu-decision button { background: none; color: var(--wl-text); }
+html[data-theme=light] .tu-root .tu-readiness { border-color: var(--wl-border); background: var(--wl-green-soft); color: var(--wl-green); }
+html[data-theme=light] .tu-manage { border-bottom-color: var(--wl-border); }
+html[data-theme=light] .tu-manage summary { color: var(--wl-muted); }
+html[data-theme=light] .tu-root .tu-manage button { background: transparent; }
+html[data-theme=light] .tu-activity i { background: var(--wl-surface); }
+html[data-theme=light] .tu-activity p { color: var(--wl-muted); }
+html[data-theme=light] .tu-activity small { color: var(--wl-muted); }
+html[data-theme=light] .tu-setup>div>span { border-color: var(--wl-border); color: var(--wl-muted); }
+html[data-theme=light] .tu-setup small { color: var(--wl-green); }
+html[data-theme=light] .tu-footer { color: var(--wl-muted); }
+html[data-theme=light] .tu-footer i { background: var(--wl-raised); }
+html[data-theme=light] .tu-empty { color: var(--wl-muted); }
+html[data-theme=light] .tu-empty b { color: var(--wl-text); }
+html[data-theme=light] .tu-chartempty { color: var(--wl-muted); }
+html[data-theme=light] .tu-warning { background: var(--wl-amber-soft); color: var(--wl-amber); }
+html[data-theme=light] .tu-root .tu-warning button { background: none; border-color: var(--wl-amber); }
+html[data-theme=light] .tu-toast { background: var(--wl-surface); border-color: var(--wl-border); box-shadow: 0 10px 40px rgb(3 33 28 / 0.18); }
+html[data-theme=light] .tu-toast button { background: none; }
+html[data-theme=light] .tu-dialog { background: var(--wl-surface); border-color: var(--wl-border); color: var(--wl-text); box-shadow: 0 30px 100px rgb(3 33 28 / 0.18); }
+html[data-theme=light] .tu-dialog::backdrop { background: rgb(3 33 28 / .42); }
+html[data-theme=light] .tu-dialoghead>span { color: var(--wl-muted); }
+html[data-theme=light] .tu-dialoghead button { background: none; }
+html[data-theme=light] .tu-dialog p { color: var(--wl-muted); }
+html[data-theme=light] .tu-dialog .tu-dialogbot { color: var(--wl-muted); }
+html[data-theme=light] .tu-dialogfact { border-bottom-color: var(--wl-border); }
+html[data-theme=light] .tu-dialogfact>span { color: var(--wl-muted); }
+html[data-theme=light] .tu-link { color: var(--wl-green); }
+@media (max-width:760px) {
+html[data-theme=light] .tu-mobiletabs { background: var(--wl-surface); }
+}
+@media (max-width:760px) {
+html[data-theme=light] .tu-root .tu-mobiletabs button { background: none; color: var(--wl-muted); }
+}
+@media (max-width:760px) {
+html[data-theme=light] .tu-root .tu-mobiletabs button[aria-pressed=true] { background: var(--wl-green-soft); color: var(--wl-text); }
+}
+@media (max-width:1180px) and (min-width:761px) {
+html[data-theme=light] .tu-root .tu-mobiletabs button { background: transparent; color: var(--wl-muted); }
+}
+@media (max-width:1180px) and (min-width:761px) {
+html[data-theme=light] .tu-root .tu-mobiletabs button[aria-pressed=true] { background: var(--wl-green-soft); color: var(--wl-text); }
+}
+html[data-theme=light] .tu-tokenlogo { background: hsl(var(--coin-hue) 35% 94%); color: hsl(var(--coin-hue) 45% 30%); border-color: var(--wl-border); }
+html[data-theme=light] .tu-projectlinks a,
+html[data-theme=light] .tu-root .tu-identitylinks .tu-projectlinks button { background: transparent; color: var(--wl-muted); }
+html[data-theme=light] .tu-projectlinks a:hover,
+html[data-theme=light] .tu-root .tu-identitylinks .tu-projectlinks button:hover:not(:disabled) { color: var(--wl-text); background: transparent; }
+html[data-theme=light] .tu-root .tu-identitylinks .tu-projectlinks button.is-copied { color: var(--wl-green); }
+html[data-theme=light] .tu-projectlinks [data-tooltip]::after { background: var(--wl-surface); color: var(--wl-text); border-color: var(--wl-border); }
+html[data-theme=light] .tu-projectlinks a:focus-visible,
+html[data-theme=light] .tu-root .tu-identitylinks .tu-projectlinks button:focus-visible { outline-color: var(--wl-green); }
+html[data-theme=light] .tu-volumemetric summary:hover,
+html[data-theme=light] .tu-volumemetric[open] summary { background: var(--wl-hover); }
+html[data-theme=light] .tu-volumemetric summary>span { color: var(--wl-muted); }
+html[data-theme=light] .tu-volumemetric summary b { color: var(--wl-text); }
+html[data-theme=light] .tu-root .tu-marketmetrics .tu-volumepop { background: var(--wl-surface); box-shadow: 0 18px 60px rgb(3 33 28 / 0.18); border-color: var(--wl-border); }
+html[data-theme=light] .tu-root .tu-marketmetrics .tu-volumeperiods { background: var(--wl-surface); }
+html[data-theme=light] .tu-root .tu-volumeperiods button { background: transparent; color: var(--wl-muted); }
+html[data-theme=light] .tu-root .tu-volumeperiods button[aria-pressed=true] { background: var(--wl-green-soft); color: var(--wl-text); }
+html[data-theme=light] .tu-volumeresult>span { color: var(--wl-muted); }
+html[data-theme=light] .tu-root .tu-marketmetrics .tu-volumeunits { border-top-color: var(--wl-border); }
+html[data-theme=light] .tu-volumepop p { color: var(--wl-muted); }
+html[data-theme=light] .tu-marketfacts { border-bottom-color: var(--wl-border); background: var(--wl-surface); }
+html[data-theme=light] .tu-marketfacts summary { color: var(--wl-muted); }
+html[data-theme=light] .tu-marketfacts summary>span:last-child { color: var(--wl-muted); }
+html[data-theme=light] .tu-factgrid span { color: var(--wl-muted); }
+html[data-theme=light] .tu-marketfacts p { color: var(--wl-muted); }
+html[data-theme=light] .tu-root .tu-market-switch { background: none; }
+html[data-theme=light] .tu-mode-select { color: var(--wl-text); }
+html[data-theme=light] .tu-mode-select select { background: transparent; color: inherit; }
+html[data-theme=light] .tu-workmenu>summary { color: var(--wl-muted); }
+html[data-theme=light] .tu-workmenu>div { background: var(--wl-surface); box-shadow: 0 12px 32px rgb(3 33 28 / 0.18); }
+html[data-theme=light] .tu-root .tu-workmenu button { background: transparent; }
+html[data-theme=light] .tu-root .chart-heading { color: var(--wl-muted); }
+html[data-theme=light] .tu-root .chart-tools-toggle { background: transparent; color: var(--wl-muted); }
+html[data-theme=light] .tu-root .tu-botselect { background: transparent; }
+html[data-theme=light] .tu-disclosure { border-top-color: var(--wl-border); }
+html[data-theme=light] .tu-disclosure>summary { color: var(--wl-text); }
+html[data-theme=light] .tu-disclosure>summary>span { color: var(--wl-muted); }
+html[data-theme=light] .tu-policy-content>div>span { color: var(--wl-muted); }
+html[data-theme=light] .tu-root .tu-policy-content>button { background: none; }
+html[data-theme=light] .tu-root .tu-manage { border-top-color: var(--wl-border); }
+html[data-theme=light] .tu-market-information .tu-marketfacts { background: transparent; }
+@media (max-width:760px) {
+html[data-theme=light] .tu-marketrelationship { background: transparent; }
+}
+@media (max-width:760px) {
+html[data-theme=light] .tu-marketrelationship.is-unmatched { background: transparent; }
+}
+
+/* dashboard/trading/paper.css */
+html[data-theme=light] .tu-modetoggle { border-color: var(--wl-border); }
+html[data-theme=light] .tu-modetoggle button { background: transparent; color: var(--wl-muted); }
+html[data-theme=light] .tu-modetoggle button.active { background: var(--wl-green-soft); color: var(--wl-green); }
+html[data-theme=light] .tu-paperbadge { color: var(--wl-green); }
+html[data-theme=light] .tu-paperassumptions p { color: var(--wl-muted); }
+html[data-theme=light] .tu-paperdecisions article { border-bottom-color: var(--wl-border); }
+html[data-theme=light] .tu-paperdecisions time,
+html[data-theme=light] .tu-paperdecisions small { color: var(--wl-muted); }
+html[data-theme=light] .tu-paperdecisions p { color: var(--wl-text); }
+html[data-theme=light] .tu-paperfacts { color: var(--wl-muted); }
+html[data-theme=light] .tu-paperfacts summary { color: var(--wl-green); }
+html[data-theme=light] .tu-paperfacts dt { color: var(--wl-muted); }
+html[data-theme=light] .tu-paperfacts>p { color: var(--wl-muted) !important; }
+html[data-theme=light] .tu-legacyreview { color: var(--wl-muted) !important; }
+
+/* dashboard/trading/live.css */
+html[data-theme=light] .tu-live .tu-available { color: var(--wl-muted); }
+html[data-theme=light] .tu-live .tu-livechecks { border-top-color: var(--wl-border); background: transparent; color: var(--wl-muted); }
+html[data-theme=light] .tu-livechecks>div { border-top-color: var(--wl-border); color: var(--wl-muted); }
+html[data-theme=light] .tu-pending { color: var(--wl-amber); }
+html[data-theme=light] .tu-live .tu-activityitem { border-bottom-color: var(--wl-border); background: transparent; }
+html[data-theme=light] .tu-activityitem time { color: var(--wl-muted); }
+html[data-theme=light] .tu-live .tu-allactivity { background: none; }
+html[data-theme=light] .tu-protectionlist { border-top-color: var(--wl-border); }
+html[data-theme=light] .tu-root .tu-protectionlist button { background: none; }
+html[data-theme=light] .tu-closepositions { border-top-color: var(--wl-border); }
+html[data-theme=light] .tu-closepositions span { color: var(--wl-muted); }
+
+/* dashboard/model-picker.css */
+html[data-theme=light] .model-studio { color: var(--wl-text); }
+html[data-theme=light] .model-back,
+html[data-theme=light] .model-text-action { background: transparent !important; color: var(--wl-text); }
+html[data-theme=light] .model-crew select { background: var(--wl-surface); color: var(--wl-text); border-color: var(--wl-control); }
+html[data-theme=light] .model-steps button { background: transparent !important; }
+html[data-theme=light] .model-steps button span { border-color: var(--wl-control); }
+html[data-theme=light] .model-steps li[aria-current=step] button { color: var(--wl-text); }
+html[data-theme=light] .model-steps li[aria-current=step] button span { color: var(--wl-green); }
+html[data-theme=light] .model-studio .model-option { color: var(--wl-text); }
+html[data-theme=light] .model-studio .model-option:hover { border-color: var(--wl-control); }
+html[data-theme=light] .model-studio .model-option.is-selected { border-color: var(--wl-green); background: var(--wl-green-soft) !important; }
+html[data-theme=light] .model-logo { color: var(--wl-muted); }
+html[data-theme=light] .model-option-check { border-color: var(--wl-control); color: var(--wl-green); }
+html[data-theme=light] .model-option-rate b { color: var(--wl-text); }
+html[data-theme=light] .model-primary { color: #fff !important; }
+html[data-theme=light] .model-role-icon { color: var(--wl-muted); border-color: var(--wl-border); }
+html[data-theme=light] .model-pair-line { border-left-color: var(--wl-border); }
+html[data-theme=light] .model-summary-total b { color: var(--wl-text); }
+html[data-theme=light] .model-current summary { color: var(--wl-text); }
+html[data-theme=light] .model-current b { color: var(--wl-text); }
+html[data-theme=light] .model-expectations p { color: var(--wl-text); }
+html[data-theme=light] .model-error { background: var(--wl-red-soft); border-color: var(--wl-red); color: var(--wl-text); }
+html[data-theme=light] .model-error button { background: transparent; color: var(--wl-text); }
+html[data-theme=light] .model-success-mark { background: var(--wl-green-soft); }
+
+/* dashboard/trading-market-picker.css */
+html[data-theme=light] .trade-market-selection .inline-link { color: var(--wl-green); }
+html[data-theme=light] .trade-market-chosen button { background: var(--wl-green-soft) !important; color: var(--wl-text); border-color: var(--wl-green); }
+html[data-theme=light] .crew-builder label.trade-market-search { border-color: var(--wl-control); background: var(--wl-surface); color: var(--wl-muted); }
+html[data-theme=light] .trade-market-search input { background: transparent !important; }
+html[data-theme=light] .trade-market-search:focus-within { outline-color: var(--wl-green); }
+html[data-theme=light] .trade-market-list { border-color: var(--wl-border); }
+html[data-theme=light] .trade-market-picker .trade-market-row { border-bottom-color: var(--wl-border); background: transparent !important; color: var(--wl-text); }
+html[data-theme=light] .trade-market-row:nth-child(odd) { border-right-color: var(--wl-border); }
+html[data-theme=light] .trade-market-picker .trade-market-row:hover { background: var(--wl-hover) !important; }
+html[data-theme=light] .trade-market-picker .trade-market-row.selected { background: var(--wl-green-soft) !important; }
+html[data-theme=light] .trade-market-row small { color: var(--wl-muted); }
+html[data-theme=light] .trade-market-tick { border-color: var(--wl-border); }
+html[data-theme=light] .selected .trade-market-tick { background: var(--wl-green-soft); color: var(--wl-green); border-color: var(--wl-green); }
+html[data-theme=light] .trade-market-caption { color: var(--wl-muted); }
+html[data-theme=light] .trade-market-picker .tu-tokenlogo>span { background: var(--wl-surface); }
+html[data-theme=light] .model-market-settings { border-top-color: var(--wl-border); border-bottom-color: var(--wl-border); }
+html[data-theme=light] .model-market-settings>small { color: var(--wl-muted); }
+html[data-theme=light] .model-market-settings>p { color: var(--wl-text); }
+html[data-theme=light] .policy-unlock { border-top-color: var(--wl-border); }
+@media (max-width:760px) {
+html[data-theme=light] .model-mobile-rules { border-block-color: var(--wl-border); }
+}
+@media (max-width:760px) {
+html[data-theme=light] .model-mobile-rules small { color: var(--wl-muted); }
+}
+html[data-theme=light] .modal[data-kind=renew] { background: var(--wl-surface); }
+html[data-theme=light] .crew-builder .rename-crew summary { color: var(--wl-muted); }
+
+/* dashboard/hive-drop.css */
+html[data-theme=light] .panel.hive-drop { border-color: var(--accent-line,var(--wl-green)); background: var(--wl-green-soft); }
+html[data-theme=light] .hive-drop-dot { background: var(--brand-mint,var(--wl-green)); }
+
+/* dashboard/trade-builder.css */
+html[data-theme=light] .trade-builder { background: var(--surface,var(--wl-surface)); color: var(--text,var(--wl-text)); border-color: var(--wl-border); box-shadow: 0 24px 80px rgb(3 33 28 / 0.18); }
+html[data-theme=light] .trade-builder::backdrop { background: rgb(3 33 28 / .42); }
+html[data-theme=light] .trade-builder-head>span { color: var(--wl-green); }
+html[data-theme=light] .trade-builder-head button { background: transparent; }
+html[data-theme=light] .trade-builder input,
+html[data-theme=light] .trade-builder select { color: inherit; }
+html[data-theme=light] .trade-builder-price input { background: transparent; }
+html[data-theme=light] .trade-builder-sides button[aria-pressed=true],
+html[data-theme=light] .trade-builder-horizons button[aria-pressed=true] { background: var(--wl-green-soft); border-color: var(--wl-green); color: var(--wl-green); }
+html[data-theme=light] .trade-builder-preview { background: var(--wl-green-soft); border-color: var(--wl-border); }
+html[data-theme=light] .trade-builder-preview strong { color: var(--wl-green); }
+html[data-theme=light] .trade-builder .primary,
+html[data-theme=light] .trade-builder-launch .primary { background: var(--wl-green); color: #fff; border-color: var(--wl-green); }
+html[data-theme=light] .trade-builder-wallet,
+html[data-theme=light] .trade-builder-retry { background: transparent; }
+html[data-theme=light] .trade-builder-status b { color: var(--wl-green); }
+html[data-theme=light] .trade-builder :focus-visible { outline-color: var(--wl-green); }
+
+/* dashboard/auto-exits.css */
+html[data-theme=light] .exit-status { border-color: var(--wl-amber); }
+html[data-theme=light] .exit-status.is-set { border-color: var(--wl-green); color: var(--wl-green); }
+html[data-theme=light] .exit-levels label small { color: var(--wl-green); }
+html[data-theme=light] .exits-submit { border-color: var(--wl-green); }
+html[data-theme=light] .exits-error { border-color: var(--wl-red); }
+html[data-theme=light] .exits-success { border-color: var(--wl-green); color: var(--wl-green); background: var(--wl-green-soft); }
+html[data-theme=light] .exits-empty>svg { color: var(--wl-green); }
+
+/* ui/product-icons.css */
+html[data-theme=light] .hh-brand-mark { background: currentColor; color: var(--wl-green); }
+
+/* demo/demo.css */
+html[data-theme=light] .dm-root { background: var(--wl-surface); }
+html[data-theme=light] .dm-root a { color: inherit; }
+html[data-theme=light] .dm-root .dm-button { background: var(--wl-surface); }
+html[data-theme=light] .dm-root .dm-button:hover { background: var(--wl-hover); }
+html[data-theme=light] .dm-root .dm-primary { border-color: var(--wl-green); }
+html[data-theme=light] .dm-root .dm-primary:hover { background: var(--wl-green-hover); }
+html[data-theme=light] .dm-root .dm-quiet { background: transparent; }
+html[data-theme=light] .dm-root .dm-quiet:hover { background: var(--wl-hover); }
+html[data-theme=light] .dm-header { border-bottom-color: var(--wl-border); background: var(--wl-surface); }
+html[data-theme=light] .dm-panel.is-focus { border-color: var(--wl-green); box-shadow: 0 0 0 3px rgb(3 33 28 / 0.04); }
+html[data-theme=light] .dm-glyph { background: var(--wl-raised); }
+html[data-theme=light] .dm-status i { background: currentColor; }
+html[data-theme=light] .dm-status.is-watching { color: var(--wl-muted); }
+html[data-theme=light] .dm-meter { background: var(--wl-raised); }
+html[data-theme=light] .dm-scouts span.is-live { border-color: var(--wl-green); }
+html[data-theme=light] .dm-grid { stroke: var(--wl-muted); }
+html[data-theme=light] .dm-tick { fill: var(--wl-muted); }
+html[data-theme=light] .dm-level-entry { color: var(--wl-text); }
+html[data-theme=light] .dm-pin::before { background: currentColor; }
+html[data-theme=light] .dm-pin-buy { color: var(--wl-text); }
+html[data-theme=light] .dm-pin-buy span { background: var(--wl-surface); }
+html[data-theme=light] .dm-pin-loss span { color: var(--wl-red); }
+html[data-theme=light] .dm-sizer { box-shadow: 0 16px 40px -16px rgb(3 33 28 / 0.18); }
+html[data-theme=light] .dm-feed { scrollbar-color: var(--wl-control) var(--wl-raised); }
+html[data-theme=light] .dm-idea.is-approved { border-color: var(--wl-green); }
+html[data-theme=light] .dm-idea-title span { background: var(--wl-green-soft); }
+html[data-theme=light] .dm-badge.is-yes { background: var(--wl-green-soft); }
+html[data-theme=light] .dm-event-dot { background: var(--wl-muted); }
+html[data-theme=light] .dm-root .dm-control:not(:disabled):hover { background: var(--wl-hover); }
+html[data-theme=light] .dm-callout { border-color: var(--wl-border); box-shadow: 0 22px 60px -20px rgb(3 33 28 / 0.18); }
+html[data-theme=light] .dm-progress { background: var(--wl-raised); }
+html[data-theme=light] .dm-modal-layer { background: rgb(3 33 28 / .42); }
+html[data-theme=light] .dm-modal { border-color: var(--wl-border); box-shadow: 0 28px 80px rgb(3 33 28 / 0.18); }
+html[data-theme=light] .dm-explore-bar { border-color: var(--wl-border); box-shadow: 0 20px 50px -20px rgb(3 33 28 / 0.18); }
+html[data-theme=light] .dm-toast>span { border-color: var(--wl-border); box-shadow: 0 20px 50px -20px rgb(3 33 28 / 0.18); }
+html[data-theme=light] .dm-root .dm-toast button { background: rgb(11 104 78 / .035); }
+/* Local token scopes in the trading desk, model picker and standalone demo. */
+html[data-theme=light] .tu-root {
+  --tu-bg: var(--wl-canvas);
+  --tu-panel: var(--wl-surface);
+  --tu-line: var(--wl-border);
+  --tu-muted: var(--wl-muted);
+  --tu-text: var(--wl-text);
+  --tu-accent: var(--wl-green);
+}
+html[data-theme=light] .model-studio {
+  --model-muted: var(--wl-muted);
+  --model-line: var(--wl-border);
+  --model-mint: var(--wl-green);
+  --model-surface: var(--wl-surface);
+}
+html[data-theme=light] .dm-root {
+  --canvas: var(--wl-canvas);
+  --panel: var(--wl-surface);
+  --raised: var(--wl-raised);
+  --dialog: var(--wl-surface);
+  --border: var(--wl-border);
+  --border-strong: var(--wl-control);
+  --hairline: var(--wl-border);
+  --text: var(--wl-text);
+  --body: var(--wl-text);
+  --muted: var(--wl-muted);
+  --mint: var(--wl-green);
+  --mint-hi: var(--wl-green);
+  --mint-ink: #fff;
+  --red: var(--wl-red);
+  --amber: var(--wl-amber);
+  background: var(--wl-canvas);
+}
+html[data-theme=light] body { background: var(--wl-canvas); color: var(--wl-text); }
+html[data-theme=light] .forest { --tone: var(--wl-green); --tint: var(--wl-green-soft); }
+html[data-theme=light] .blue { --tone: var(--wl-blue); --tint: var(--wl-blue-soft); }
+html[data-theme=light] .violet { --tone: var(--wl-violet); --tint: var(--wl-violet-soft); }
+html[data-theme=light] .ochre { --tone: var(--wl-amber); --tint: var(--wl-amber-soft); }
+
+/* Keep semantic surfaces intentional, including full-screen charts and native dialogs. */
+html[data-theme=light] .site-header,
+html[data-theme=light] .site-navigation,
+html[data-theme=light] .dm-header { background: var(--wl-surface); }
+html[data-theme=light] .panel,
+html[data-theme=light] .modal,
+html[data-theme=light] .command-dialog,
+html[data-theme=light] .profile-popover,
+html[data-theme=light] .dropdown-menu,
+html[data-theme=light] .token-wallet-dialog,
+html[data-theme=light] .chart-tooltip,
+html[data-theme=light] .chart-workspace:fullscreen,
+html[data-theme=light] .tu-root .chart-workspace,
+html[data-theme=light] .modal[data-kind=renew] { background: var(--wl-surface); }
+html[data-theme=light] .panel.hive-drop,
+html[data-theme=light] .exits-success,
+html[data-theme=light] .trade-builder-preview,
+html[data-theme=light] .toast,
+html[data-theme=light] .tu-toast { background: var(--wl-green-soft); color: var(--wl-green); border-color: var(--wl-green); }
+html[data-theme=light] .toast.error,
+html[data-theme=light] .model-error { background: var(--wl-red-soft); color: var(--wl-red); border-color: var(--wl-red); }
+html[data-theme=light] .model-error button { color: var(--wl-red); }
+html[data-theme=light] .crew-risk-note,
+html[data-theme=light] .connection-warning,
+html[data-theme=light] .feature-unavailable { background: var(--wl-amber-soft); color: var(--wl-amber); border-color: var(--wl-amber); }
+html[data-theme=light] .candle-readout { background: rgb(255 255 255 / .95); color: var(--wl-text); }
+html[data-theme=light] .allocation-bar,
+html[data-theme=light] .dm-meter,
+html[data-theme=light] .dm-progress { background: var(--wl-border); }
+html[data-theme=light] .allocation-stack i:nth-child(2) { background: var(--wl-blue); }
+html[data-theme=light] .allocation-stack i:nth-child(3) { background: var(--wl-violet); }
+html[data-theme=light] .allocation-stack i:nth-child(4) { background: var(--wl-amber); }
+html[data-theme=light] .tu-activity i,
+html[data-theme=light] .tu-footer i,
+html[data-theme=light] .hive-drop-dot { background: var(--wl-green); }
+
+/* Primary, destructive, selected and disabled controls. */
+html[data-theme=light] .primary,
+html[data-theme=light] .tu-root button.tu-primary,
+html[data-theme=light] .trade-builder .primary,
+html[data-theme=light] .trade-builder-launch .primary,
+html[data-theme=light] .dm-root .dm-primary {
+  color: #fff; background: var(--wl-green); border-color: var(--wl-green);
+}
+html[data-theme=light] .primary:hover:not(:disabled),
+html[data-theme=light] .tu-root button.tu-primary:hover:not(:disabled),
+html[data-theme=light] .trade-builder .primary:hover:not(:disabled),
+html[data-theme=light] .trade-builder-launch .primary:hover:not(:disabled),
+html[data-theme=light] .dm-root .dm-primary:hover:not(:disabled) {
+  color: #fff; background: var(--wl-green-hover); border-color: var(--wl-green-hover);
+}
+html[data-theme=light] .primary:active:not(:disabled),
+html[data-theme=light] .tu-root button.tu-primary:active:not(:disabled),
+html[data-theme=light] .trade-builder .primary:active:not(:disabled),
+html[data-theme=light] .dm-root .dm-primary:active:not(:disabled) { background: #03211c; border-color: #03211c; }
+html[data-theme=light] .model-primary:hover { --model-mint: var(--wl-green-hover); filter: none; }
+html[data-theme=light] .model-primary:active { --model-mint: #03211c; }
+html[data-theme=light] .danger,
+html[data-theme=light] .modal .danger.wide,
+html[data-theme=light] .modal .modal-actions .danger { background: var(--wl-red-soft); color: var(--wl-red); border-color: var(--wl-red); }
+html[data-theme=light] .danger:hover:not(:disabled),
+html[data-theme=light] .modal .danger.wide:hover:not(:disabled),
+html[data-theme=light] .modal .modal-actions .danger:hover:not(:disabled) { background: #f9dce0; color: #941b29; }
+html[data-theme=light] .model-steps li[aria-current=step] button span,
+html[data-theme=light] .model-option.is-selected .model-option-check,
+html[data-theme=light] .selected .trade-market-tick,
+html[data-theme=light] .welcome-steps .current b,
+html[data-theme=light] .welcome-steps .complete b { background: var(--wl-green); color: #fff; border-color: var(--wl-green); }
+html[data-theme=light] .ledger-tabs button[aria-selected=true],
+html[data-theme=light] .crew-overview-tabs button[aria-selected=true],
+html[data-theme=light] .segmented button.selected,
+html[data-theme=light] .segmented button[aria-pressed=true] { color: var(--wl-green); }
+html[data-theme=light] .ledger-tabs button[aria-selected=true],
+html[data-theme=light] .crew-overview-tabs button[aria-selected=true] { border-bottom-color: var(--wl-green); }
+html[data-theme=light] .segmented button.selected,
+html[data-theme=light] .segmented button[aria-pressed=true],
+html[data-theme=light] .view-toggle button[aria-pressed=true] { background: var(--wl-green-soft); }
+html[data-theme=light] .site-main .quiet-action:hover:not(:disabled),
+html[data-theme=light] .modal .quiet-action:hover:not(:disabled),
+html[data-theme=light] .site-main .crew-row-actions button:hover:not(:disabled),
+html[data-theme=light] .site-main .home-shortcuts button:hover { background: var(--wl-hover); }
+
+/* UI boundaries are stronger than decorative rules. No border widths change. */
+html[data-theme=light] input,
+html[data-theme=light] select,
+html[data-theme=light] textarea,
+html[data-theme=light] .trade-builder input,
+html[data-theme=light] .trade-builder select,
+html[data-theme=light] .trade-builder-price,
+html[data-theme=light] .trade-builder-sides button,
+html[data-theme=light] .trade-builder-horizons button,
+html[data-theme=light] .model-studio .model-option,
+html[data-theme=light] .theme-toggle { border-color: var(--wl-control); }
+html[data-theme=light] .trade-builder-sides button[aria-pressed=true],
+html[data-theme=light] .trade-builder-horizons button[aria-pressed=true],
+html[data-theme=light] .model-studio .model-option.is-selected { border-color: var(--wl-green); }
+html[data-theme=light] input,
+html[data-theme=light] select,
+html[data-theme=light] textarea { background-color: var(--wl-surface); color: var(--wl-text); }
+html[data-theme=light] input::placeholder,
+html[data-theme=light] textarea::placeholder { color: var(--wl-muted); opacity: 1; }
+html[data-theme=light] input:focus,
+html[data-theme=light] select:focus,
+html[data-theme=light] textarea:focus,
+html[data-theme=light] .trade-builder input:focus,
+html[data-theme=light] .trade-builder select:focus { border-color: var(--wl-green); }
+html[data-theme=light] :is(.site-workspace,.modal,.token-wallet-dialog,.trade-builder,.dm-root) :focus-visible,
+html[data-theme=light] .theme-toggle:focus-visible { outline-color: var(--wl-green); }
+html[data-theme=light] input[aria-invalid=true],
+html[data-theme=light] select[aria-invalid=true],
+html[data-theme=light] textarea[aria-invalid=true] { border-color: var(--wl-red); outline-color: var(--wl-red); }
+html[data-theme=light] :is(.site-workspace,.modal,.trade-builder,.token-wallet-dialog,.dm-root) :is(button,input,select,textarea):disabled {
+  opacity: 1; color: var(--wl-muted); background-color: var(--wl-raised); border-color: var(--wl-control);
+}
+html[data-theme=light] .model-studio .model-primary:disabled { color: var(--wl-muted) !important; background: var(--wl-raised) !important; border-color: var(--wl-control) !important; }
+html[data-theme=light] .table-scroll,
+html[data-theme=light] .tu-marketrows,
+html[data-theme=light] .dm-feed,
+html[data-theme=light] :is(.site-workspace,.modal,.token-wallet-dialog,.trade-builder,.dm-root) * { scrollbar-color: var(--wl-control) var(--wl-raised); }
+
+/* Only the workspace (dark-tone) CA chip changes; marketing's light chip is untouched. */
+html[data-theme=light] .token-ca--dark { color: var(--wl-text); background: var(--wl-surface); border-color: var(--wl-control); }
+html[data-theme=light] .token-ca--dark:hover { color: var(--wl-green); border-color: var(--wl-green); }
+html[data-theme=light] .token-ca--dark .token-ca__action { color: #fff; background: var(--wl-green); }
+html[data-theme=light] .token-ca--dark .token-ca__label,
+html[data-theme=light] .token-ca--dark .token-ca__short { color: var(--wl-muted); opacity: 1; }
+html[data-theme=light] .token-ca--dark:focus-visible { outline-color: var(--wl-green); }
+html[data-theme=light] .token-ca--dark.token-ca--empty:hover { border-color: var(--wl-control); }
+html[data-theme=light] .token-ca--dark.token-ca--empty .token-ca__address { color: var(--wl-muted); opacity: 1; }
+html[data-theme=light] .token-ca--dark.token-ca--empty .token-ca__action { color: var(--wl-muted); background: var(--wl-raised); opacity: 1; }
+
+/* Demo chart labels, the moving scouts and dimmed panels retain readable contrast. */
+html[data-theme=light] .dm-grid { stroke: var(--wl-border); }
+html[data-theme=light] .dm-tick { fill: var(--wl-muted); }
+html[data-theme=light] .dm-pin-loss span { color: #fff; }
+html[data-theme=light] .dm-pin-buy span { background: var(--wl-raised); color: var(--wl-text); }
+html[data-theme=light] .dm-panel.is-dim { opacity: 1; background: var(--wl-raised); }
+html[data-theme=light] .dm-panel.is-focus { border-color: var(--wl-green); box-shadow: 0 0 0 3px rgb(11 104 78 / .1); }
+/* The existing scout keyframe contains dark-only colours; keep its light colours stable. */
+html[data-theme=light] .dm-scouts span.is-live { border-color: var(--wl-green) !important; background: var(--wl-green-soft) !important; }
+html[data-theme=light] .dm-level-rule,
+html[data-theme=light] .dm-event.is-no .dm-event-dot { opacity: 1; }
+
+/* Preserve artwork without changing the source images. */
+html[data-theme=light] .sidebar-brand img { filter: none; }
+html[data-theme=light] .package-welcome-art { background: var(--wl-green-soft); }
+html[data-theme=light] .package-welcome-art img { mix-blend-mode: multiply; }
+html[data-theme=light] .wallet-option img,
+html[data-theme=light] .tu-tokenlogo img { background-color: var(--wl-raised); }
+html[data-theme=light] .model-logo[data-provider=OpenAI] img { filter: brightness(0) saturate(100%) invert(29%) sepia(34%) saturate(1182%) hue-rotate(112deg) brightness(91%) contrast(94%); }

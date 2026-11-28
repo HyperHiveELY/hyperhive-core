@@ -36,6 +36,8 @@ html { scroll-padding-top: 80px; }
 .site-header .site-logo { font-size: 20px; gap: 8px; }
 .site-header .site-logo__mark { width: 24px; height: 24px; }
 .site-header__start, .site-header__end { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-width: 0; }
+.site-header__actions { display: flex; align-items: center; gap: 10px; }
+.site-header .theme-toggle.site-header__mobile-theme { display: none; }
 .site-btn.site-btn--small { min-height: 34px; padding: 7px 14px; font-size: 12px; gap: 7px; }
 .site-btn--small .site-btn__dot { width: 5px; height: 5px; }
 .site-header .token-ca.site-header__ca { min-height: 34px; padding: 4px 4px 4px 10px; gap: 8px; font-size: 11px; }
@@ -79,6 +81,7 @@ html { scroll-padding-top: 80px; }
   .site-header__inner { display: flex; justify-content: space-between; }
   .site-header__toggle { display: inline-flex; }
   .site-header .token-ca.site-header__mobile-ca { display: inline-flex; margin-left: auto; margin-right: 4px; }
+  .site-header .theme-toggle.site-header__mobile-theme { display: inline-grid; margin-right: 4px; }
 }
 @media (min-width: 1280px) { .site-menu { display: none !important; } }
 @media (max-width: 809px) {

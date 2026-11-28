@@ -7,7 +7,7 @@ export interface ScanResult {
  market:string;mark:number;side:'long'|'short'|null;invalidationPx:number|null;distancePct:number|null;horizonH:number|null;
  why:string;skeptic:{verdict:'PASS'|'KILL';reasons:string[]};scannedAt:number;
 }
-const stopRule='Place the invalidation price at least 1.5 times the market atr field away from the mark, beyond normal one-hour noise; a closer invalidation is not a valid trade.';
+const stopRule='Place the invalidation price at least 2 times the market atr field away from the mark, beyond normal one-hour noise; a closer invalidation is not a valid trade.';
 const publicCopy='Use plain words for a newcomer. Do not name people, companies or products. Do not promise returns. Explain price moves without trading jargon.';
 const unsuitable=/\b(?:apy|apr|yield|earn|learn|passive income|guaranteed|partner|protected|insured|covered|receipt|mandate|guard|thesis)\b/i;
 const plain=(text:string,fallback:string)=>unsuitable.test(text)?fallback:text;
@@ -21,10 +21,10 @@ export async function scanMarket(db:Database,market:Snapshot):Promise<ScanResult
  },12000);
  const suggestion=await call(scout,SCOUT+' '+stopRule+' '+publicCopy,{lens:'One clear trade, or no trade right now',markets:[market]},Scout);
  const proposed=Scout.parse(suggestion.value).card;
- // Mirror the Sizer: a stop is never closer than 1.2 x ATR, so review the stop a real trade would use.
- const floor=1.2*market.atr,wrongSide=proposed&&(proposed.side==='long'?proposed.invalidationPx>=market.mark:proposed.invalidationPx<=market.mark),card=proposed&&!wrongSide?{...proposed,invalidationPx:proposed.side==='long'?Math.min(proposed.invalidationPx,market.mark-floor):Math.max(proposed.invalidationPx,market.mark+floor)}:proposed;
+ // Public reads use a wider stop than the Sizer's 1.2 x ATR floor so the idea, not hourly noise, decides it.
+ const floor=2*market.atr,wrongSide=proposed&&(proposed.side==='long'?proposed.invalidationPx>=market.mark:proposed.invalidationPx<=market.mark),card=proposed&&!wrongSide?{...proposed,invalidationPx:proposed.side==='long'?Math.min(proposed.invalidationPx,market.mark-floor):Math.max(proposed.invalidationPx,market.mark+floor)}:proposed;
  if(card&&card.market!==market.market)throw Error('Scout selected an unauthorized market');
- const criticism=await call(skeptic,SKEPTIC+' '+publicCopy+' The invalidation already respects a minimum distance of 1.2 times atr from the mark; judge the idea itself, not the stop width.'+' If card is null, return KILL and explain why there is no trade to check.',{card,market},Decision);
+ const criticism=await call(skeptic,SKEPTIC+' '+publicCopy+' The invalidation is set at least 2 times atr from the mark by design, so never reject for stop width or distance. Judge the idea itself: KILL only for a specific, material flaw in the reasoning or the market facts; otherwise PASS.'+' If card is null, return KILL and explain why there is no trade to check.',{card,market},Decision);
  let verdict=Decision.parse(criticism.value);
  if(!card)verdict={verdict:'KILL',reasons:verdict.reasons.length?verdict.reasons:['No clear trade to check.']};
  else if((card.side==='long'?market.mark-card.invalidationPx:card.invalidationPx-market.mark)<.8*market.atr){

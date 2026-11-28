@@ -1,4 +1,5 @@
 import {CrewStack,CrewLattice,CrewPrism,CrewNodes} from '../ui/ProductIcons.js';
+import {onThemeChange} from '../theme.js';
 import {FirstCrewJourney} from './SetupJourney.js';
 import React,{useId,useState,useEffect} from 'react';
 import {ArrowRight,ArrowUpRight,Plus,Search,LayoutGrid,List,Pause,Play,Wallet,ShieldCheck,ChevronDown,Copy,Check} from '../ui/ProductIcons.js';
@@ -22,14 +23,17 @@ export function CrewGlyph({variant='forest',large=false}:{variant?:string;large?
 const statusLabels:Record<string,string>={AWAITING_TRADES:'Waiting for trades',RECONCILING:'Checking fills',LOCAL_SIGNED:'Signed locally',SIGNED:'Signed',INVALID:'Invalid',BROKEN:'Broken'};
 export function Status({value}:{value:string}){return <span className={'bot-status status-'+value.toLowerCase().replaceAll(' ','-')}><i/>{statusLabels[value]??value.replaceAll('_',' ')}</span>;}
 export function PageEmpty({icon='bots',title,children}:{icon?:string;title:string;children?:React.ReactNode}){return <div className="page-empty"><Icon name={icon} size={22}/><h3>{title}</h3>{children&&<div className="empty-description">{children}</div>}</div>;}
-export function Plot({points,compact=false,color='#6fe3b8',label='Account equity history'}:{points:Point[];compact?:boolean;color?:string;label?:string}){
+export function Plot({points,compact=false,color:requestedColor='#6fe3b8',label='Account equity history'}:{points:Point[];compact?:boolean;color?:string;label?:string}){
+ const [light,setLight]=useState(()=>document.documentElement.dataset.theme==='light');
+ useEffect(()=>onThemeChange(()=>setLight(document.documentElement.dataset.theme==='light')),[]);
+ const color=light?(requestedColor==='#6fe3b8'?'#0b684e':requestedColor==='#8a929d'?'#59645f':requestedColor):requestedColor;
  const [hover,setHover]=useState<number|null>(null),id=useId().replaceAll(':','');
  if(points.length<2)return <div className={compact?'spark-empty':'portfolio-empty'}>{compact?'History pending':'No balance history for this period'}</div>;
  const w=900,h=compact?100:250,pad=8,lo=Math.min(...points.map(p=>p[1])),hi=Math.max(...points.map(p=>p[1])),range=hi-lo||Math.max(Math.abs(hi)*.02,1),min=hi===lo?lo-range/2:lo;
  const first=points[0][0],last=points.at(-1)![0],x=(t:number)=>pad+(t-first)/(last-first||1)*(w-pad*2),y=(v:number)=>h-pad-(v-min)/range*(h-pad*2);
  const line=points.map(([t,v])=>x(t)+','+y(v)).join(' '),chosen=hover===null?null:points.reduce((a,b)=>Math.abs(b[0]-(first+hover*(last-first)))<Math.abs(a[0]-(first+hover*(last-first)))?b:a);
  return <div className={compact?'sparkline':'performance-plot'}>{!compact&&<div className="plot-axis">{[min+range,min+range*2/3,min+range/3,min].map((v,i)=><span key={i}>{formatUsd(v,0)}</span>)}</div>}<div className="plot-canvas" onPointerMove={compact?undefined:e=>{const b=e.currentTarget.getBoundingClientRect();setHover(Math.min(1,Math.max(0,(e.clientX-b.left)/b.width)));}} onPointerLeave={()=>setHover(null)}>
-  <svg viewBox={'0 0 '+w+' '+h} preserveAspectRatio="none" role="img" aria-label={label}><defs><linearGradient id={id} x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor={color} stopOpacity=".15"/><stop offset="100%" stopColor={color} stopOpacity="0"/></linearGradient></defs>{!compact&&[0,1,2,3].map(n=><line key={n} x1="0" x2={w} y1={pad+n*(h-2*pad)/3} y2={pad+n*(h-2*pad)/3} stroke="#252a2e" strokeDasharray="3 5"/>)}<polygon points={pad+','+h+' '+line+' '+(w-pad)+','+h} fill={'url(#'+id+')'}/><polyline points={line} fill="none" stroke={color} strokeWidth={compact?1.8:2} vectorEffect="non-scaling-stroke"/>{chosen&&<><line x1={x(chosen[0])} x2={x(chosen[0])} y1="0" y2={h} stroke="#8a929d" strokeDasharray="3 4"/><circle cx={x(chosen[0])} cy={y(chosen[1])} r="4" fill={color}/></>}</svg>
+  <svg viewBox={'0 0 '+w+' '+h} preserveAspectRatio="none" role="img" aria-label={label}><defs><linearGradient id={id} x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stopColor={color} stopOpacity=".15"/><stop offset="100%" stopColor={color} stopOpacity="0"/></linearGradient></defs>{!compact&&[0,1,2,3].map(n=><line key={n} x1="0" x2={w} y1={pad+n*(h-2*pad)/3} y2={pad+n*(h-2*pad)/3} stroke={light?'#d9dedc':'#252a2e'} strokeDasharray="3 5"/>)}<polygon points={pad+','+h+' '+line+' '+(w-pad)+','+h} fill={'url(#'+id+')'}/><polyline points={line} fill="none" stroke={color} strokeWidth={compact?1.8:2} vectorEffect="non-scaling-stroke"/>{chosen&&<><line x1={x(chosen[0])} x2={x(chosen[0])} y1="0" y2={h} stroke={light?'#59645f':'#8a929d'} strokeDasharray="3 4"/><circle cx={x(chosen[0])} cy={y(chosen[1])} r="4" fill={color}/></>}</svg>
   {chosen&&<div className="chart-tooltip">{money(chosen[1])}<small>{new Date(chosen[0]).toLocaleString()}</small></div>}{!compact&&<div className="plot-dates">{[first,(first+last)/2,last].map((t,i)=><span key={i}>{new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric'})}</span>)}</div>}
  </div></div>;
 }

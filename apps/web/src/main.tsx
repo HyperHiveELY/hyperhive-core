@@ -2,6 +2,8 @@ import './typography.css';
 import React from 'react';
 import {createRoot} from 'react-dom/client';
 import {loadFlags,walkthroughSeen,WALKTHROUGH_PREVIEW_PATH} from './flags.js';
+import {applyTheme} from './theme.js';
+applyTheme();
 const root=createRoot(document.getElementById('root')!);
 const path=location.pathname.replace(/\/+$/,'')||'/';
 

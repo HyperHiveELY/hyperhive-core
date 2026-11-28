@@ -1,0 +1,442 @@
+/* Public website only. Keep palette tokens local to the marketing roots so the
+   workspace and its dark CA chip retain their existing appearance. */
+html[data-theme=dark] :is(.lp, .document-shell) {
+  --sd-page: #09120f;
+  --sd-soft: #0c1712;
+  --sd-card: #12211a;
+  --sd-hover: #1c3529;
+  --sd-ink: #f3f8f5;
+  --sd-text: #d7e2dd;
+  --sd-muted: #a6b8ae;
+  --sd-line: #60796c;
+  --sd-guide: #344b3e;
+  --sd-mint: #97fce3;
+  --sd-green: #0b684e;
+  --sd-green-hover: #075340;
+  --sd-success: #8ce3b5;
+  --sd-warning: #f3c77a;
+  --sd-danger: #ffaaa0;
+  --sd-success-bg: #102c20;
+  --sd-warning-bg: #302615;
+  --sd-danger-bg: #351e1b;
+  --site-ink: var(--sd-ink);
+  --site-muted: var(--sd-muted);
+  --site-green: var(--sd-green);
+  --site-green-hover: var(--sd-green-hover);
+  --site-notice: var(--sd-green);
+  --site-mint: var(--sd-mint);
+  --ink: var(--sd-ink);
+  --muted: var(--sd-muted);
+  --line: var(--sd-line);
+  --green: var(--sd-mint);
+  --mint: var(--sd-mint);
+  --deep: #03211c;
+  --paper: var(--sd-page);
+  --soft: var(--sd-card);
+  background: var(--sd-page);
+  color: var(--sd-text);
+  color-scheme: dark;
+  scrollbar-color: var(--sd-line) var(--sd-page);
+}
+
+html[data-theme=dark] body:has(> #root > :is(.lp, .document-shell)) {
+  background: #09120f;
+  color: #d7e2dd;
+}
+html[data-theme=dark]:has(#root > :is(.lp, .document-shell)) {
+  scrollbar-color: #60796c #09120f;
+}
+html[data-theme=dark] :is(.lp, .document-shell) ::selection { background: #97fce3; color: #03211c; }
+html[data-theme=dark] :is(.lp, .document-shell) ::placeholder { color: var(--sd-muted); opacity: 1; }
+html[data-theme=dark] :is(.lp, .document-shell) :is(input, select, textarea) { caret-color: var(--sd-mint); }
+html[data-theme=dark] :is(.lp, .document-shell) option { background: var(--sd-card); color: var(--sd-ink); }
+html[data-theme=dark] :is(.lp, .document-shell) :is(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline-color: var(--sd-mint);
+}
+html[data-theme=dark] :is(.lp, .document-shell) button:disabled { opacity: 1; }
+
+/* Shared chrome. Keep the charcoal footer and its existing grid / glow. */
+html[data-theme=dark] .site-header { background: var(--sd-page); border-color: var(--sd-guide); }
+html[data-theme=dark] .site-menu { background: var(--sd-card); border-color: var(--sd-line); }
+html[data-theme=dark] .site-header__nav a:hover,
+html[data-theme=dark] .site-header__nav a[aria-current=page],
+html[data-theme=dark] .site-menu nav a:hover,
+html[data-theme=dark] .site-menu nav a[aria-current=page] { color: var(--sd-mint); }
+html[data-theme=dark] .site-logo { color: var(--sd-ink); }
+html[data-theme=dark] .site-header .site-logo__mark,
+html[data-theme=dark] .lp-pricing__by img { filter: brightness(0) saturate(100%) invert(91%) sepia(24%) saturate(578%) hue-rotate(100deg); }
+html[data-theme=dark] .site-header__toggle { color: var(--sd-ink); }
+html[data-theme=dark] .site-header__toggle:hover,
+html[data-theme=dark] .site-header__toggle[aria-expanded=true] { background: var(--sd-hover); color: var(--sd-mint); }
+html[data-theme=dark] .site-header .theme-toggle { border-color: var(--sd-line); }
+html[data-theme=dark] .site-header .theme-toggle:hover { background: var(--sd-hover); border-color: var(--sd-mint); }
+html[data-theme=dark] .site-status__dot { background: var(--sd-success); }
+html[data-theme=dark] .site-btn--primary { background: var(--sd-green); border-color: #92c3aa; color: #fff; }
+html[data-theme=dark] .site-btn--primary:hover { background: var(--sd-green-hover); border-color: var(--sd-mint); }
+html[data-theme=dark] .site-btn--light,
+html[data-theme=dark] .site-btn--dark { background: var(--sd-card); border-color: var(--sd-line); color: var(--sd-ink); }
+html[data-theme=dark] .site-btn--light:hover,
+html[data-theme=dark] .site-btn--dark:hover { background: var(--sd-hover); border-color: var(--sd-mint); }
+html[data-theme=dark] .site-btn:active { background: #03211c; border-color: var(--sd-mint); }
+html[data-theme=dark] .site-btn:disabled { background: #243b30; color: var(--sd-muted); border-color: #79988a; }
+html[data-theme=dark] .site-footer { box-shadow: inset 0 1px var(--sd-line); }
+html[data-theme=dark] .site-footer__cta { background: #1d2822; border-color: var(--sd-line); color: #b9c7bf; }
+html[data-theme=dark] .site-footer__cta:hover { border-color: var(--sd-mint); }
+html[data-theme=dark] .site-footer__cta:hover .site-footer__cta-btn { background: #096c55; }
+
+/* Only the public (light-tone) contract-address chip is rethemed. */
+html[data-theme=dark] .token-ca--light { background: #12211a; color: #d7e2dd; border-color: #60796c; }
+html[data-theme=dark] .token-ca--light:hover { background: #1c3529; border-color: #97fce3; }
+html[data-theme=dark] .token-ca--light:active { background: #03211c; }
+html[data-theme=dark] .token-ca--light .token-ca__label,
+html[data-theme=dark] .token-ca--light .token-ca__short { color: #a6b8ae; opacity: 1; }
+html[data-theme=dark] .token-ca--light .token-ca__action { background: #0b684e; color: #fff; }
+html[data-theme=dark] .token-ca--light:focus-visible { outline-color: #97fce3; }
+html[data-theme=dark] .token-ca--light.token-ca--empty,
+html[data-theme=dark] .token-ca--light.token-ca--empty:hover { background: #0c1712; border-color: #60796c; color: #a6b8ae; }
+html[data-theme=dark] .token-ca--light.token-ca--empty .token-ca__address { opacity: 1; }
+html[data-theme=dark] .token-ca--light.token-ca--empty .token-ca__action { background: #243b30; color: #a6b8ae; opacity: 1; }
+
+/* Landing palette: separate green used for text from green button / panel fills. */
+html[data-theme=dark] .lp {
+  --lp-ink: var(--sd-ink);
+  --lp-text: var(--sd-text);
+  --lp-muted: var(--sd-muted);
+  --lp-faint: var(--sd-muted);
+  --lp-green-deep: var(--sd-mint);
+  --lp-green: var(--sd-success);
+  --lp-green-btn: var(--sd-green);
+  --lp-mint: var(--sd-mint);
+  --lp-mint-dot: var(--sd-mint);
+  --lp-soft: var(--sd-soft);
+  --lp-card: var(--sd-card);
+  --lp-dark: #07100d;
+  --lp-guide: var(--sd-guide);
+}
+html[data-theme=dark] .lp :is(h1, h2, h3) { color: var(--sd-ink); }
+html[data-theme=dark] .lp-section,
+html[data-theme=dark] .lp-hero,
+html[data-theme=dark] .lp-strip,
+html[data-theme=dark] .lp-audience-wrap { background: var(--sd-page); }
+html[data-theme=dark] .lp-section--soft { background: var(--sd-soft); }
+html[data-theme=dark] .lp-skip { background: #03211c; }
+html[data-theme=dark] .lp-guides > .lp-container::before,
+html[data-theme=dark] .lp-guides > .lp-container::after,
+html[data-theme=dark] .lp-pricing__card .lp-corners i {
+  background: linear-gradient(#97fce3, #97fce3) center / 11px 1.5px no-repeat, linear-gradient(#97fce3, #97fce3) center / 1.5px 11px no-repeat;
+}
+html[data-theme=dark] .lp-gridbg { filter: invert(1); opacity: .16; }
+html[data-theme=dark] .lp-glow { opacity: .14; }
+html[data-theme=dark] .lp-glow--soft { opacity: .1; }
+html[data-theme=dark] .lp-kicker--dark .lp-kicker__dot,
+html[data-theme=dark] .lp-kicker--green .lp-kicker__dot { color: var(--sd-mint); }
+html[data-theme=dark] .lp-gradient-text {
+  background-image: linear-gradient(90deg, #97fce3, #73c9ad);
+}
+html[data-theme=dark] .lp-tile--framed { background: var(--sd-card); border-color: var(--sd-line); }
+html[data-theme=dark] .lp-tile--framed::before,
+html[data-theme=dark] .lp-tile--framed::after { border-color: var(--sd-mint); }
+html[data-theme=dark] .lp-tile--sketch { background: transparent; }
+/* The original printed art has white paper and dark ink. A green-tinted
+   inversion preserves its linework; screen blends the paper into each panel. */
+html[data-theme=dark] .lp-sketch,
+html[data-theme=dark] .lp-tile--sketch img,
+html[data-theme=dark] .lp-avatars img {
+  filter: invert(1) sepia(.22) saturate(.65) hue-rotate(85deg) !important;
+  mix-blend-mode: screen;
+}
+html[data-theme=dark] .lp-tile--sketch img { opacity: .72; }
+html[data-theme=dark] .lp-avatars img { border-color: var(--sd-page); }
+html[data-theme=dark] .lp-case__media:has(.lp-sketch),
+html[data-theme=dark] .lp-owner__portrait.lp-sketch { background: var(--sd-card); }
+html[data-theme=dark] .lp-audience__card--owners .lp-audience__bg.lp-sketch { opacity: .18; }
+html[data-theme=dark] .lp-ticker { color: var(--sd-mint); opacity: .6; }
+html[data-theme=dark] .lp-features__lead,
+html[data-theme=dark] .lp-principle__audience p { color: var(--sd-text); }
+html[data-theme=dark] .lp-accordion li { border-color: var(--sd-line); }
+html[data-theme=dark] .lp-accordion button:hover,
+html[data-theme=dark] .lp-owner__quote a:hover { color: var(--sd-mint); }
+html[data-theme=dark] .lp-accordion__line { background: linear-gradient(90deg, #97fce3, #67b899); }
+html[data-theme=dark] .lp-principle__body { border-image: linear-gradient(90deg, #97fce3, #60796c) 1; }
+html[data-theme=dark] .lp-statement__mint { color: #b7efdc; }
+html[data-theme=dark] .lp-arch-card { background: var(--sd-card); }
+html[data-theme=dark] .lp-arch-card:hover { box-shadow: 0 18px 40px #0006; }
+html[data-theme=dark] .lp-inside,
+html[data-theme=dark] .lp-owner__key { background: #03211c; }
+html[data-theme=dark] .lp-inside__link { background: #163c2f; border-color: #719b88; }
+html[data-theme=dark] .lp-inside__link:hover { background: #204b3c; }
+html[data-theme=dark] .lp-inside__arrow { background: var(--sd-mint); color: #03211c; }
+html[data-theme=dark] .lp-how__bar { background: #0b684e; }
+html[data-theme=dark] .lp-how__help { background: #075340; color: var(--sd-mint); }
+html[data-theme=dark] .lp-how__tabs button { color: var(--sd-muted); opacity: 1; }
+html[data-theme=dark] .lp-how__tabs button:hover { background: var(--sd-hover); color: var(--sd-ink); opacity: 1; }
+html[data-theme=dark] .lp-how__tabs button.is-active { background: #204333; color: var(--sd-mint); box-shadow: inset 3px 0 var(--sd-mint); }
+html[data-theme=dark] .lp-how__select select { color: var(--sd-ink); }
+html[data-theme=dark] .lp-how__panel { background: var(--sd-card); color: var(--sd-text); }
+html[data-theme=dark] .lp-how__panel h3,
+html[data-theme=dark] .lp-quotes blockquote p { color: var(--sd-ink); }
+html[data-theme=dark] .lp-how__meta,
+html[data-theme=dark] .lp-how__panel dt,
+html[data-theme=dark] .lp-how__next p { color: var(--sd-mint); }
+html[data-theme=dark] .lp-how__meta span + span,
+html[data-theme=dark] .lp-how__intro,
+html[data-theme=dark] .lp-how__next span { color: var(--sd-muted); }
+html[data-theme=dark] .lp-how__panel dd { color: var(--sd-text); }
+html[data-theme=dark] .lp-how__panel dl > div,
+html[data-theme=dark] .lp-how__next { border-color: var(--sd-line); }
+html[data-theme=dark] .lp-quotes__nav > button:hover { background: var(--sd-hover); color: var(--sd-mint); }
+html[data-theme=dark] .lp-cases__controls button { background: var(--sd-mint); color: #03211c; }
+html[data-theme=dark] .lp-cases__controls button:hover { background: #c4ffed; }
+html[data-theme=dark] .lp-cases__controls button:disabled { background: #243b30; color: var(--sd-muted); opacity: 1; }
+html[data-theme=dark] .lp-case,
+html[data-theme=dark] .lp-case__icon,
+html[data-theme=dark] .lp-owner__quote p { color: var(--sd-ink); }
+html[data-theme=dark] .lp-case__media::after { background: linear-gradient(transparent 37.5%, #07100d); }
+html[data-theme=dark] .lp-owner__quote { background: var(--sd-card); border-color: var(--sd-line); }
+html[data-theme=dark] .lp-owner__object,
+html[data-theme=dark] .lp-pricing__object { filter: grayscale(1) invert(1); mix-blend-mode: screen; opacity: .16; }
+html[data-theme=dark] .lp-controls__stat { background-image: linear-gradient(292deg, #73c9ad 8%, #97fce3 100%); }
+html[data-theme=dark] .lp-controls__grid,
+html[data-theme=dark] .lp-controls__grid li,
+html[data-theme=dark] .lp-controls__iconrow { border-color: var(--sd-line); }
+html[data-theme=dark] .lp-controls__grid h3 { color: var(--sd-ink); }
+html[data-theme=dark] .lp-controls__icon,
+html[data-theme=dark] .lp-pricing__box { background: var(--sd-card); border-color: var(--sd-line); color: var(--sd-mint); }
+html[data-theme=dark] .lp-metrics,
+html[data-theme=dark] .lp-pricing { background: #032b21; }
+html[data-theme=dark] .lp-metrics__grid,
+html[data-theme=dark] .lp-metrics__cell { border-color: #668c7a; }
+html[data-theme=dark] .lp-metrics__cell:last-child { border-color: #668c7a; }
+html[data-theme=dark] .lp-metric { background: #123c2d; }
+html[data-theme=dark] .lp-metric:hover { background: #194b38; }
+html[data-theme=dark] .lp-pricing__note > p:first-child { color: #b6d1c3; }
+html[data-theme=dark] .lp-pricing__packs button { background: #174331; color: var(--sd-text); }
+html[data-theme=dark] .lp-pricing__packs button:hover { background: #24583f; }
+html[data-theme=dark] .lp-pricing__packs button[aria-pressed=true] { background: var(--sd-mint); color: #03211c; }
+html[data-theme=dark] .lp-pricing__card { background: var(--sd-card); color: var(--sd-ink); }
+html[data-theme=dark] .lp-audience__card--owners { background: #0d3b30; }
+html[data-theme=dark] .lp-audience__card--builders { background: linear-gradient(#064936, #103a2d); }
+html[data-theme=dark] .lp-audience__icon { background: #163c2f; color: var(--sd-mint); }
+html[data-theme=dark] .lp-scan-pill { background: var(--sd-card); border-color: var(--sd-line); }
+html[data-theme=dark] .lp-scan-pill label { color: var(--sd-mint); }
+html[data-theme=dark] .lp-scan-pill select { color: var(--sd-ink); }
+html[data-theme=dark] .lp-scan-pill button { background: #096c55; color: #fff; }
+html[data-theme=dark] .lp-scan-pill button:hover { background: #075340; }
+
+/* Inline landing SVGs contain their own paper, ink and chart palette. Preserve
+   gradient paints, masks, grain and white marks on coloured chart / key panels. */
+html[data-theme=dark] .lp-art svg { color: var(--sd-text) !important; fill: var(--sd-text) !important; }
+html[data-theme=dark] .lp-art :is(rect, circle)[fill=white],
+html[data-theme=dark] .lp-art [fill="#fff"] { fill: var(--sd-card); }
+html[data-theme=dark] .lp-art :is([fill="#fafbf9"], [fill="#f0f2ef"], [fill="#f2f3f2"], [fill="#edf0ed"], [fill="#ecefeb"], [fill="#e7f3ec"]) { fill: #284436; }
+html[data-theme=dark] .lp-art :is([stroke="#e4e8e5"], [stroke="#e2e8e4"], [stroke="#ced9d2"], [stroke="#d5ded7"], [stroke="#e2e7e3"], [stroke="#e2e8e3"], [stroke="#e3e8e2"], [stroke="#e1e6e3"], [stroke="#d6deda"], [stroke="#d8e5dd"], [stroke="#edf0ed"], [stroke="#edf0ec"], [stroke="#e7ede8"]) { stroke: var(--sd-line); }
+html[data-theme=dark] .lp-art :is([stroke="#43594d"], [stroke="#78847c"], [stroke="#596961"], [stroke="#a5b0a8"], [stroke="#a6cdb7"]) { stroke: var(--sd-muted); }
+html[data-theme=dark] .lp-art :is([stroke="#258f70"], [stroke="#549d80"], [stroke="#3d9d7b"], [stroke="#54b78f"], [stroke="#77bfa1"], [stroke="#459f7a"]) { stroke: var(--sd-mint); }
+html[data-theme=dark] .lp-art text[fill]:not([fill=white]):not([fill="#edf5ef"]) { fill: var(--sd-muted); }
+html[data-theme=dark] .lp-art text[fill="#4a896a"],
+html[data-theme=dark] .lp-art text[fill="#4f9f7a"] { fill: var(--sd-mint); }
+html[data-theme=dark] .lp-art [fill="#178569"] { fill: #0b684e; }
+html[data-theme=dark] .lp-art [fill="#75c9a8"] { fill: #0b684e; }
+html[data-theme=dark] .lp-art [stroke="#f5fff9"],
+html[data-theme=dark] .lp-art path[stroke=white] { stroke: #03211c; }
+html[data-theme=dark] .lp-art svg > image { opacity: .12; }
+
+/* Text pages, roadmap, FAQ and 404. Legacy .landing / Framer selectors in
+   styles.css are unused by Landing.jsx; transparent fills and currentColor
+   icons intentionally inherit the local palette. Typography.css has no colours. */
+html[data-theme=dark] .document-shell :is(h1, h2, h3) { color: var(--sd-ink); }
+html[data-theme=dark] .document-shell .eyebrow,
+html[data-theme=dark] .document-shell .doc-intro,
+html[data-theme=dark] .document-shell .faq-item > p,
+html[data-theme=dark] .document-shell .faq > div > p,
+html[data-theme=dark] .document-shell .section-heading > p { color: var(--sd-muted); }
+html[data-theme=dark] .document-shell .doc-content p { color: var(--sd-text); }
+html[data-theme=dark] .document-shell .doc-nav > a,
+html[data-theme=dark] .document-shell .text-link,
+html[data-theme=dark] .document-shell .milestone-detail > a { color: var(--sd-mint); }
+html[data-theme=dark] .document-shell .doc-nav > a:hover { color: var(--sd-ink); background: var(--sd-hover); }
+html[data-theme=dark] .document-shell .eyebrow i { background: var(--sd-mint); box-shadow: 0 0 0 3px #97fce326; }
+html[data-theme=dark] .document-shell .hh-button { background: #096c55; color: #fff; border-color: #92c3aa; }
+html[data-theme=dark] .document-shell .hh-button:hover { background: #075340; border-color: var(--sd-mint); box-shadow: 0 5px 18px #0004; }
+html[data-theme=dark] .document-shell .hh-button.secondary { background: var(--sd-card); color: var(--sd-ink); border-color: var(--sd-line); }
+html[data-theme=dark] .document-shell .hh-button.secondary:hover { background: var(--sd-hover); border-color: var(--sd-mint); }
+html[data-theme=dark] .document-shell .section-box,
+html[data-theme=dark] .document-shell .roadmap,
+html[data-theme=dark] .document-shell .faq { border-color: var(--sd-guide); }
+html[data-theme=dark] .document-shell .roadmap-list button,
+html[data-theme=dark] .document-shell .faq-item { border-color: var(--sd-line); color: var(--sd-text); }
+html[data-theme=dark] .document-shell .roadmap-list button > span,
+html[data-theme=dark] .document-shell .roadmap-list small { color: var(--sd-muted); }
+html[data-theme=dark] .document-shell .roadmap-list button:hover,
+html[data-theme=dark] .document-shell .faq-item > button:hover { background: var(--sd-hover); color: var(--sd-mint); }
+html[data-theme=dark] .document-shell .roadmap-list button.selected { background: #204333; border-color: var(--sd-mint); color: var(--sd-mint); }
+html[data-theme=dark] .document-shell .milestone-detail { background: var(--sd-card); border-color: var(--sd-line); }
+html[data-theme=dark] .document-shell .milestone-top b { color: var(--sd-mint); }
+html[data-theme=dark] .document-shell .milestone-detail li > span,
+html[data-theme=dark] .document-shell .milestone-detail > a { border-color: var(--sd-line); }
+html[data-theme=dark] .document-shell .template-picture { filter: invert(1) sepia(.22) saturate(.65) hue-rotate(85deg); mix-blend-mode: screen; opacity: .75; }
+
+/* Long documents, including the sticky mobile TOC, search and code / tables. */
+html[data-theme=dark] .ld {
+  --ld-ink: var(--sd-ink);
+  --ld-muted: var(--sd-muted);
+  --ld-line: var(--sd-line);
+  --ld-green: var(--sd-mint);
+  --ld-mint: var(--sd-mint);
+  --ld-soft: var(--sd-card);
+}
+html[data-theme=dark] .ld-side { background: var(--sd-page); }
+html[data-theme=dark] .ld-print,
+html[data-theme=dark] .ld-card { background: var(--sd-card); }
+html[data-theme=dark] .ld-print:hover,
+html[data-theme=dark] .ld-card:hover { background: var(--sd-hover); border-color: var(--sd-mint); }
+html[data-theme=dark] .ld-card:hover { box-shadow: 0 14px 34px #0005; }
+html[data-theme=dark] .ld-card__icon { background: #204333; }
+html[data-theme=dark] .ld-hero__links a,
+html[data-theme=dark] .ld-link { border-color: var(--sd-line); }
+html[data-theme=dark] .ld-hero__links a:hover,
+html[data-theme=dark] .ld-link:hover { border-color: var(--sd-mint); }
+html[data-theme=dark] .ld-toc__num,
+html[data-theme=dark] .ld--docs .ld-group__label span { color: var(--sd-muted); }
+html[data-theme=dark] .ld-body p,
+html[data-theme=dark] .ld-list li,
+html[data-theme=dark] .ld-steps li,
+html[data-theme=dark] .ld-defs dd,
+html[data-theme=dark] .ld-table td { color: var(--sd-text); }
+html[data-theme=dark] .ld-abstract { border-color: var(--sd-line); }
+html[data-theme=dark] .ld-abstract p { color: var(--sd-text) !important; }
+html[data-theme=dark] .ld-table { background: var(--sd-soft); }
+html[data-theme=dark] .ld-table tbody tr:hover { background: var(--sd-card); }
+html[data-theme=dark] .ld-formula { background: #03211c; }
+html[data-theme=dark] .ld-formula pre { color: var(--sd-mint); }
+html[data-theme=dark] .ld-formula figcaption { border-color: var(--sd-line); color: #b4d3c8; }
+html[data-theme=dark] .ld-dhero__meta,
+html[data-theme=dark] .ld-pipe small,
+html[data-theme=dark] .ld-pipe__n { color: #afc9be; }
+html[data-theme=dark] .ld-search { background: #143c30; border-color: #779f8e; color: #bdd5ca; }
+html[data-theme=dark] .ld-search:focus-within { background: #194536; border-color: var(--sd-mint); box-shadow: 0 0 0 1px var(--sd-mint); }
+html[data-theme=dark] .ld-search input::placeholder { color: #bdd5ca; }
+html[data-theme=dark] .ld-search kbd { border-color: #779f8e; }
+html[data-theme=dark] .ld-pipe,
+html[data-theme=dark] .ld-pipe li + li { border-color: #668c7a; }
+html[data-theme=dark] .ld-pipe a:hover { background: #1a4636; }
+html[data-theme=dark] .ld--docs .ld-end .hh-button { background: #096c55; color: #fff; border-color: #92c3aa; }
+html[data-theme=dark] .ld--docs .ld-end .hh-button:hover { background: #075340; border-color: var(--sd-mint); }
+
+/* Scanner: LONG and SHORT keep the same green signal; quiet results stay neutral. */
+html[data-theme=dark] .scan-page { color: var(--sd-text); }
+html[data-theme=dark] .scan-eyebrow { color: var(--sd-mint); }
+html[data-theme=dark] .scan-eyebrow > span { background: var(--sd-mint); box-shadow: 0 0 0 3px #97fce326; }
+html[data-theme=dark] .scan-workbench { background: var(--sd-soft); border-color: var(--sd-line); }
+html[data-theme=dark] .scan-picker input,
+html[data-theme=dark] .scan-picker select,
+html[data-theme=dark] .scan-quick button { background: var(--sd-card); border-color: var(--sd-line); color: var(--sd-text); }
+html[data-theme=dark] .scan-quick button:hover { background: var(--sd-hover); color: var(--sd-mint); border-color: var(--sd-mint); }
+html[data-theme=dark] .scan-quick button[aria-pressed=true] { background: #204333; color: var(--sd-mint); border-color: var(--sd-mint); }
+html[data-theme=dark] .scan-submit,
+html[data-theme=dark] .scan-trade { background: #096c55; border-color: #92c3aa; color: #fff; }
+html[data-theme=dark] .scan-picker--result .scan-submit { background: var(--sd-card); border-color: var(--sd-line); color: var(--sd-mint); }
+html[data-theme=dark] .scan-submit:hover,
+html[data-theme=dark] .scan-trade:hover { background: #075340; border-color: var(--sd-mint); color: #fff; }
+/* Avoid compounded opacity on a disabled fieldset and each of its children. */
+html[data-theme=dark] .scan-page :disabled { opacity: 1; }
+html[data-theme=dark] .scan-page :is(button, input, select):disabled { background: #243b30; color: var(--sd-muted); border-color: #79988a; }
+html[data-theme=dark] .scan-page .scan-hint,
+html[data-theme=dark] .scan-empty > p:not(.scan-eyebrow),
+html[data-theme=dark] .scan-progress > p:last-child,
+html[data-theme=dark] .scan-result__top span,
+html[data-theme=dark] .scan-levels span,
+html[data-theme=dark] .scan-page .scan-asof,
+html[data-theme=dark] .scan-page .scan-disclaimer,
+html[data-theme=dark] .scan-progress ol { color: var(--sd-muted); }
+html[data-theme=dark] .scan-read { background: var(--sd-card); border-color: var(--sd-line); }
+html[data-theme=dark] .scan-empty__roles { border-color: var(--sd-line); color: var(--sd-mint); }
+html[data-theme=dark] .scan-result h2,
+html[data-theme=dark] .document-shell .scan-result h2 { color: var(--sd-success); }
+html[data-theme=dark] .scan-result--quiet h2,
+html[data-theme=dark] .document-shell .scan-result--quiet h2 { color: var(--sd-ink); }
+html[data-theme=dark] .scan-levels { border-color: var(--sd-line); }
+html[data-theme=dark] .scan-skeptic { background: #1b3529; }
+html[data-theme=dark] .scan-skeptic h3 span,
+html[data-theme=dark] .scan-another,
+html[data-theme=dark] .scan-error button,
+html[data-theme=dark] .scan-progress .is-current { color: var(--sd-mint); }
+html[data-theme=dark] .scan-progress li span { border-color: var(--sd-line); }
+html[data-theme=dark] .scan-progress .is-current span { background: var(--sd-mint); border-color: var(--sd-mint); color: #03211c; }
+html[data-theme=dark] .scan-progress .is-done span { background: #0b684e; border-color: #8ce3b5; color: #fff; }
+html[data-theme=dark] .scan-error,
+html[data-theme=dark] .scan-error h2 { color: var(--sd-danger); }
+
+/* Wallet report: success, amber attention and red risk retain distinct fills,
+   text and bars. Every input and state also works without a connected wallet. */
+html[data-theme=dark] .wallet-check { color: var(--sd-text); }
+html[data-theme=dark] .wallet-check__eyebrow,
+html[data-theme=dark] .wallet-check__connected,
+html[data-theme=dark] .wallet-check__fix { color: var(--sd-mint); }
+html[data-theme=dark] .wallet-check__intro > p:last-child,
+html[data-theme=dark] .wallet-check__form > p,
+html[data-theme=dark] .wallet-check__feedback,
+html[data-theme=dark] .wallet-check__report-label > span,
+html[data-theme=dark] .wallet-check__address,
+html[data-theme=dark] .wallet-check dt,
+html[data-theme=dark] .wallet-check__summary dd span,
+html[data-theme=dark] .wallet-check__summary small,
+html[data-theme=dark] .wallet-check__positions-heading h2 span,
+html[data-theme=dark] .wallet-check__positions-heading p,
+html[data-theme=dark] .wallet-check__position-heading h3 span,
+html[data-theme=dark] .wallet-check__position-heading > span,
+html[data-theme=dark] .wallet-check__distance small,
+html[data-theme=dark] .wallet-check__empty p,
+html[data-theme=dark] .wallet-check__rules > div,
+html[data-theme=dark] .wallet-check__privacy { color: var(--sd-muted); }
+html[data-theme=dark] .wallet-check__input-row input { background: var(--sd-card); color: var(--sd-ink); border-color: var(--sd-line); }
+html[data-theme=dark] .wallet-check__input-row input[aria-invalid=true] { border-color: var(--sd-danger); }
+html[data-theme=dark] .wallet-check__form .wallet-check__error { background: var(--sd-danger-bg); border-color: var(--sd-danger); color: var(--sd-danger); }
+html[data-theme=dark] .wallet-check__report,
+html[data-theme=dark] .wallet-check__summary,
+html[data-theme=dark] .wallet-check__summary > div,
+html[data-theme=dark] .wallet-check__position,
+html[data-theme=dark] .wallet-check__badges span,
+html[data-theme=dark] .wallet-check__fix,
+html[data-theme=dark] .wallet-check__empty,
+html[data-theme=dark] .wallet-check__rules { border-color: var(--sd-line); }
+html[data-theme=dark] .wallet-check__summary,
+html[data-theme=dark] .wallet-check__position,
+html[data-theme=dark] .wallet-check__empty { background: var(--sd-card); }
+html[data-theme=dark] .wallet-check__verdict { background: var(--sd-success-bg); border-color: #629c85; }
+html[data-theme=dark] .wallet-check__status { background: #096c55; color: #fff; }
+html[data-theme=dark] .wallet-check__verdict--attention { background: var(--sd-warning-bg); border-color: #b48b47; }
+html[data-theme=dark] .wallet-check__verdict--attention .wallet-check__status { background: #805000; color: #fff; }
+html[data-theme=dark] .wallet-check__verdict--risk { background: var(--sd-danger-bg); border-color: #c27d71; }
+html[data-theme=dark] .wallet-check__verdict--risk .wallet-check__status { background: #a12f27; color: #fff; }
+html[data-theme=dark] .wallet-check__bar { background: #344b3e; }
+html[data-theme=dark] .wallet-check__bar span { background: var(--sd-success); }
+html[data-theme=dark] .wallet-check__bar--attention span { background: var(--sd-warning); }
+html[data-theme=dark] .wallet-check__bar--risk span { background: var(--sd-danger); }
+html[data-theme=dark] .wallet-check__badges .is-set { background: var(--sd-success-bg); border-color: #629c85; color: var(--sd-success); }
+html[data-theme=dark] .wallet-check__badges .is-missing { background: var(--sd-warning-bg); border-color: #b48b47; color: var(--sd-warning); }
+html[data-theme=dark] .wallet-check__negative { color: var(--sd-danger); }
+html[data-theme=dark] .wallet-check__rules summary:hover,
+html[data-theme=dark] .wallet-check__rules[open] summary { color: var(--sd-mint); }
+html[data-theme=dark] .wallet-check__connected:disabled { color: var(--sd-muted); }
+
+/* Whitepaper export retains its existing light paper treatment. */
+@media print {
+  html[data-theme=dark] body:has(> #root > .document-shell),
+  html[data-theme=dark] .document-shell {
+    --sd-page: #fff;
+    --sd-soft: #f4f8f5;
+    --sd-card: #f4f8f5;
+    --sd-ink: #111;
+    --sd-text: #26312c;
+    --sd-muted: #59645f;
+    --sd-line: #999;
+    --sd-mint: #096c55;
+    background: #fff;
+    color: #26312c;
+    color-scheme: light;
+  }
+  html[data-theme=dark] .ld-formula { background: #fff; border-color: #999; }
+  html[data-theme=dark] .ld-formula pre { color: #000; }
+  html[data-theme=dark] .ld-formula figcaption { color: #333; }
+}

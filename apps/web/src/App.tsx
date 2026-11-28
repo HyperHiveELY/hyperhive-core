@@ -25,6 +25,7 @@ import {TradeCards,RiskPage,RecordsPage} from './dashboard/ResearchPages.js';
 import {SettingsPage,PlansPage,IntegrationsPage,NetworkPage,AuditorPage} from './dashboard/SettingsPages.js';
 import {CheckoutSettings} from './dashboard/CheckoutSettings.js';
 import './dashboard/theme.css';import './dashboard/brand.css';
+import './dashboard/workspace-light.css';
 async function api(path:string,body?:unknown){const r=await fetch(`/api${path}`,{credentials:'same-origin',...(body!==undefined?{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}:{})});const data=await r.json();if(!r.ok)throw Error(data.error??'Request failed');if(body!==undefined&&path.startsWith('/setup/'))window.dispatchEvent(new Event('hyperhive-config-updated'));return data;}
 const short=(s:string)=>s?`${s.slice(0,6)}…${s.slice(-4)}`:'—';
 // Keep the app in a refresh boundary so edits preserve the current workspace view.

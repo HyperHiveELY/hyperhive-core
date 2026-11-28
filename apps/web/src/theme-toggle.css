@@ -1,0 +1,5 @@
+.theme-toggle{display:inline-grid;place-items:center;flex:none;width:34px;height:34px;padding:0;border:1px solid #d9dedc;border-radius:8px;background:transparent;color:#111;cursor:pointer;transition:border-color .15s,background-color .15s,color .15s}
+.theme-toggle:hover{border-color:#0b684e;color:#0b684e}
+.theme-toggle:focus-visible{outline:2px solid #6fe3b8;outline-offset:3px}
+html[data-theme=dark] .theme-toggle{border-color:#2f3438;color:#e7ecea}
+html[data-theme=dark] .theme-toggle:hover{border-color:#6fe3b8;color:#8ff2d2}
